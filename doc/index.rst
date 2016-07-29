@@ -11,9 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
-   pwm
    synthetic
-   util
+   simulations
+   pwm
 
 
 Indices and tables
