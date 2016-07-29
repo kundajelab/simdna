@@ -1,5 +1,7 @@
+synthetic module
+================
+
 .. automodule:: synthetic
     :members:
     :undoc-members:
-    :inherited-members:
     :show-inheritance:
