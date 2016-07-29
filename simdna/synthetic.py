@@ -10,24 +10,36 @@ import re
 
 
 class LabelGenerator(object):
+    """Generate labels for a generated sequence.
 
+    Arguments:
+        labelNames: an array of strings that are the names of the labels
+        labelsFromGeneratedSequenceFunction: function that accepts
+            an instance of :class:`.GeneratedSequence` and returns an array
+            of the labels (eg: an array of ones and zeros indicating if
+            the criteria for various labels are met)
+    """
     def __init__(self, labelNames, labelsFromGeneratedSequenceFunction):
-        """
-            labelNames: an array of strings
-            labelsFromGeneratedSequenceFunction: function that accepts
-                an instance of generatedSequence and returns an array
-                of the labels
-        """
         self.labelNames = labelNames
         self.labelsFromGeneratedSequenceFunction = labelsFromGeneratedSequenceFunction
 
     def generateLabels(self, generatedSequence):
+        """calls self.labelsFromGeneratedSequenceFunction.
+
+        Arguments:
+            generatedSequence: an instance of :class:`.GeneratedSequence`
+        """
         return self.labelsFromGeneratedSequenceFunction(
             self, generatedSequence)
 
 
 class IsInTraceLabelGenerator(LabelGenerator):
+    """LabelGenerator where labels match which embedders are called.
 
+    A special kind of LabelGenerator where the names of the labels
+        are the names of embedders, and the label is 1 if a particular
+        embedder has been called on the sequence and 0 otherwise.
+    """ 
     def __init__(self, labelNames):
         def labelsFromGeneratedSequenceFunction(self, generatedSequence):
             return [(1 if generatedSequence.additionalInfo.isInTrace(x) else 0)
@@ -36,36 +48,64 @@ class IsInTraceLabelGenerator(LabelGenerator):
             labelNames, labelsFromGeneratedSequenceFunction)
 
 
-def printSequences(outputFileName, sequenceSetGenerator, includeEmbeddings=False, labelGenerator=None, includeFasta=False):
-    """
-        outputFileName: string
-        sequenceSetGenerator: instance of AbstractSequenceSetGenerator
-        Given an output filename, and an instance of AbstractSequenceSetGenerator,
-        will call the sequence set generator and print the generated sequences
+def printSequences(outputFileName, sequenceSetGenerator,
+                   includeEmbeddings=False, labelGenerator=None,
+                   includeFasta=False, prefix=None):
+    """Print a series of synthetic sequences.
+
+    Given an output filename, and an instance of
+        :class:`.AbstractSequenceSetGenerator`, will call the
+        sequenceSetGenerator and print the generated sequences
         to the output file. Will also create a file "info_outputFileName.txt"
-        in the samedirectory as outputFileName that contains all the information
-        about sequenceSetGenerator.
-        includeEmbeddings: a boolean indicating whether to print a column that lists the embeddings
-        labelGenerator: instance of LabelGenerator
+        in the same directory as outputFileName that contains
+        all the information about sequenceSetGenerator.
+
+    Arguments:
+        outputFileName: string
+
+        sequenceSetGenerator: instance of
+            :class:`.AbstractSequenceSetGenerator`
+    
+        includeEmbeddings: a boolean indicating whether to print a
+            column that lists the embeddings
+    
+        labelGenerator: optional instance of :class:`.LabelGenerator`
+
+        includeFasta: optional boolean indicating whether to also
+            print out the generated sequences in fasta format
+            (the file will be produced with a .fa extension)
+
+        prefix: string - this will be prefixed in front of the generated
+            sequence ids, followed by a hyphen
     """
     ofh = fp.getFileHandle(outputFileName, 'w')
-    fastaOfh = fp.getFileHandle(fp.getFileNameParts(
-        outputFileName).getFilePathWithTransformation(lambda x: x, extension=".fa"), 'w')
-    ofh.write("seqName\tsequence" + ("\tembeddings" if includeEmbeddings else "") + ("\t" +
-                                                                                     "\t".join(labelGenerator.labelNames) if labelGenerator is not None else "") + "\n")
+    if (includeFasta):
+        fastaOfh = fp.getFileHandle(fp.getFileNameParts(
+            outputFileName).getFilePathWithTransformation(
+            lambda x: x, extension=".fa"), 'w')
+    ofh.write("seqName\tsequence"
+              + ("\tembeddings" if includeEmbeddings else "")
+              + ("\t" +
+                 "\t".join(labelGenerator.labelNames)
+                 if labelGenerator is not None else "") + "\n")
     generatedSequences = sequenceSetGenerator.generateSequences()  # returns a generator
     for generatedSequence in generatedSequences:
-        ofh.write(generatedSequence.seqName + "\t" + generatedSequence.seq
+        ofh.write((prefix+"-" if prefix is not None else "")
+                  + generatedSequence.seqName + "\t" + generatedSequence.seq
                   + ("\t" + ",".join(str(x)
-                                     for x in generatedSequence.embeddings) if includeEmbeddings else "")
+                     for x in generatedSequence.embeddings)
+                         if includeEmbeddings else "")
                   + ("\t" + "\t".join(str(x) for x in labelGenerator.generateLabels(
                       generatedSequence)) if labelGenerator is not None else "")
                   + "\n")
-        fastaOfh.write(">" + generatedSequence.seqName + "\n")
-        fastaOfh.write(generatedSequence.seq + "\n")
+        if (includeFasta):
+            fastaOfh.write(">" + (prefix+"-" if prefix is not None else "")
+                               + generatedSequence.seqName + "\n")
+            fastaOfh.write(generatedSequence.seq + "\n")
 
     ofh.close()
-    fastaOfh.close()
+    if (includeFasta):
+        fastaOfh.close()
     infoFilePath = fp.getFileNameParts(outputFileName).getFilePathWithTransformation(
         lambda x: x + "_info", extension=".txt")
 
@@ -74,68 +114,24 @@ def printSequences(outputFileName, sequenceSetGenerator, includeEmbeddings=False
     ofh.close()
 
 
-def printSequencesTransformationPosNeg(outputFileNamePos, outputFileNameNeg, sequenceSetGenerator, transformation):
-    """
-        outputFileName: string
-        sequenceSetGenerator: instance of AbstractSequenceSetGenerator
-                generatedSequences: the sequences that have been generated by sequenceSetGenerator
-        Given an output filename, and an instance of AbstractSequenceSetGenerator,
-        will print the generated sequences to the output file. Will also create a file
-                "info_outputFileName.txt" in the same directory as outputFileName that contains all the
-                information about sequenceSetGenerator.
-    """
-    ofhPos = fp.getFileHandle(outputFileNamePos, 'w')
-    ofhPos.write("seqName\tsequence\n")
-    ofhNeg = fp.getFileHandle(outputFileNameNeg, 'w')
-    ofhNeg.write("seqName\tsequence\n")
-    generatedSequences = sequenceSetGenerator.generateSequences()  # returns a generator
-
-    for generateSequence in generatedSequences:
-                # Iterate through the generated sequences, recording them in
-                # the pos. file, make a 1 bp substitution in the motif, and
-                # record the changed sequence in the neg. file
-        ofhPos.write(generateSequence.seqName + "\t" +
-                     generateSequence.seq + "\n")
-
-        embedding = generateSequence.embeddings[0]
-        embeddingList = list(embedding.what)
-        transformation.transform(embeddingList)
-        embeddingNeg = ''.join(embeddingList)
-        seqNeg = generateSequence.seq[0:embedding.startPos] + embeddingNeg + generateSequence.seq[
-            embedding.startPos + len(embeddingNeg):len(generateSequence.seq)]
-        generateSequenceNeg = generateSequence
-        generateSequenceNeg.seq = seqNeg
-        ofhNeg.write(generateSequenceNeg.seqName + "\t" +
-                     generateSequenceNeg.seq + "\n")
-
-    ofhPos.close()
-    ofhNeg.close()
-    infoFilePathPos = fp.getFileNameParts(outputFileNamePos).getFilePathWithTransformation(
-        lambda x: "info_" + x, extension=".txt")
-
-    import json
-    ofhPos = fp.getFileHandle(infoFilePathPos, 'w')
-    ofhPos.write(json.dumps(sequenceSetGenerator.getJsonableObject(),
-                            indent=4, separators=(',', ': ')))
-    ofhPos.close()
-
-
 class DefaultNameMixin(object):
-
+    """Basic functionality for classes that have a self.name attribute
+    """
     def __init__(self, name):
         if (name == None):
             name = self.getDefaultName()
         self.name = name
 
     def getDefaultName(self):
-        return json.dumps(self.getJsonableObject())
+        return RuntimeError("No default name implementation")
 
 
 class AbstractPositionGenerator(DefaultNameMixin):
-    """
-        Given the length of the background sequence and the length
-        of the substring you are trying to embed, will return a start position
-        to embed the substring at.
+    """Generate a start position at which to embed something
+
+    Given the length of the background sequence and the length
+    of the substring you are trying to embed, will return a start position
+    to embed the substring at.
     """
 
     def generatePos(self, lenBackground, lenSubstring, additionalInfo=None):
@@ -337,73 +333,100 @@ class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
 
 
 class AbstractSingleSequenceGenerator(object):
-    """
-        When called, generates a single sequence
+    """Generate a single sequence.
+
+    Arguments:
+        namePrefix: the GeneratedSequence object has a field
+            for the object's name; this is the prefix associated
+            with that name. The suffix is the value of a counter that
+            is incremented every time
     """
 
     def __init__(self, namePrefix=None):
-        """
-            namePrefix: the GeneratedSequence object has a field for the object's name; this is
-            the prefix associated with that name. The suffix is the value of a counter that
-            is incremented every time
-        """
         self.namePrefix = namePrefix if namePrefix is not None else "synth"
         self.sequenceCounter = 0
 
     def generateSequence(self):
-        """
-            returns GeneratedSequence object
+        """Generate the sequence.
+
+        Returns:
+            An instance of :class:`.GeneratedSequence`
         """
         raise NotImplementedError()
 
     def getJsonableObject(self):
-        """
-            returns an object representing the details of this, which
-            can be converted to json.
+        """Get JSON object representation.
+
+        Returns:
+            An json-friendly object (built of dictionaries, lists and
+                python primitives), which can be converted to json to
+                record the exact details of what was simualted.
         """
         raise NotImplementedError()
 
 
 class AdditionalInfo(object):
+    """Used to keep track of which embedders were called and how many times.
 
+    An instance of AdditionalInfo is meant to be an attribute of
+        a :class:`.GeneratedSequence` object.
+
+    Has self.trace which is a dictionary from operatorName->int
+        and which records operations that were called in the
+        process of embedding things in the sequence. At the time
+        of writing, operatorName is typically just the name of the
+        embedder.
+    """
     def __init__(self):
         self.trace = OrderedDict()  # a trace of everything that was called.
         self.additionalInfo = OrderedDict()  # for more ad-hoc messages
 
     def isInTrace(self, operatorName):
+        """Return True if operatorName has been called on the sequence.
+        """
         return operatorName in self.trace
 
     def updateTrace(self, operatorName):
+        """Increment count for the number of times operatorName was called.
+        """
         if (operatorName not in self.trace):
             self.trace[operatorName] = 0
         self.trace[operatorName] += 1
 
     def updateAdditionalInfo(self, operatorName, value):
+        """Can be used to store any additional information on operatorName.
+        """
         self.additionaInfo[operatorName] = value
 
 
 class EmbedInABackground(AbstractSingleSequenceGenerator):
-    """
-        Takes a backgroundGenerator and a series of embedders. Will
-        generate the background and then call each of the embedders in
-        succession. Then returns the result.
+    """Generate a background sequence and embed smaller sequences in it.
+    
+    Takes a backgroundGenerator and a series of embedders. Will
+    generate the background and then call each of the embedders in
+    succession. Then returns the result.
+
+    Arguments:
+        backgroundGenerator: instance of
+            :class:`.AbstractBackgroundGenerator`
+        embedders: array of instances of :class:`.AbstractEmbedder`
+        namePrefix: see parent
     """
 
     def __init__(self, backgroundGenerator, embedders, namePrefix=None):
-        """
-            backgroundGenerator: instance of AbstractBackgroundGenerator
-            embedders: array of instances of AbstractEmbedder
-            namePrefix: see parent
-        """
         super(EmbedInABackground, self).__init__(namePrefix)
         self.backgroundGenerator = backgroundGenerator
         self.embedders = embedders
 
     def generateSequence(self):
-        """
-            generates a background using self.backgroundGenerator, splits it into an array,
-            and passes it to each of self.embedders in turn for embedding things.
-            returns an instance of GeneratedSequence
+        """Produce the sequence.
+        
+        Generates a background using self.backgroundGenerator,
+        splits it into an array, and passes it to each of
+        self.embedders in turn for embedding things.
+
+        Returns:
+            An instance of :class:`.GeneratedSequence`
         """
         additionalInfo = AdditionalInfo()
         backgroundString = self.backgroundGenerator.generateBackground()
@@ -415,13 +438,20 @@ class EmbedInABackground(AbstractSingleSequenceGenerator):
             embedder.embed(backgroundStringArr,
                            priorEmbeddedThings, additionalInfo)
         self.sequenceCounter += 1
-        return GeneratedSequence(self.namePrefix + str(self.sequenceCounter), "".join(backgroundStringArr), priorEmbeddedThings.getEmbeddings(), additionalInfo)
+        return GeneratedSequence(self.namePrefix + str(self.sequenceCounter),
+                                 "".join(backgroundStringArr),
+                                 priorEmbeddedThings.getEmbeddings(),
+                                 additionalInfo)
 
     def getJsonableObject(self):
+        """See parent.
         """
-            see parent
-        """
-        return OrderedDict([("class", "EmbedInABackground"), ("namePrefix", self.namePrefix), ("backgroundGenerator", self.backgroundGenerator.getJsonableObject()), ("embedders", [x.getJsonableObject() for x in self.embedders])
+        return OrderedDict([("class", "EmbedInABackground"),
+                            ("namePrefix", self.namePrefix),
+                            ("backgroundGenerator",
+                             self.backgroundGenerator.getJsonableObject()),
+                            ("embedders",
+                             [x.getJsonableObject() for x in self.embedders])
                             ])
 
 
@@ -512,27 +542,44 @@ class AbstractEmbeddable(object):
         raise NotImplementedError()
 
     def canEmbed(self, priorEmbeddedThings, startPos):
-        """
-            priorEmbeddedThings: instance of AbstractPriorEmbeddedThings
-            startPos: the position you are considering embedding self at
-            returns a boolean indicating whether self can be embedded at startPos,
+        """Checks whether embedding is possible at a given pos.
+
+        Accepts an instance of :class:`AbstractPriorEmbeddedThings` and
+            a startPos, and checks if startPos is viable given the
+            contents of priorEmbeddedThings
+
+        Arguments:
+            priorEmbeddedThings: instance of
+                :class:`AbstractPriorEmbeddedThings`
+
+            startPos: int; the position you are considering embedding self at
+
+        Returns:
+            A boolean indicating whether self can be embedded at startPos,
                 given the things that have already been embedded.
         """
         raise NotImplementedError()
 
     def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
-        """
-            Will embed self at startPos in backgroundStringArr, and will update priorEmbeddedThings.
-            priorEmbeddedThings: instance of AbstractPriorEmbeddedThings
-            backgroundStringArr: an array of characters representing the background
-            startPos: the position to embed self at
+        """Embed self in a background string.
+
+        Will embed self at startPos in backgroundStringArr,
+            and will update priorEmbeddedThings accordingly
+
+        Arguments:
+            priorEmbeddedThings: instance of
+                :class:`AbstractPriorEmbeddedThings`
+            backgroundStringArr: an array of characters
+                representing the background
+            startPos: integer; the position to embed self at
         """
         raise NotImplementedError()
 
 
 class StringEmbeddable(AbstractEmbeddable):
-    """
-        represents a string (such as a sampling from a pwm) that is to
+    """A string that is to be embedded in a background.
+
+    Represents a string (such as a sampling from a pwm) that is to
         be embedded in a background. See docs for superclass.
     """
 
@@ -566,11 +613,11 @@ class StringEmbeddable(AbstractEmbeddable):
 
 
 class PairEmbeddable_General(AbstractEmbeddable):
-    """
-        embeds two Embeddable objects with some sep
+    """Embeds two :class:`.AbstractEmbeddable` objects with some separation.
     """
 
-    def __init__(self, embeddable1, embeddable2, separation, embeddableDescription, nothingInBetween=True):
+    def __init__(self, embeddable1, embeddable2, separation,
+                       embeddableDescription, nothingInBetween=True):
         self.embeddable1 = embeddable1
         self.embeddable2 = embeddable2
         self.separation = separation
@@ -593,7 +640,8 @@ class PairEmbeddable_General(AbstractEmbeddable):
             return (priorEmbeddedThings.canEmbed(startPos, startPos + len(self.embeddable1))
                     and priorEmbeddedThings.canEmbed(startPos + len(self.embeddable1) + self.separation, startPos + len(self)))
 
-    def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
+    def embedInBackgroundStringArr(self, priorEmbeddedThings,
+                                         backgroundStringArr, startPos):
         self.embeddable1.embedInBackgroundStringArr(
             priorEmbeddedThings, backgroundStringArr, startPos)
         self.embeddable2.embedInBackgroundStringArr(
@@ -607,9 +655,9 @@ class PairEmbeddable_General(AbstractEmbeddable):
 
 
 class PairEmbeddable(AbstractEmbeddable):
-    """
-        Represents a pair of strings that are embedded with some separation.
-        Used for motif grammars. See superclass docs.
+    """Embed two strings with some separation. To be deprecated.
+
+        The use of PairEmbeddable_General instead should be favoured.
     """
 
     def __init__(self, string1, string2, separation, embeddableDescription, nothingInBetween=True):
@@ -678,16 +726,20 @@ class AbstractEmbedder(DefaultNameMixin):
 
 
 class EmbeddableEmbedder(AbstractEmbedder):
-    """
-        Embeds instances of AbstractEmbeddable within the background sequence,
-        at a position sampled from a distribution. Only embeds at unoccupied
-        positions
+    """Embeds an instance of :class:`.AbstractEmbeddable` at a sampled pos.
+
+    Embeds instances of :class:`.AbstractEmbeddable` within the
+        background sequence, at a position sampled from a distribution.
+        Only embeds at unoccupied positions.
     """
 
-    def __init__(self, embeddableGenerator, positionGenerator=uniformPositionGenerator, name=None):
+    def __init__(self, embeddableGenerator,
+                       positionGenerator=uniformPositionGenerator, name=None):
         """
-            embeddableGenerator: instance of AbstractEmbeddableGenerator
-            positionGenerator: instance of AbstractPositionGenerator
+            embeddableGenerator: instance of
+                :class:`.AbstractEmbeddableGenerator`
+            positionGenerator: instance of
+                :class:`.AbstractPositionGenerator`
         """
         self.embeddableGenerator = embeddableGenerator
         self.positionGenerator = positionGenerator
@@ -695,10 +747,12 @@ class EmbeddableEmbedder(AbstractEmbedder):
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
         """
-            calls self.embeddableGenerator to determine the embeddable to embed. Then
-            calls self.positionGenerator to determine the start position at which
-            to embed it. If the position is occupied, will resample from
-            self.positionGenerator. Will warn if tries to resample too many times.
+            calls self.embeddableGenerator to determine the
+                embeddable to embed. Then calls self.positionGenerator to
+                determine the start position at which to embed it.
+                If the position is occupied, will resample from
+                self.positionGenerator. Will warn if tries to
+                resample too many times.
         """
         embeddable = self.embeddableGenerator.generateEmbeddable()
         canEmbed = False
@@ -719,8 +773,7 @@ class EmbeddableEmbedder(AbstractEmbedder):
 
 
 class XOREmbedder(AbstractEmbedder):
-    """
-        calls exactly one of the supplied embedders
+    """Calls exactly one of the supplied embedders.
     """
 
     def __init__(self, embedder1, embedder2, probOfFirst, name=None):
@@ -745,9 +798,9 @@ class XOREmbedder(AbstractEmbedder):
 
 
 class AllEmbedders(AbstractEmbedder):
-    """
-        Wrapper around a list of embedders to make sure all are called
-        Useful in conjunciton with RandomSubsetOfEmbedders
+    """Wrapper around a list of embedders that calls each one in turn.
+
+    Useful to nest under a :class:`.RandomSubsetOfEmbedders`
     """
 
     def __init__(self, embedders, name=None):
@@ -765,15 +818,18 @@ class AllEmbedders(AbstractEmbedder):
 
 
 class RandomSubsetOfEmbedders(AbstractEmbedder):
-    """
-        Takes a quantity generator that generates a quantity of
+    """Call some random subset of supplied embedders.
+
+    Takes a quantity generator that generates a quantity of
         embedders, and executes that many embedders from a supplied set,
         in sequence
     """
 
     def __init__(self, quantityGenerator, embedders, name=None):
         """
-            quantityGenerator: instance of AbstractQuantityGenerator
+            Arguments:
+                quantityGenerator: instance of
+                    :class:`.AbstractQuantityGenerator`
         """
         if (isinstance(quantityGenerator, int)):
             quantityGenerator = FixedQuantityGenerator(quantityGenerator)
@@ -798,25 +854,25 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
 
 
 class RepeatedEmbedder(AbstractEmbedder):
-    """
-        Wrapper around an embedder to call it multiple times according to sampling
-        from a distribution.
+    """Call an embedded multiple times.
+
+    Wrapper around an embedder to call it multiple times according to samples
+        from a distribution. First calls
+        self.quantityGenerator to get the quantity, then calls
+        self.embedder a number of times equal to the value returned.
     """
 
     def __init__(self, embedder, quantityGenerator, name=None):
         """
-            embedder: instance of AbstractEmbedder
-            quantityGenerator: instance of AbstractQuantityGenerator
+        Arguments:
+            embedder: instance of :class:`.AbstractEmbedder`
+            quantityGenerator: instance of :class:`.AbstractQuantityGenerator`
         """
         self.embedder = embedder
         self.quantityGenerator = quantityGenerator
         super(RepeatedEmbedder, self).__init__(name)
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
-        """
-            first calls self.quantityGenerator.generateQuantity(), then calls
-            self.embedder a number of times equal to the value returned.
-        """
         quantity = self.quantityGenerator.generateQuantity()
         for i in range(quantity):
             self.embedder.embed(backgroundStringArr,
@@ -827,13 +883,13 @@ class RepeatedEmbedder(AbstractEmbedder):
 
 
 class AbstractQuantityGenerator(DefaultNameMixin):
-    """
-        class to sample according to a distribution
+    """Class to sample according to a distribution.
     """
 
     def generateQuantity(self):
         """
-            returns the sampled value
+        Returns:
+            The sampled value.
         """
         raise NotImplementedError()
 
@@ -842,8 +898,7 @@ class AbstractQuantityGenerator(DefaultNameMixin):
 
 
 class ChooseValueFromASet(AbstractQuantityGenerator):
-    """
-        Randomly samples a particular value from a set of values
+    """Randomly samples a particular value from a set of values.
     """
 
     def __init__(self, setOfPossibleValues, name=None):
@@ -858,8 +913,7 @@ class ChooseValueFromASet(AbstractQuantityGenerator):
 
 
 class UniformIntegerGenerator(AbstractQuantityGenerator):
-    """
-        Randomly samples an integer from minVal to maxVal, inclusive.
+    """Randomly samples an integer from minVal to maxVal, inclusive.
     """
 
     def __init__(self, minVal, maxVal, name=None):
@@ -876,14 +930,13 @@ class UniformIntegerGenerator(AbstractQuantityGenerator):
 
 
 class FixedQuantityGenerator(AbstractQuantityGenerator):
-    """
-        returns a fixed number every time generateQuantity is called
+    """Returns a fixed number every time generateQuantity is called.
+
+    Arguments:
+        quantity: the value to return when generateQuantity is called.
     """
 
     def __init__(self, quantity, name=None):
-        """
-            quantity: the value to return when generateQuantity is called.
-        """
         self.quantity = quantity
         super(FixedQuantityGenerator, self).__init__(name)
 
@@ -895,14 +948,13 @@ class FixedQuantityGenerator(AbstractQuantityGenerator):
 
 
 class PoissonQuantityGenerator(AbstractQuantityGenerator):
-    """
-        Generates values according to a poisson distribution
+    """Generates values according to a poisson distribution.
+
+    Arguments:
+        mean: the mean of the poisson distribution
     """
 
     def __init__(self, mean, name=None):
-        """
-            mean: the mean of the poisson distribution
-        """
         self.mean = mean
         super(PoissonQuantityGenerator, self).__init__(name)
 
@@ -914,14 +966,13 @@ class PoissonQuantityGenerator(AbstractQuantityGenerator):
 
 
 class BernoulliQuantityGenerator(AbstractQuantityGenerator):
-    """
-        Generates 1 or 0 according to a bernoulli distribution
+    """Generates 1 or 0 according to a bernoulli distribution.
+
+    Arguments:
+        prob: probability of 1
     """
 
     def __init__(self, prob, name=None):
-        """
-            prob: probability of 1
-        """
         self.prob = prob
         super(BernoulliQuantityGenerator, self).__init__(name)
 
@@ -933,18 +984,22 @@ class BernoulliQuantityGenerator(AbstractQuantityGenerator):
 
 
 class MinMaxWrapper(AbstractQuantityGenerator):
-    """
-        Wrapper that restricts a distribution to only return values between the min and
+    """Compress a distribution to lie within a min and a max.
+
+    Wrapper that restricts a distribution to only return values between the min and
         the max. If a value outside the range is returned, resamples until
         it obtains a value within the range. Warns if it resamples too many times.
+
+    Arguments:
+        quantityGenerator: instance of :class:`.AbstractQuantityGenerator`.
+            Used to draw samples from the distribution to truncate
+
+        theMin: can be None; if so will be ignored.
+
+        theMax: can be None; if so will be ignored.
     """
 
     def __init__(self, quantityGenerator, theMin=None, theMax=None, name=None):
-        """
-            quantityGenerator: samples from the distribution to truncate
-            theMin: can be None; if so will be ignored
-            theMax: can be None; if so will be ignored.
-        """
         self.quantityGenerator = quantityGenerator
         self.theMin = theMin
         self.theMax = theMax
@@ -967,16 +1022,21 @@ class MinMaxWrapper(AbstractQuantityGenerator):
 
 
 class ZeroInflater(AbstractQuantityGenerator):
-    """
-        Wrapper that inflates the number of zeros returned. Flips a coin; if positive,
-        will return zero - otherwise will sample from the wrapped distribution (which may still return 0)
+    """Inflate a particular distribution with zeros.
+
+    Wrapper that inflates the number of zeros returned.
+        Flips a coin; if positive, will return zero - otherwise will
+        sample from the wrapped distribution (which may still return 0)
+
+    Arguments:
+        quantityGenerator: an instance of :class:`.AbstractQuantityGenerator`;
+            represents the distribution to sample from with probability
+            1-zeroProb
+        zeroProb: the probability of just returning 0
+            without sampling from quantityGenerator
     """
 
     def __init__(self, quantityGenerator, zeroProb, name=None):
-        """
-            quantityGenerator: the distribution to sample from with probability 1-zeroProb
-            zeroProb: the probability of just returning 0 without sampling from quantityGenerator
-        """
         self.quantityGenerator = quantityGenerator
         self.zeroProb = zeroProb
         super(ZeroInflater, self).__init__(name)
@@ -993,24 +1053,25 @@ class ZeroInflater(AbstractQuantityGenerator):
 
 
 class SubstringEmbedder(EmbeddableEmbedder):
-    """
-        embeds a single generated substring within the background sequence,
+    """Used to embed substrings.
+
+    Embeds a single generated substring within the background sequence,
         at a position sampled from a distribution. Only embeds at unoccupied
         positions
+
+    Arguments:
+        substringGenerator: instance of :class:`.AbstractSubstringGenerator`
+        positionGenerator: instance of :class:`.AbstractPositionGenerator`
     """
 
     def __init__(self, substringGenerator, positionGenerator=uniformPositionGenerator, name=None):
-        """
-            substringGenerator: instance of AbstractSubstringGenerator
-            positionGenerator: instance of AbstractPositionGenerator
-        """
         super(SubstringEmbedder, self).__init__(
             SubstringEmbeddableGenerator(substringGenerator), positionGenerator, name)
 
 
 def sampleIndexWithinRegionOfLength(length, lengthOfThingToEmbed):
-    """
-        uniformly at random samples integers from 0 to length-lengthOfThingToEmbedIn
+    """Uniformly at random samples integers from 0 to
+    length-lengthOfThingToEmbedIn.
     """
     assert lengthOfThingToEmbed <= length
     indexToSample = int(
@@ -1019,8 +1080,7 @@ def sampleIndexWithinRegionOfLength(length, lengthOfThingToEmbed):
 
 
 class AbstractEmbeddableGenerator(DefaultNameMixin):
-    """
-        Generates an embeddable, usually for embedding in a background sequence.
+    """Generates an embeddable, usually for embedding in a background sequence.
     """
 
     def generateEmbeddable(self):
@@ -1041,8 +1101,9 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
     def generateEmbeddable(self):
         embeddable1 = self.embeddableGenerator1.generateEmbeddable()
         embeddable2 = self.embeddableGenerator2.generateEmbeddable()
-        return PairEmbeddable(
-            embeddable1, embeddable2, self.separationGenerator.generateQuantity(
+        return PairEmbeddable_General(
+            embeddable1, embeddable2,
+             self.separationGenerator.generateQuantity(
             ), embeddable1.getDescription() + "+" + embeddable2.getDescription()
         )
 
@@ -1054,11 +1115,19 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
 class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
 
     def __init__(self, substringGenerator1, substringGenerator2, separationGenerator, name=None):
-        """
-            Specifically for a pair of substrings
-            substringGenerator1: instance of AbstractSubstringGenerator
-            substringGenerator2: instance of AbstractSubstringGenerator
-            separationGenerator: instance of AbstractQuantityGenerator
+        """Embed a pair of substrings with some separation. This class needs
+            to be deprecated in favour of just using
+            :class:`.PairEmbeddableGenerator_General`
+            
+        Arguments:
+            substringGenerator1: instance of
+                :class:`.AbstractSubstringGenerator`
+
+            substringGenerator2: instance of
+                :class:`.AbstractSubstringGenerator`
+
+            separationGenerator: instance of
+                :class:`.AbstractQuantityGenerator`
         """
         self.substringGenerator1 = substringGenerator1
         self.substringGenerator2 = substringGenerator2
@@ -1079,11 +1148,11 @@ class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
 
 
 class SubstringEmbeddableGenerator(AbstractEmbeddableGenerator):
-
+    """
+    Arguments:
+        substringGenerator: instance of :class:`.AbstractSubstringGenerator`
+    """
     def __init__(self, substringGenerator, name=None):
-        """
-            substringGenerator: instance of AbstractSubstringGenerator
-        """
         self.substringGenerator = substringGenerator
         super(SubstringEmbeddableGenerator, self).__init__(name)
 

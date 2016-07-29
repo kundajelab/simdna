@@ -97,20 +97,58 @@ an Embeddable + a position = an embedding.</p>
 <dl class="method">
 <dt id="simdna.synthetic.AbstractEmbeddable.canEmbed">
 <code class="descname">canEmbed</code><span class="sig-paren">(</span><em>priorEmbeddedThings</em>, <em>startPos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractEmbeddable.canEmbed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractEmbeddable.canEmbed" title="Permalink to this definition">¶</a></dt>
-<dd><p>priorEmbeddedThings: instance of AbstractPriorEmbeddedThings
-startPos: the position you are considering embedding self at
-returns a boolean indicating whether self can be embedded at startPos,</p>
-<blockquote>
-<div>given the things that have already been embedded.</div></blockquote>
+<dd><p>Checks whether embedding is possible at a given pos.</p>
+<dl class="docutils">
+<dt>Accepts an instance of <a class="reference internal" href="#simdna.synthetic.AbstractPriorEmbeddedThings" title="simdna.synthetic.AbstractPriorEmbeddedThings"><code class="xref py py-class docutils literal"><span class="pre">AbstractPriorEmbeddedThings</span></code></a> and</dt>
+<dd>a startPos, and checks if startPos is viable given the
+contents of priorEmbeddedThings</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>priorEmbeddedThings</strong> &#8211; instance of
+<a class="reference internal" href="#simdna.synthetic.AbstractPriorEmbeddedThings" title="simdna.synthetic.AbstractPriorEmbeddedThings"><code class="xref py py-class docutils literal"><span class="pre">AbstractPriorEmbeddedThings</span></code></a></li>
+<li><strong>startPos</strong> &#8211; int; the position you are considering embedding self at</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>A boolean indicating whether self can be embedded at startPos,</dt>
+<dd><p class="first last">given the things that have already been embedded.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="simdna.synthetic.AbstractEmbeddable.embedInBackgroundStringArr">
 <code class="descname">embedInBackgroundStringArr</code><span class="sig-paren">(</span><em>priorEmbeddedThings</em>, <em>backgroundStringArr</em>, <em>startPos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractEmbeddable.embedInBackgroundStringArr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractEmbeddable.embedInBackgroundStringArr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Will embed self at startPos in backgroundStringArr, and will update priorEmbeddedThings.
-priorEmbeddedThings: instance of AbstractPriorEmbeddedThings
-backgroundStringArr: an array of characters representing the background
-startPos: the position to embed self at</p>
+<dd><p>Embed self in a background string.</p>
+<dl class="docutils">
+<dt>Will embed self at startPos in backgroundStringArr,</dt>
+<dd>and will update priorEmbeddedThings accordingly</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>priorEmbeddedThings</strong> &#8211; instance of
+<a class="reference internal" href="#simdna.synthetic.AbstractPriorEmbeddedThings" title="simdna.synthetic.AbstractPriorEmbeddedThings"><code class="xref py py-class docutils literal"><span class="pre">AbstractPriorEmbeddedThings</span></code></a></li>
+<li><strong>backgroundStringArr</strong> &#8211; an array of characters
+representing the background</li>
+<li><strong>startPos</strong> &#8211; integer; the position to embed self at</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -189,6 +227,7 @@ stores instances of pwm.PWM</p>
 <dt id="simdna.synthetic.AbstractPositionGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">AbstractPositionGenerator</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractPositionGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractPositionGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.DefaultNameMixin" title="simdna.synthetic.DefaultNameMixin"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.DefaultNameMixin</span></code></a></p>
+<p>Generate a start position at which to embed something</p>
 <p>Given the length of the background sequence and the length
 of the substring you are trying to embed, will return a start position
 to embed the substring at.</p>
@@ -245,11 +284,18 @@ to embed the substring at.</p>
 <dt id="simdna.synthetic.AbstractQuantityGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">AbstractQuantityGenerator</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractQuantityGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractQuantityGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.DefaultNameMixin" title="simdna.synthetic.DefaultNameMixin"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.DefaultNameMixin</span></code></a></p>
-<p>class to sample according to a distribution</p>
+<p>Class to sample according to a distribution.</p>
 <dl class="method">
 <dt id="simdna.synthetic.AbstractQuantityGenerator.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractQuantityGenerator.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractQuantityGenerator.generateQuantity" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns the sampled value</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The sampled value.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -301,18 +347,49 @@ can be converted to json.</p>
 <dt id="simdna.synthetic.AbstractSingleSequenceGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">AbstractSingleSequenceGenerator</code><span class="sig-paren">(</span><em>namePrefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractSingleSequenceGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractSingleSequenceGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>When called, generates a single sequence</p>
+<p>Generate a single sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>namePrefix</strong> &#8211; the GeneratedSequence object has a field
+for the object&#8217;s name; this is the prefix associated
+with that name. The suffix is the value of a counter that
+is incremented every time</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.AbstractSingleSequenceGenerator.generateSequence">
 <code class="descname">generateSequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractSingleSequenceGenerator.generateSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractSingleSequenceGenerator.generateSequence" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns GeneratedSequence object</p>
+<dd><p>Generate the sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An instance of <a class="reference internal" href="#simdna.synthetic.GeneratedSequence" title="simdna.synthetic.GeneratedSequence"><code class="xref py py-class docutils literal"><span class="pre">GeneratedSequence</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="simdna.synthetic.AbstractSingleSequenceGenerator.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AbstractSingleSequenceGenerator.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AbstractSingleSequenceGenerator.getJsonableObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns an object representing the details of this, which
-can be converted to json.</p>
+<dd><p>Get JSON object representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>An json-friendly object (built of dictionaries, lists and</dt>
+<dd>python primitives), which can be converted to json to
+record the exact details of what was simualted.</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -359,20 +436,33 @@ May mutate stringArr</p>
 <dt id="simdna.synthetic.AdditionalInfo">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">AdditionalInfo</code><a class="reference internal" href="_modules/simdna/synthetic.html#AdditionalInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AdditionalInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Used to keep track of which embedders were called and how many times.</p>
+<dl class="docutils">
+<dt>An instance of AdditionalInfo is meant to be an attribute of</dt>
+<dd>a <a class="reference internal" href="#simdna.synthetic.GeneratedSequence" title="simdna.synthetic.GeneratedSequence"><code class="xref py py-class docutils literal"><span class="pre">GeneratedSequence</span></code></a> object.</dd>
+<dt>Has self.trace which is a dictionary from operatorName-&gt;int</dt>
+<dd>and which records operations that were called in the
+process of embedding things in the sequence. At the time
+of writing, operatorName is typically just the name of the
+embedder.</dd>
+</dl>
 <dl class="method">
 <dt id="simdna.synthetic.AdditionalInfo.isInTrace">
 <code class="descname">isInTrace</code><span class="sig-paren">(</span><em>operatorName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AdditionalInfo.isInTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AdditionalInfo.isInTrace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return True if operatorName has been called on the sequence.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="simdna.synthetic.AdditionalInfo.updateAdditionalInfo">
 <code class="descname">updateAdditionalInfo</code><span class="sig-paren">(</span><em>operatorName</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AdditionalInfo.updateAdditionalInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AdditionalInfo.updateAdditionalInfo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Can be used to store any additional information on operatorName.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="simdna.synthetic.AdditionalInfo.updateTrace">
 <code class="descname">updateTrace</code><span class="sig-paren">(</span><em>operatorName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AdditionalInfo.updateTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AdditionalInfo.updateTrace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Increment count for the number of times operatorName was called.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -380,8 +470,8 @@ May mutate stringArr</p>
 <dt id="simdna.synthetic.AllEmbedders">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">AllEmbedders</code><span class="sig-paren">(</span><em>embedders</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AllEmbedders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AllEmbedders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbedder</span></code></a></p>
-<p>Wrapper around a list of embedders to make sure all are called
-Useful in conjunciton with RandomSubsetOfEmbedders</p>
+<p>Wrapper around a list of embedders that calls each one in turn.</p>
+<p>Useful to nest under a <a class="reference internal" href="#simdna.synthetic.RandomSubsetOfEmbedders" title="simdna.synthetic.RandomSubsetOfEmbedders"><code class="xref py py-class docutils literal"><span class="pre">RandomSubsetOfEmbedders</span></code></a></p>
 <dl class="method">
 <dt id="simdna.synthetic.AllEmbedders.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#AllEmbedders.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.AllEmbedders.getJsonableObject" title="Permalink to this definition">¶</a></dt>
@@ -393,7 +483,15 @@ Useful in conjunciton with RandomSubsetOfEmbedders</p>
 <dt id="simdna.synthetic.BernoulliQuantityGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">BernoulliQuantityGenerator</code><span class="sig-paren">(</span><em>prob</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#BernoulliQuantityGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.BernoulliQuantityGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>Generates 1 or 0 according to a bernoulli distribution</p>
+<p>Generates 1 or 0 according to a bernoulli distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prob</strong> &#8211; probability of 1</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.BernoulliQuantityGenerator.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#BernoulliQuantityGenerator.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.BernoulliQuantityGenerator.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -457,7 +555,7 @@ from an AbstractLoadedMotifs object (it basically extracts the pwm for you)</p>
 <dt id="simdna.synthetic.ChooseValueFromASet">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">ChooseValueFromASet</code><span class="sig-paren">(</span><em>setOfPossibleValues</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#ChooseValueFromASet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.ChooseValueFromASet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>Randomly samples a particular value from a set of values</p>
+<p>Randomly samples a particular value from a set of values.</p>
 <dl class="method">
 <dt id="simdna.synthetic.ChooseValueFromASet.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#ChooseValueFromASet.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.ChooseValueFromASet.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -474,6 +572,7 @@ from an AbstractLoadedMotifs object (it basically extracts the pwm for you)</p>
 <dt id="simdna.synthetic.DefaultNameMixin">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">DefaultNameMixin</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#DefaultNameMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.DefaultNameMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Basic functionality for classes that have a self.name attribute</p>
 <dl class="method">
 <dt id="simdna.synthetic.DefaultNameMixin.getDefaultName">
 <code class="descname">getDefaultName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#DefaultNameMixin.getDefaultName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.DefaultNameMixin.getDefaultName" title="Permalink to this definition">¶</a></dt>
@@ -485,21 +584,45 @@ from an AbstractLoadedMotifs object (it basically extracts the pwm for you)</p>
 <dt id="simdna.synthetic.EmbedInABackground">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">EmbedInABackground</code><span class="sig-paren">(</span><em>backgroundGenerator</em>, <em>embedders</em>, <em>namePrefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#EmbedInABackground"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.EmbedInABackground" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractSingleSequenceGenerator" title="simdna.synthetic.AbstractSingleSequenceGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractSingleSequenceGenerator</span></code></a></p>
+<p>Generate a background sequence and embed smaller sequences in it.</p>
 <p>Takes a backgroundGenerator and a series of embedders. Will
 generate the background and then call each of the embedders in
 succession. Then returns the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>backgroundGenerator</strong> &#8211; instance of
+<a class="reference internal" href="#simdna.synthetic.AbstractBackgroundGenerator" title="simdna.synthetic.AbstractBackgroundGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractBackgroundGenerator</span></code></a></li>
+<li><strong>embedders</strong> &#8211; array of instances of <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">AbstractEmbedder</span></code></a></li>
+<li><strong>namePrefix</strong> &#8211; see parent</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.EmbedInABackground.generateSequence">
 <code class="descname">generateSequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#EmbedInABackground.generateSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.EmbedInABackground.generateSequence" title="Permalink to this definition">¶</a></dt>
-<dd><p>generates a background using self.backgroundGenerator, splits it into an array,
-and passes it to each of self.embedders in turn for embedding things.
-returns an instance of GeneratedSequence</p>
+<dd><p>Produce the sequence.</p>
+<p>Generates a background using self.backgroundGenerator,
+splits it into an array, and passes it to each of
+self.embedders in turn for embedding things.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An instance of <a class="reference internal" href="#simdna.synthetic.GeneratedSequence" title="simdna.synthetic.GeneratedSequence"><code class="xref py py-class docutils literal"><span class="pre">GeneratedSequence</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="simdna.synthetic.EmbedInABackground.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#EmbedInABackground.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.EmbedInABackground.getJsonableObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>see parent</p>
+<dd><p>See parent.</p>
 </dd></dl>
 
 </dd></dl>
@@ -508,9 +631,12 @@ returns an instance of GeneratedSequence</p>
 <dt id="simdna.synthetic.EmbeddableEmbedder">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">EmbeddableEmbedder</code><span class="sig-paren">(</span><em>embeddableGenerator</em>, <em>positionGenerator=&lt;simdna.synthetic.UniformPositionGenerator object&gt;</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#EmbeddableEmbedder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.EmbeddableEmbedder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbedder</span></code></a></p>
-<p>Embeds instances of AbstractEmbeddable within the background sequence,
-at a position sampled from a distribution. Only embeds at unoccupied
-positions</p>
+<p>Embeds an instance of <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">AbstractEmbeddable</span></code></a> at a sampled pos.</p>
+<dl class="docutils">
+<dt>Embeds instances of <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">AbstractEmbeddable</span></code></a> within the</dt>
+<dd>background sequence, at a position sampled from a distribution.
+Only embeds at unoccupied positions.</dd>
+</dl>
 <dl class="method">
 <dt id="simdna.synthetic.EmbeddableEmbedder.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#EmbeddableEmbedder.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.EmbeddableEmbedder.getJsonableObject" title="Permalink to this definition">¶</a></dt>
@@ -535,7 +661,15 @@ a sequence</p>
 <dt id="simdna.synthetic.FixedQuantityGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">FixedQuantityGenerator</code><span class="sig-paren">(</span><em>quantity</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#FixedQuantityGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.FixedQuantityGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>returns a fixed number every time generateQuantity is called</p>
+<p>Returns a fixed number every time generateQuantity is called.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>quantity</strong> &#8211; the value to return when generateQuantity is called.</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.FixedQuantityGenerator.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#FixedQuantityGenerator.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.FixedQuantityGenerator.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -610,16 +744,47 @@ sequence, sampled uniformly at random</p>
 <dt id="simdna.synthetic.IsInTraceLabelGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">IsInTraceLabelGenerator</code><span class="sig-paren">(</span><em>labelNames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#IsInTraceLabelGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.IsInTraceLabelGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.LabelGenerator" title="simdna.synthetic.LabelGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.LabelGenerator</span></code></a></p>
+<p>LabelGenerator where labels match which embedders are called.</p>
+<dl class="docutils">
+<dt>A special kind of LabelGenerator where the names of the labels</dt>
+<dd>are the names of embedders, and the label is 1 if a particular
+embedder has been called on the sequence and 0 otherwise.</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="simdna.synthetic.LabelGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">LabelGenerator</code><span class="sig-paren">(</span><em>labelNames</em>, <em>labelsFromGeneratedSequenceFunction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#LabelGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.LabelGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Generate labels for a generated sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>labelNames</strong> &#8211; an array of strings that are the names of the labels</li>
+<li><strong>labelsFromGeneratedSequenceFunction</strong> &#8211; function that accepts
+an instance of <a class="reference internal" href="#simdna.synthetic.GeneratedSequence" title="simdna.synthetic.GeneratedSequence"><code class="xref py py-class docutils literal"><span class="pre">GeneratedSequence</span></code></a> and returns an array
+of the labels (eg: an array of ones and zeros indicating if
+the criteria for various labels are met)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.LabelGenerator.generateLabels">
 <code class="descname">generateLabels</code><span class="sig-paren">(</span><em>generatedSequence</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#LabelGenerator.generateLabels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.LabelGenerator.generateLabels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calls self.labelsFromGeneratedSequenceFunction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>generatedSequence</strong> &#8211; an instance of <a class="reference internal" href="#simdna.synthetic.GeneratedSequence" title="simdna.synthetic.GeneratedSequence"><code class="xref py py-class docutils literal"><span class="pre">GeneratedSequence</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -640,9 +805,26 @@ format - specifically the motifs.txt file that contains Pouya&#8217;s motifs</p>
 <dt id="simdna.synthetic.MinMaxWrapper">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">MinMaxWrapper</code><span class="sig-paren">(</span><em>quantityGenerator</em>, <em>theMin=None</em>, <em>theMax=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#MinMaxWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.MinMaxWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>Wrapper that restricts a distribution to only return values between the min and
-the max. If a value outside the range is returned, resamples until
-it obtains a value within the range. Warns if it resamples too many times.</p>
+<p>Compress a distribution to lie within a min and a max.</p>
+<dl class="docutils">
+<dt>Wrapper that restricts a distribution to only return values between the min and</dt>
+<dd>the max. If a value outside the range is returned, resamples until
+it obtains a value within the range. Warns if it resamples too many times.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>quantityGenerator</strong> &#8211; instance of <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractQuantityGenerator</span></code></a>.
+Used to draw samples from the distribution to truncate</li>
+<li><strong>theMin</strong> &#8211; can be None; if so will be ignored.</li>
+<li><strong>theMax</strong> &#8211; can be None; if so will be ignored.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.MinMaxWrapper.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#MinMaxWrapper.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.MinMaxWrapper.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -672,8 +854,8 @@ sampled uniformly at random. Complement of InsideCentralBp.</p>
 <dt id="simdna.synthetic.PairEmbeddable">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">PairEmbeddable</code><span class="sig-paren">(</span><em>string1</em>, <em>string2</em>, <em>separation</em>, <em>embeddableDescription</em>, <em>nothingInBetween=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PairEmbeddable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PairEmbeddable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbeddable</span></code></a></p>
-<p>Represents a pair of strings that are embedded with some separation.
-Used for motif grammars. See superclass docs.</p>
+<p>Embed two strings with some separation. To be deprecated.</p>
+<p>The use of PairEmbeddable_General instead should be favoured.</p>
 <dl class="method">
 <dt id="simdna.synthetic.PairEmbeddable.canEmbed">
 <code class="descname">canEmbed</code><span class="sig-paren">(</span><em>priorEmbeddedThings</em>, <em>startPos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PairEmbeddable.canEmbed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PairEmbeddable.canEmbed" title="Permalink to this definition">¶</a></dt>
@@ -727,7 +909,7 @@ Used for motif grammars. See superclass docs.</p>
 <dt id="simdna.synthetic.PairEmbeddable_General">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">PairEmbeddable_General</code><span class="sig-paren">(</span><em>embeddable1</em>, <em>embeddable2</em>, <em>separation</em>, <em>embeddableDescription</em>, <em>nothingInBetween=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PairEmbeddable_General"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PairEmbeddable_General" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbeddable</span></code></a></p>
-<p>embeds two Embeddable objects with some sep</p>
+<p>Embeds two <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">AbstractEmbeddable</span></code></a> objects with some separation.</p>
 <dl class="method">
 <dt id="simdna.synthetic.PairEmbeddable_General.canEmbed">
 <code class="descname">canEmbed</code><span class="sig-paren">(</span><em>priorEmbeddedThings</em>, <em>startPos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PairEmbeddable_General.canEmbed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PairEmbeddable_General.canEmbed" title="Permalink to this definition">¶</a></dt>
@@ -749,7 +931,15 @@ Used for motif grammars. See superclass docs.</p>
 <dt id="simdna.synthetic.PoissonQuantityGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">PoissonQuantityGenerator</code><span class="sig-paren">(</span><em>mean</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PoissonQuantityGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PoissonQuantityGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>Generates values according to a poisson distribution</p>
+<p>Generates values according to a poisson distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mean</strong> &#8211; the mean of the poisson distribution</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.PoissonQuantityGenerator.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#PoissonQuantityGenerator.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.PoissonQuantityGenerator.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -831,9 +1021,12 @@ from an AbstractLoadedMotifs object (it basically extracts the pwm for you)</p>
 <dt id="simdna.synthetic.RandomSubsetOfEmbedders">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">RandomSubsetOfEmbedders</code><span class="sig-paren">(</span><em>quantityGenerator</em>, <em>embedders</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#RandomSubsetOfEmbedders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.RandomSubsetOfEmbedders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbedder</span></code></a></p>
-<p>Takes a quantity generator that generates a quantity of
-embedders, and executes that many embedders from a supplied set,
-in sequence</p>
+<p>Call some random subset of supplied embedders.</p>
+<dl class="docutils">
+<dt>Takes a quantity generator that generates a quantity of</dt>
+<dd>embedders, and executes that many embedders from a supplied set,
+in sequence</dd>
+</dl>
 <dl class="method">
 <dt id="simdna.synthetic.RandomSubsetOfEmbedders.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#RandomSubsetOfEmbedders.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.RandomSubsetOfEmbedders.getJsonableObject" title="Permalink to this definition">¶</a></dt>
@@ -845,8 +1038,13 @@ in sequence</p>
 <dt id="simdna.synthetic.RepeatedEmbedder">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">RepeatedEmbedder</code><span class="sig-paren">(</span><em>embedder</em>, <em>quantityGenerator</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#RepeatedEmbedder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.RepeatedEmbedder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbedder</span></code></a></p>
-<p>Wrapper around an embedder to call it multiple times according to sampling
-from a distribution.</p>
+<p>Call an embedded multiple times.</p>
+<dl class="docutils">
+<dt>Wrapper around an embedder to call it multiple times according to samples</dt>
+<dd>from a distribution. First calls
+self.quantityGenerator to get the quantity, then calls
+self.embedder a number of times equal to the value returned.</dd>
+</dl>
 <dl class="method">
 <dt id="simdna.synthetic.RepeatedEmbedder.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#RepeatedEmbedder.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.RepeatedEmbedder.getJsonableObject" title="Permalink to this definition">¶</a></dt>
@@ -926,8 +1124,11 @@ with the specified probability.</p>
 <dt id="simdna.synthetic.StringEmbeddable">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">StringEmbeddable</code><span class="sig-paren">(</span><em>string</em>, <em>stringDescription=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#StringEmbeddable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.StringEmbeddable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddable" title="simdna.synthetic.AbstractEmbeddable"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbeddable</span></code></a></p>
-<p>represents a string (such as a sampling from a pwm) that is to
-be embedded in a background. See docs for superclass.</p>
+<p>A string that is to be embedded in a background.</p>
+<dl class="docutils">
+<dt>Represents a string (such as a sampling from a pwm) that is to</dt>
+<dd>be embedded in a background. See docs for superclass.</dd>
+</dl>
 <dl class="method">
 <dt id="simdna.synthetic.StringEmbeddable.canEmbed">
 <code class="descname">canEmbed</code><span class="sig-paren">(</span><em>priorEmbeddedThings</em>, <em>startPos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#StringEmbeddable.canEmbed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.StringEmbeddable.canEmbed" title="Permalink to this definition">¶</a></dt>
@@ -954,6 +1155,14 @@ be embedded in a background. See docs for superclass.</p>
 <dt id="simdna.synthetic.SubstringEmbeddableGenerator">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">SubstringEmbeddableGenerator</code><span class="sig-paren">(</span><em>substringGenerator</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#SubstringEmbeddableGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.SubstringEmbeddableGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbeddableGenerator" title="simdna.synthetic.AbstractEmbeddableGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbeddableGenerator</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>substringGenerator</strong> &#8211; instance of <a class="reference internal" href="#simdna.synthetic.AbstractSubstringGenerator" title="simdna.synthetic.AbstractSubstringGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractSubstringGenerator</span></code></a></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.SubstringEmbeddableGenerator.generateEmbeddable">
 <code class="descname">generateEmbeddable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#SubstringEmbeddableGenerator.generateEmbeddable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.SubstringEmbeddableGenerator.generateEmbeddable" title="Permalink to this definition">¶</a></dt>
@@ -970,9 +1179,24 @@ be embedded in a background. See docs for superclass.</p>
 <dt id="simdna.synthetic.SubstringEmbedder">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">SubstringEmbedder</code><span class="sig-paren">(</span><em>substringGenerator</em>, <em>positionGenerator=&lt;simdna.synthetic.UniformPositionGenerator object&gt;</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#SubstringEmbedder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.SubstringEmbedder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.EmbeddableEmbedder" title="simdna.synthetic.EmbeddableEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.EmbeddableEmbedder</span></code></a></p>
-<p>embeds a single generated substring within the background sequence,
-at a position sampled from a distribution. Only embeds at unoccupied
-positions</p>
+<p>Used to embed substrings.</p>
+<dl class="docutils">
+<dt>Embeds a single generated substring within the background sequence,</dt>
+<dd>at a position sampled from a distribution. Only embeds at unoccupied
+positions</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>substringGenerator</strong> &#8211; instance of <a class="reference internal" href="#simdna.synthetic.AbstractSubstringGenerator" title="simdna.synthetic.AbstractSubstringGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractSubstringGenerator</span></code></a></li>
+<li><strong>positionGenerator</strong> &#8211; instance of <a class="reference internal" href="#simdna.synthetic.AbstractPositionGenerator" title="simdna.synthetic.AbstractPositionGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractPositionGenerator</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -1055,7 +1279,7 @@ background sequence to embed the full substring.</p>
 <dt id="simdna.synthetic.XOREmbedder">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">XOREmbedder</code><span class="sig-paren">(</span><em>embedder1</em>, <em>embedder2</em>, <em>probOfFirst</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#XOREmbedder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.XOREmbedder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractEmbedder" title="simdna.synthetic.AbstractEmbedder"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractEmbedder</span></code></a></p>
-<p>calls exactly one of the supplied embedders</p>
+<p>Calls exactly one of the supplied embedders.</p>
 <dl class="method">
 <dt id="simdna.synthetic.XOREmbedder.getJsonableObject">
 <code class="descname">getJsonableObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#XOREmbedder.getJsonableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.XOREmbedder.getJsonableObject" title="Permalink to this definition">¶</a></dt>
@@ -1067,8 +1291,27 @@ background sequence to embed the full substring.</p>
 <dt id="simdna.synthetic.ZeroInflater">
 <em class="property">class </em><code class="descclassname">simdna.synthetic.</code><code class="descname">ZeroInflater</code><span class="sig-paren">(</span><em>quantityGenerator</em>, <em>zeroProb</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#ZeroInflater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.ZeroInflater" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">simdna.synthetic.AbstractQuantityGenerator</span></code></a></p>
-<p>Wrapper that inflates the number of zeros returned. Flips a coin; if positive,
-will return zero - otherwise will sample from the wrapped distribution (which may still return 0)</p>
+<p>Inflate a particular distribution with zeros.</p>
+<dl class="docutils">
+<dt>Wrapper that inflates the number of zeros returned.</dt>
+<dd>Flips a coin; if positive, will return zero - otherwise will
+sample from the wrapped distribution (which may still return 0)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>quantityGenerator</strong> &#8211; an instance of <a class="reference internal" href="#simdna.synthetic.AbstractQuantityGenerator" title="simdna.synthetic.AbstractQuantityGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractQuantityGenerator</span></code></a>;
+represents the distribution to sample from with probability
+1-zeroProb</li>
+<li><strong>zeroProb</strong> &#8211; the probability of just returning 0
+without sampling from quantityGenerator</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="simdna.synthetic.ZeroInflater.generateQuantity">
 <code class="descname">generateQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#ZeroInflater.generateQuantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.ZeroInflater.generateQuantity" title="Permalink to this definition">¶</a></dt>
@@ -1121,36 +1364,44 @@ will return zero - otherwise will sample from the wrapped distribution (which ma
 
 <dl class="function">
 <dt id="simdna.synthetic.printSequences">
-<code class="descclassname">simdna.synthetic.</code><code class="descname">printSequences</code><span class="sig-paren">(</span><em>outputFileName</em>, <em>sequenceSetGenerator</em>, <em>includeEmbeddings=False</em>, <em>labelGenerator=None</em>, <em>includeFasta=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#printSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.printSequences" title="Permalink to this definition">¶</a></dt>
-<dd><p>outputFileName: string
-sequenceSetGenerator: instance of AbstractSequenceSetGenerator
-Given an output filename, and an instance of AbstractSequenceSetGenerator,
-will call the sequence set generator and print the generated sequences
+<code class="descclassname">simdna.synthetic.</code><code class="descname">printSequences</code><span class="sig-paren">(</span><em>outputFileName</em>, <em>sequenceSetGenerator</em>, <em>includeEmbeddings=False</em>, <em>labelGenerator=None</em>, <em>includeFasta=False</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#printSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.printSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a series of synthetic sequences.</p>
+<dl class="docutils">
+<dt>Given an output filename, and an instance of</dt>
+<dd><a class="reference internal" href="#simdna.synthetic.AbstractSequenceSetGenerator" title="simdna.synthetic.AbstractSequenceSetGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractSequenceSetGenerator</span></code></a>, will call the
+sequenceSetGenerator and print the generated sequences
 to the output file. Will also create a file &#8220;info_outputFileName.txt&#8221;
-in the samedirectory as outputFileName that contains all the information
-about sequenceSetGenerator.
-includeEmbeddings: a boolean indicating whether to print a column that lists the embeddings
-labelGenerator: instance of LabelGenerator</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="simdna.synthetic.printSequencesTransformationPosNeg">
-<code class="descclassname">simdna.synthetic.</code><code class="descname">printSequencesTransformationPosNeg</code><span class="sig-paren">(</span><em>outputFileNamePos</em>, <em>outputFileNameNeg</em>, <em>sequenceSetGenerator</em>, <em>transformation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#printSequencesTransformationPosNeg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.printSequencesTransformationPosNeg" title="Permalink to this definition">¶</a></dt>
-<dd><p>outputFileName: string
-sequenceSetGenerator: instance of AbstractSequenceSetGenerator</p>
-<blockquote>
-<div>generatedSequences: the sequences that have been generated by sequenceSetGenerator</div></blockquote>
-<p>Given an output filename, and an instance of AbstractSequenceSetGenerator,
-will print the generated sequences to the output file. Will also create a file</p>
-<blockquote>
-<div>&#8220;info_outputFileName.txt&#8221; in the same directory as outputFileName that contains all the
-information about sequenceSetGenerator.</div></blockquote>
+in the same directory as outputFileName that contains
+all the information about sequenceSetGenerator.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outputFileName</strong> &#8211; string</li>
+<li><strong>sequenceSetGenerator</strong> &#8211; instance of
+<a class="reference internal" href="#simdna.synthetic.AbstractSequenceSetGenerator" title="simdna.synthetic.AbstractSequenceSetGenerator"><code class="xref py py-class docutils literal"><span class="pre">AbstractSequenceSetGenerator</span></code></a></li>
+<li><strong>includeEmbeddings</strong> &#8211; a boolean indicating whether to print a
+column that lists the embeddings</li>
+<li><strong>labelGenerator</strong> &#8211; optional instance of <a class="reference internal" href="#simdna.synthetic.LabelGenerator" title="simdna.synthetic.LabelGenerator"><code class="xref py py-class docutils literal"><span class="pre">LabelGenerator</span></code></a></li>
+<li><strong>includeFasta</strong> &#8211; optional boolean indicating whether to also
+print out the generated sequences in fasta format
+(the file will be produced with a .fa extension)</li>
+<li><strong>prefix</strong> &#8211; string - this will be prefixed in front of the generated
+sequence ids, followed by a hyphen</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="simdna.synthetic.sampleIndexWithinRegionOfLength">
 <code class="descclassname">simdna.synthetic.</code><code class="descname">sampleIndexWithinRegionOfLength</code><span class="sig-paren">(</span><em>length</em>, <em>lengthOfThingToEmbed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/synthetic.html#sampleIndexWithinRegionOfLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.synthetic.sampleIndexWithinRegionOfLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>uniformly at random samples integers from 0 to length-lengthOfThingToEmbedIn</p>
+<dd><p>Uniformly at random samples integers from 0 to
+length-lengthOfThingToEmbedIn.</p>
 </dd></dl>
 
 </div>
