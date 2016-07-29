@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>simdna.pwm &mdash; SimDNA 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="SimDNA 0.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for simdna.pwm</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">util</span><span class="p">,</span> <span class="n">fileProcessing</span> <span class="k">as</span> <span class="n">fp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="n">PWM_FORMAT</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">enum</span><span class="p">(</span>
+    <span class="n">encodeMotifsFile</span><span class="o">=</span><span class="s2">&quot;encodeMotifsFile&quot;</span><span class="p">,</span> <span class="n">singlePwm</span><span class="o">=</span><span class="s2">&quot;singlePwm&quot;</span><span class="p">)</span>
+<span class="n">DEFAULT_LETTER_TO_INDEX</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="n">SCORE_SEQ_MODE</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">enum</span><span class="p">(</span>
+    <span class="n">maxScore</span><span class="o">=</span><span class="s2">&quot;maxScore&quot;</span><span class="p">,</span> <span class="n">bestMatch</span><span class="o">=</span><span class="s2">&quot;bestMatch&quot;</span><span class="p">,</span> <span class="n">continuous</span><span class="o">=</span><span class="s2">&quot;continuous&quot;</span><span class="p">,</span> <span class="n">topN</span><span class="o">=</span><span class="s2">&quot;topN&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="getLoadPwmArgparse"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.getLoadPwmArgparse">[docs]</a><span class="k">def</span> <span class="nf">getLoadPwmArgparse</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--motifsFile&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pwmName&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pseudocountProb&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="processOptions"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.processOptions">[docs]</a><span class="k">def</span> <span class="nf">processOptions</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">thePwm</span> <span class="o">=</span> <span class="n">getSpecfiedPwmFromPwmFile</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">pwm</span> <span class="o">=</span> <span class="n">thePwm</span></div>
+
+
+<div class="viewcode-block" id="getFileNamePieceFromOptions"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.getFileNamePieceFromOptions">[docs]</a><span class="k">def</span> <span class="nf">getFileNamePieceFromOptions</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">argsToAdd</span> <span class="o">=</span> <span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">ArgumentToAdd</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pwmName</span><span class="p">,</span> <span class="s1">&#39;pwm&#39;</span><span class="p">),</span> <span class="n">util</span><span class="o">.</span><span class="n">ArgumentToAdd</span><span class="p">(</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">pseudocountProb</span><span class="p">,</span> <span class="s1">&#39;pcPrb&#39;</span><span class="p">)]</span>
+    <span class="n">toReturn</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">addArguments</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">argsToAdd</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">toReturn</span></div>
+
+
+<div class="viewcode-block" id="getSpecfiedPwmFromPwmFile"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.getSpecfiedPwmFromPwmFile">[docs]</a><span class="k">def</span> <span class="nf">getSpecfiedPwmFromPwmFile</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">pwms</span> <span class="o">=</span> <span class="n">readPwm</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">getFileHandle</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">motifsFile</span><span class="p">),</span>
+                   <span class="n">pseudocountProb</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">pseudocountProb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">pwmName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pwms</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;pwmName &quot;</span> <span class="o">+</span> <span class="n">options</span><span class="o">.</span><span class="n">pwmName</span> <span class="o">+</span>
+                           <span class="s2">&quot; not in &quot;</span> <span class="o">+</span> <span class="n">options</span><span class="o">.</span><span class="n">motifsFile</span><span class="p">)</span>
+    <span class="n">pwm</span> <span class="o">=</span> <span class="n">pwms</span><span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">pwmName</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pwm</span></div>
+
+
+<div class="viewcode-block" id="readPwm"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.readPwm">[docs]</a><span class="k">def</span> <span class="nf">readPwm</span><span class="p">(</span><span class="n">fileHandle</span><span class="p">,</span> <span class="n">pwmFormat</span><span class="o">=</span><span class="n">PWM_FORMAT</span><span class="o">.</span><span class="n">encodeMotifsFile</span><span class="p">,</span> <span class="n">pseudocountProb</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="n">recordedPwms</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pwmFormat</span> <span class="o">==</span> <span class="n">PWM_FORMAT</span><span class="o">.</span><span class="n">encodeMotifsFile</span><span class="p">):</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">getReadPwmAction_encodeMotifs</span><span class="p">(</span><span class="n">recordedPwms</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unsupported pwm format: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pwmFormat</span><span class="p">))</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">performActionOnEachLineOfFile</span><span class="p">(</span>
+        <span class="n">fileHandle</span><span class="o">=</span><span class="n">fileHandle</span><span class="p">,</span> <span class="n">transformation</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">trimNewline</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">action</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">pwm</span> <span class="ow">in</span> <span class="n">recordedPwms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">pwm</span><span class="o">.</span><span class="n">finalise</span><span class="p">(</span><span class="n">pseudocountProb</span><span class="o">=</span><span class="n">pseudocountProb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">recordedPwms</span></div>
+
+
+<div class="viewcode-block" id="PwmScore"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PwmScore">[docs]</a><span class="k">class</span> <span class="nc">PwmScore</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">posStart</span><span class="p">,</span> <span class="n">posEnd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posStart</span> <span class="o">=</span> <span class="n">posStart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posEnd</span> <span class="o">=</span> <span class="n">posEnd</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posStart</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posEnd</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.Mutation">[docs]</a><span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        class to represent a single bp mutation in a motif sequence</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">previous</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">deltaScore</span><span class="p">,</span> <span class="n">parentLength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            index: the position within the motif of the mutation</span>
+<span class="sd">            previous: the previous base at this position</span>
+<span class="sd">            new: the new base at this position after the mutation</span>
+<span class="sd">            deltaScore: change in some score corresponding to this mutation change</span>
+<span class="sd">            parentLength: optional; length of the motif. Used for assertion checks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">assert</span> <span class="n">previous</span> <span class="o">!=</span> <span class="n">new</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous</span> <span class="o">=</span> <span class="n">previous</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">new</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltaScore</span> <span class="o">=</span> <span class="n">deltaScore</span>
+        <span class="c1"># the length of the full sequence that self.index indexes into</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentLength</span> <span class="o">=</span> <span class="n">parentLength</span>
+
+<div class="viewcode-block" id="Mutation.parentLengthAssertionCheck"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.Mutation.parentLengthAssertionCheck">[docs]</a>    <span class="k">def</span> <span class="nf">parentLengthAssertionCheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stringArr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            checks that stringArr is consistent with parentLength if defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentLength</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">stringArr</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentLength</span></div>
+
+<div class="viewcode-block" id="Mutation.revert"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.Mutation.revert">[docs]</a>    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stringArr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            set the base at the position of the mutation to the unmutated value</span>
+<span class="sd">            Modifies stringArr which is an array of characters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentLengthAssertionCheck</span><span class="p">(</span><span class="n">stringArr</span><span class="p">)</span>
+        <span class="n">stringArr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous</span></div>
+
+<div class="viewcode-block" id="Mutation.applyMutation"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.Mutation.applyMutation">[docs]</a>    <span class="k">def</span> <span class="nf">applyMutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stringArr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            set the base at the position of the mutation to the mutated value.</span>
+<span class="sd">            Modifies stringArr which is an array of characters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentLengthAssertionCheck</span><span class="p">(</span><span class="n">stringArr</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">stringArr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous</span>
+        <span class="n">stringArr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span></div></div>
+
+<span class="n">BEST_HIT_MODE</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">enum</span><span class="p">(</span><span class="n">pwmProb</span><span class="o">=</span><span class="s2">&quot;pwmProb&quot;</span><span class="p">,</span> <span class="n">logOdds</span><span class="o">=</span><span class="s2">&quot;logOdds&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PWM"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM">[docs]</a><span class="k">class</span> <span class="nc">PWM</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">letterToIndex</span><span class="o">=</span><span class="n">DEFAULT_LETTER_TO_INDEX</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">util</span><span class="o">.</span><span class="n">DEFAULT_BACKGROUND_FREQ</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">letterToIndex</span> <span class="o">=</span> <span class="n">letterToIndex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">letterToIndex</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">letterToIndex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="n">background</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PWM.setBackground"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.setBackground">[docs]</a>    <span class="k">def</span> <span class="nf">setBackground</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">background</span><span class="p">):</span>
+        <span class="c1"># remember to update everything that might depend on the background!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_background</span> <span class="o">=</span> <span class="n">background</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logBackground</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_background</span><span class="p">[</span><span class="n">x</span><span class="p">]))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_background</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateBestLogOddsHit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PWM.updateBestLogOddsHit"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.updateBestLogOddsHit">[docs]</a>    <span class="k">def</span> <span class="nf">updateBestLogOddsHit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bestLogOddsHit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">computeBestHitGivenMatrix</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getLogOddsRows</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PWM.addRow"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.addRow">[docs]</a>    <span class="k">def</span> <span class="nf">addRow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PWM.finalise"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.finalise">[docs]</a>    <span class="k">def</span> <span class="nf">finalise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pseudocountProb</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">pseudocountProb</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">pseudocountProb</span> <span class="o">&lt;</span> <span class="mi">1</span>
+        <span class="c1"># will smoothen the rows with a pseudocount...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">*</span> \
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pseudocountProb</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">pseudocountProb</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logRows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bestPwmHit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">computeBestHitGivenMatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateBestLogOddsHit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PWM.getBestHit"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.getBestHit">[docs]</a>    <span class="k">def</span> <span class="nf">getBestHit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bestHitMode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bestHitMode</span> <span class="o">==</span> <span class="n">BEST_HIT_MODE</span><span class="o">.</span><span class="n">pwmProb</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bestPwmHit</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">bestHitMode</span> <span class="o">==</span> <span class="n">BEST_HIT_MODE</span><span class="o">.</span><span class="n">logOdds</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bestLogOddsHit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unsupported bestHitMode &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">bestHitMode</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PWM.computeSingleBpMutationEffects"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.computeSingleBpMutationEffects">[docs]</a>    <span class="k">def</span> <span class="nf">computeSingleBpMutationEffects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bestHitMode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bestHitMode</span> <span class="o">==</span> <span class="n">BEST_HIT_MODE</span><span class="o">.</span><span class="n">pwmProb</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">computeSingleBpMutationEffectsGivenMatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">bestHitMode</span> <span class="o">==</span> <span class="n">BEST_HIT_MODE</span><span class="o">.</span><span class="n">logOdds</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">computeSingleBpMutationEffectsGivenMatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logRows</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Unsupported best hit mode: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">bestHitMode</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PWM.computeSingleBpMutationEffectsGivenMatrix"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.computeSingleBpMutationEffectsGivenMatrix">[docs]</a>    <span class="k">def</span> <span class="nf">computeSingleBpMutationEffectsGivenMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            matrix is some matrix where the rows are positions and the columns represent</span>
+<span class="sd">            a value for some base at that position, where higher values are more favourable.</span>
+<span class="sd">            It first finds the best match according to that matrix, and then ranks possible</span>
+<span class="sd">            deviations from that best match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute the impact of particular mutations at each position, relative</span>
+        <span class="c1"># to the best hit</span>
+        <span class="n">possibleMutations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rowIndex</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+            <span class="n">bestColIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">scoreForBestCol</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">bestColIndex</span><span class="p">]</span>
+            <span class="n">letterAtBestCol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">bestColIndex</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">colIndex</span><span class="p">,</span> <span class="n">scoreForCol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">colIndex</span> <span class="o">!=</span> <span class="n">bestColIndex</span><span class="p">):</span>
+                    <span class="n">deltaScore</span> <span class="o">=</span> <span class="n">scoreForCol</span> <span class="o">-</span> <span class="n">scoreForBestCol</span>
+                    <span class="k">assert</span> <span class="n">deltaScore</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+                    <span class="n">letter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">colIndex</span><span class="p">]</span>
+                    <span class="n">possibleMutations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mutation</span><span class="p">(</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">rowIndex</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="n">letterAtBestCol</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">letter</span><span class="p">,</span> <span class="n">deltaScore</span><span class="o">=</span><span class="n">deltaScore</span><span class="p">,</span> <span class="n">parentLength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span><span class="p">))</span>
+        <span class="c1"># sort the mutations</span>
+        <span class="c1"># sorts in ascending order; biggest mutations first</span>
+        <span class="n">possibleMutations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">possibleMutations</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">deltaScore</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">possibleMutations</span></div>
+
+<div class="viewcode-block" id="PWM.computeBestHitGivenMatrix"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.computeBestHitGivenMatrix">[docs]</a>    <span class="k">def</span> <span class="nf">computeBestHitGivenMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="PWM.getRows"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.getRows">[docs]</a>    <span class="k">def</span> <span class="nf">getRows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Please call finalised on &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span></div>
+
+<div class="viewcode-block" id="PWM.scoreSeqAtPos"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.scoreSeqAtPos">[docs]</a>    <span class="k">def</span> <span class="nf">scoreSeqAtPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">startIdx</span><span class="p">,</span> <span class="n">reverseComplement</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            This method will score the seq at startIdx:startIdx+len(seq).</span>
+<span class="sd">            if startIdx is &lt; 0 or startIdx is too close to the end of the string,</span>
+<span class="sd">            returns 0.</span>
+<span class="sd">            This behaviour is useful when you want to generate scores at a fixed number</span>
+<span class="sd">            of positions for a set of PWMs, some of which are longer than others.</span>
+<span class="sd">            So at each position, for startSeq you supply pos-len(pwm)/2, and if it</span>
+<span class="sd">            does not fit the score will automatically be 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">endIdx</span> <span class="o">=</span> <span class="n">startIdx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Please call finalised on &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_logRows&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">endIdx</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="ow">or</span> <span class="n">startIdx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mf">0.0</span>  <span class="c1"># return 0 when indicating a segment that is too short</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">startIdx</span><span class="p">,</span> <span class="n">endIdx</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">reverseComplement</span><span class="p">):</span>
+                <span class="n">revIdx</span> <span class="o">=</span> <span class="p">(</span><span class="n">endIdx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="n">startIdx</span><span class="p">)</span>
+            <span class="n">letter</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">reverseComplement</span><span class="p">(</span>
+                <span class="n">seq</span><span class="p">[</span><span class="n">revIdx</span><span class="p">])</span> <span class="k">if</span> <span class="n">reverseComplement</span> <span class="k">else</span> <span class="n">seq</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">letter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">letterToIndex</span> <span class="ow">and</span> <span class="p">(</span><span class="n">letter</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span> <span class="ow">or</span> <span class="n">letter</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">)):</span>
+                <span class="k">pass</span>  <span class="c1"># just skip the letter</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># compute the score at this position</span>
+                <span class="n">score</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logRows</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="n">startIdx</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">letterToIndex</span><span class="p">[</span><span class="n">letter</span><span class="p">]]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logBackground</span><span class="p">[</span><span class="n">letter</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">score</span></div>
+
+<div class="viewcode-block" id="PWM.scoreSeq"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.scoreSeq">[docs]</a>    <span class="k">def</span> <span class="nf">scoreSeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">scoreSeqOptions</span><span class="p">):</span>
+        <span class="n">scoreSeqMode</span> <span class="o">=</span> <span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">scoreSeqMode</span>
+        <span class="n">reverseComplementToo</span> <span class="o">=</span> <span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">reverseComplementToo</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">maxScore</span><span class="p">,</span> <span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">bestMatch</span><span class="p">]):</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100000000000</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">continuous</span><span class="p">]):</span>
+            <span class="n">toReturn</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="o">==</span> <span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">topN</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">heapq</span>
+            <span class="n">heap</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">greedyTopN</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span> <span class="o">*</span> <span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">topN</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unsupported score seq mode: &quot;</span> <span class="o">+</span> <span class="n">scoreSeqMode</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">scoreHere</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scoreSeqAtPos</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">reverseComplement</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">reverseComplementToo</span><span class="p">):</span>
+                <span class="n">scoreHere</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scoreHere</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scoreSeqAtPos</span><span class="p">(</span>
+                    <span class="n">seq</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">reverseComplement</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">bestMatch</span><span class="p">,</span> <span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">maxScore</span><span class="p">]):</span>
+                <span class="c1"># Get the maximum score</span>
+                <span class="k">if</span> <span class="n">scoreHere</span> <span class="o">&gt;</span> <span class="n">score</span><span class="p">:</span>
+                    <span class="c1"># The current score is larger than the previous largest</span>
+                    <span class="c1"># score, so store it and the current sequence</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="n">scoreHere</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">bestMatch</span><span class="p">]):</span>
+                        <span class="n">bestMatch</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span><span class="p">]</span>
+                        <span class="n">bestMatchPosStart</span> <span class="o">=</span> <span class="n">pos</span>
+                        <span class="n">bestMatchPosEnd</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">continuous</span><span class="p">]):</span>
+                <span class="n">toReturn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scoreHere</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="o">==</span> <span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">topN</span><span class="p">):</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">heap</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">scoreHere</span><span class="p">,</span> <span class="n">scoreHere</span><span class="p">,</span>
+                                      <span class="n">pos</span><span class="p">,</span> <span class="n">pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwmSize</span><span class="p">))</span>  <span class="c1"># it&#39;s a minheap</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The current mode is not supported</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unsupported score seq mode: &quot;</span> <span class="o">+</span> <span class="n">scoreSeqMode</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">maxScore</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">score</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">bestMatch</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">bestMatch</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">bestMatchPosStart</span><span class="p">,</span> <span class="n">bestMatchPosEnd</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">continuous</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="n">toReturn</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">scoreSeqMode</span> <span class="o">==</span> <span class="n">SCORE_SEQ_MODE</span><span class="o">.</span><span class="n">topN</span><span class="p">):</span>
+            <span class="n">topNscores</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">greedyTopN</span><span class="p">):</span>
+                <span class="n">occupiedHits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
+            <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">topNscores</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">topN</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="p">(</span><span class="n">negScore</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">posStart</span><span class="p">,</span> <span class="n">posEnd</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="p">(</span><span class="n">negScore</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">posStart</span><span class="p">,</span> <span class="n">posEnd</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">greedyTopN</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">occupiedHits</span><span class="p">[</span><span class="n">posStart</span><span class="p">:</span><span class="n">posEnd</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">topNscores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PwmScore</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">posStart</span><span class="p">,</span> <span class="n">posEnd</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">scoreSeqOptions</span><span class="o">.</span><span class="n">greedyTopN</span><span class="p">):</span>
+                        <span class="n">occupiedHits</span><span class="p">[</span><span class="n">posStart</span><span class="p">:</span><span class="n">posEnd</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">topNscores</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unsupported score seq mode: &quot;</span> <span class="o">+</span> <span class="n">scoreSeqMode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PWM.getLogOddsRows"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.getLogOddsRows">[docs]</a>    <span class="k">def</span> <span class="nf">getLogOddsRows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">toReturn</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logRows</span><span class="p">:</span>
+            <span class="n">logOddsRow</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">logVal</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                <span class="n">logOddsRow</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">logVal</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logBackground</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+            <span class="n">toReturn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logOddsRow</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">toReturn</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PWM.sampleFromPwm"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.PWM.sampleFromPwm">[docs]</a>    <span class="k">def</span> <span class="nf">sampleFromPwm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalised</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Please call finalised on &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">sampledLetters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">logOdds</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span>
+            <span class="n">sampledIndex</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">sampleFromProbsArr</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">logOdds</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">sampledIndex</span><span class="p">])</span> <span class="o">-</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logBackground</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">sampledIndex</span><span class="p">]]</span>
+            <span class="n">sampledLetters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indexToLetter</span><span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">sampleFromProbsArr</span><span class="p">(</span><span class="n">row</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sampledLetters</span><span class="p">),</span> <span class="n">logOdds</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="getReadPwmAction_encodeMotifs"><a class="viewcode-back" href="../../pwm.html#simdna.pwm.getReadPwmAction_encodeMotifs">[docs]</a><span class="k">def</span> <span class="nf">getReadPwmAction_encodeMotifs</span><span class="p">(</span><span class="n">recordedPwms</span><span class="p">):</span>
+    <span class="n">currentPwm</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">VariableWrapper</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">lineNumber</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)):</span>
+            <span class="n">inp</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+            <span class="n">inpArr</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">motifName</span> <span class="o">=</span> <span class="n">inpArr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">currentPwm</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">PWM</span><span class="p">(</span><span class="n">motifName</span><span class="p">)</span>
+            <span class="n">recordedPwms</span><span class="p">[</span><span class="n">currentPwm</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">currentPwm</span><span class="o">.</span><span class="n">var</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume that it&#39;s a line of the pwm</span>
+            <span class="k">assert</span> <span class="n">currentPwm</span><span class="o">.</span><span class="n">var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">inpArr</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">summaryLetter</span> <span class="o">=</span> <span class="n">inpArr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">currentPwm</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">addRow</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inpArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+    <span class="k">return</span> <span class="n">action</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">argparse</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pwmFile&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">pwms</span> <span class="o">=</span> <span class="n">readPwm</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">getFileHandle</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">pwmFile</span><span class="p">))</span>
+    <span class="c1">#print(&quot;\n&quot;.join([str(x) for x in pwms.values()]));</span>
+    <span class="n">theSeq</span> <span class="o">=</span> <span class="s2">&quot;ACGATGTAGCCACTGCTGAACATCTGAATATA&quot;</span>
+    <span class="k">for</span> <span class="n">pwm</span> <span class="ow">in</span> <span class="n">pwms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">pwm</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">pwm</span><span class="o">.</span><span class="n">sampleFromPwm</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Avanti Shrikumar, Johnny Israeli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

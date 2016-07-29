@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>simdna.utils &mdash; SimDNA 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="SimDNA 0.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for simdna.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">correlate2d</span>
+<span class="kn">from</span> <span class="nn">simdna.simulations</span> <span class="k">import</span> <span class="n">loaded_motifs</span>
+
+<div class="viewcode-block" id="get_pssm_scores"><a class="viewcode-back" href="../../utils.html#simdna.utils.get_pssm_scores">[docs]</a><span class="k">def</span> <span class="nf">get_pssm_scores</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">,</span> <span class="n">pssm</span><span class="p">):</span>
+    <span class="n">encoded_sequences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_bases</span><span class="p">,</span> <span class="n">seq_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_bases</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">base_indx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bases</span><span class="p">):</span>
+        <span class="n">base_pssm</span> <span class="o">=</span> <span class="n">pssm</span><span class="p">[</span><span class="n">base_indx</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pssm</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">fwd_scores</span> <span class="o">=</span> <span class="n">correlate2d</span><span class="p">(</span>
+            <span class="n">encoded_sequences</span><span class="p">[:,</span> <span class="n">base_indx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">base_pssm</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="n">rc_base_pssm</span> <span class="o">=</span> <span class="n">pssm</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">base_indx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pssm</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">rc_scores</span> <span class="o">=</span> <span class="n">correlate2d</span><span class="p">(</span>
+            <span class="n">encoded_sequences</span><span class="p">[:,</span> <span class="n">base_indx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">rc_base_pssm</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="n">scores</span><span class="p">[:,</span> <span class="n">base_indx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">fwd_scores</span><span class="p">,</span> <span class="n">rc_scores</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scores</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_motif_scores"><a class="viewcode-back" href="../../utils.html#simdna.utils.get_motif_scores">[docs]</a><span class="k">def</span> <span class="nf">get_motif_scores</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">,</span> <span class="n">motif_names</span><span class="p">,</span>
+                     <span class="n">max_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_positions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">GC_fraction</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes pwm log odds.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    encoded_sequences : 4darray</span>
+<span class="sd">    motif_names : list of strings</span>
+<span class="sd">    max_scores : int, optional</span>
+<span class="sd">    return_positions : boolean, optional</span>
+<span class="sd">    GC_fraction : float, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (num_samples, seq_length, num_motifs) complete score array by default.</span>
+<span class="sd">    If max_scores, (num_samples, num_motifs*max_scores) max score array.</span>
+<span class="sd">    If max_scores and return_positions, (num_samples, 2*num_motifs*max_scores)</span>
+<span class="sd">    array with max scores and their positions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_samples</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">seq_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">motif_names</span><span class="p">),</span> <span class="n">seq_length</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">motif_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">motif_names</span><span class="p">):</span>
+        <span class="n">pwm</span> <span class="o">=</span> <span class="n">loaded_motifs</span><span class="o">.</span><span class="n">getPwm</span><span class="p">(</span><span class="n">motif_name</span><span class="p">)</span><span class="o">.</span><span class="n">getRows</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">log_pwm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pwm</span><span class="p">)</span>
+        <span class="n">gc_pwm</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">GC_fraction</span><span class="p">,</span> <span class="n">GC_fraction</span><span class="p">,</span>
+                                  <span class="n">GC_fraction</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">GC_fraction</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pwm</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">gc_log_pwm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gc_pwm</span><span class="p">)</span>
+        <span class="n">scores</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">get_pssm_scores</span><span class="p">(</span>
+            <span class="n">encoded_sequences</span><span class="p">,</span> <span class="n">log_pwm</span><span class="p">)</span> <span class="o">-</span> <span class="n">get_pssm_scores</span><span class="p">(</span><span class="n">encoded_sequences</span><span class="p">,</span> <span class="n">gc_log_pwm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sorted_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">max_scores</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">return_positions</span><span class="p">:</span>
+            <span class="n">sorted_positions</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[:,</span> <span class="p">:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">max_scores</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">sorted_scores</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">motif_names</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_scores</span><span class="p">)),</span>
+                                   <span class="n">sorted_positions</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">motif_names</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_scores</span><span class="p">))),</span>
+                                  <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sorted_scores</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">motif_names</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_scores</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scores</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Avanti Shrikumar, Johnny Israeli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

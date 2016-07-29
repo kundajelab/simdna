@@ -1,7 +1,7 @@
 pwm module
 ==========
 
-.. automodule:: pwm
+.. automodule:: simdna.pwm
     :members:
     :undoc-members:
     :show-inheritance:

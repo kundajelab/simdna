@@ -1,7 +1,7 @@
 simulations module
 ================
 
-.. automodule:: simulations
+.. automodule:: simdna.simulations
     :members:
     :undoc-members:
     :show-inheritance:

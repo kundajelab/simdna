@@ -40,8 +40,153 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pwm-module">
-<h1>pwm module<a class="headerlink" href="#pwm-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-simdna.pwm">
+<span id="pwm-module"></span><h1>pwm module<a class="headerlink" href="#module-simdna.pwm" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="simdna.pwm.Mutation">
+<em class="property">class </em><code class="descclassname">simdna.pwm.</code><code class="descname">Mutation</code><span class="sig-paren">(</span><em>index</em>, <em>previous</em>, <em>new</em>, <em>deltaScore</em>, <em>parentLength=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#Mutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.Mutation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>class to represent a single bp mutation in a motif sequence</p>
+<dl class="method">
+<dt id="simdna.pwm.Mutation.applyMutation">
+<code class="descname">applyMutation</code><span class="sig-paren">(</span><em>stringArr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#Mutation.applyMutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.Mutation.applyMutation" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the base at the position of the mutation to the mutated value.
+Modifies stringArr which is an array of characters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.Mutation.parentLengthAssertionCheck">
+<code class="descname">parentLengthAssertionCheck</code><span class="sig-paren">(</span><em>stringArr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#Mutation.parentLengthAssertionCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.Mutation.parentLengthAssertionCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks that stringArr is consistent with parentLength if defined</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.Mutation.revert">
+<code class="descname">revert</code><span class="sig-paren">(</span><em>stringArr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#Mutation.revert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.Mutation.revert" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the base at the position of the mutation to the unmutated value
+Modifies stringArr which is an array of characters.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="simdna.pwm.PWM">
+<em class="property">class </em><code class="descclassname">simdna.pwm.</code><code class="descname">PWM</code><span class="sig-paren">(</span><em>name</em>, <em>letterToIndex={'A': 0</em>, <em>'C': 1</em>, <em>'T': 3</em>, <em>'G': 2}</em>, <em>background=OrderedDict([('A'</em>, <em>0.27)</em>, <em>('C'</em>, <em>0.23)</em>, <em>('G'</em>, <em>0.23)</em>, <em>('T'</em>, <em>0.27)])</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="simdna.pwm.PWM.addRow">
+<code class="descname">addRow</code><span class="sig-paren">(</span><em>weights</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.addRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.addRow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.computeBestHitGivenMatrix">
+<code class="descname">computeBestHitGivenMatrix</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.computeBestHitGivenMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.computeBestHitGivenMatrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.computeSingleBpMutationEffects">
+<code class="descname">computeSingleBpMutationEffects</code><span class="sig-paren">(</span><em>bestHitMode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.computeSingleBpMutationEffects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.computeSingleBpMutationEffects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.computeSingleBpMutationEffectsGivenMatrix">
+<code class="descname">computeSingleBpMutationEffectsGivenMatrix</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.computeSingleBpMutationEffectsGivenMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.computeSingleBpMutationEffectsGivenMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>matrix is some matrix where the rows are positions and the columns represent
+a value for some base at that position, where higher values are more favourable.
+It first finds the best match according to that matrix, and then ranks possible
+deviations from that best match.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.finalise">
+<code class="descname">finalise</code><span class="sig-paren">(</span><em>pseudocountProb=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.finalise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.finalise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.getBestHit">
+<code class="descname">getBestHit</code><span class="sig-paren">(</span><em>bestHitMode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.getBestHit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.getBestHit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.getLogOddsRows">
+<code class="descname">getLogOddsRows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.getLogOddsRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.getLogOddsRows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.getRows">
+<code class="descname">getRows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.getRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.getRows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.sampleFromPwm">
+<code class="descname">sampleFromPwm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.sampleFromPwm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.sampleFromPwm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.scoreSeq">
+<code class="descname">scoreSeq</code><span class="sig-paren">(</span><em>seq</em>, <em>scoreSeqOptions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.scoreSeq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.scoreSeq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.scoreSeqAtPos">
+<code class="descname">scoreSeqAtPos</code><span class="sig-paren">(</span><em>seq</em>, <em>startIdx</em>, <em>reverseComplement=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.scoreSeqAtPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.scoreSeqAtPos" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will score the seq at startIdx:startIdx+len(seq).
+if startIdx is &lt; 0 or startIdx is too close to the end of the string,
+returns 0.
+This behaviour is useful when you want to generate scores at a fixed number
+of positions for a set of PWMs, some of which are longer than others.
+So at each position, for startSeq you supply pos-len(pwm)/2, and if it
+does not fit the score will automatically be 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.setBackground">
+<code class="descname">setBackground</code><span class="sig-paren">(</span><em>background</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.setBackground"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.setBackground" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="simdna.pwm.PWM.updateBestLogOddsHit">
+<code class="descname">updateBestLogOddsHit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PWM.updateBestLogOddsHit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PWM.updateBestLogOddsHit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="simdna.pwm.PwmScore">
+<em class="property">class </em><code class="descclassname">simdna.pwm.</code><code class="descname">PwmScore</code><span class="sig-paren">(</span><em>score</em>, <em>posStart</em>, <em>posEnd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#PwmScore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.PwmScore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.getFileNamePieceFromOptions">
+<code class="descclassname">simdna.pwm.</code><code class="descname">getFileNamePieceFromOptions</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#getFileNamePieceFromOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.getFileNamePieceFromOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.getLoadPwmArgparse">
+<code class="descclassname">simdna.pwm.</code><code class="descname">getLoadPwmArgparse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#getLoadPwmArgparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.getLoadPwmArgparse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.getReadPwmAction_encodeMotifs">
+<code class="descclassname">simdna.pwm.</code><code class="descname">getReadPwmAction_encodeMotifs</code><span class="sig-paren">(</span><em>recordedPwms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#getReadPwmAction_encodeMotifs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.getReadPwmAction_encodeMotifs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.getSpecfiedPwmFromPwmFile">
+<code class="descclassname">simdna.pwm.</code><code class="descname">getSpecfiedPwmFromPwmFile</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#getSpecfiedPwmFromPwmFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.getSpecfiedPwmFromPwmFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.processOptions">
+<code class="descclassname">simdna.pwm.</code><code class="descname">processOptions</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#processOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.processOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.pwm.readPwm">
+<code class="descclassname">simdna.pwm.</code><code class="descname">readPwm</code><span class="sig-paren">(</span><em>fileHandle</em>, <em>pwmFormat='encodeMotifsFile'</em>, <em>pseudocountProb=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/pwm.html#readPwm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.pwm.readPwm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 

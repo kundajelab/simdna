@@ -39,8 +39,43 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="utils-module">
-<h1>utils module<a class="headerlink" href="#utils-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-simdna.utils">
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-simdna.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="simdna.utils.get_motif_scores">
+<code class="descclassname">simdna.utils.</code><code class="descname">get_motif_scores</code><span class="sig-paren">(</span><em>encoded_sequences</em>, <em>motif_names</em>, <em>max_scores=None</em>, <em>return_positions=False</em>, <em>GC_fraction=0.4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/utils.html#get_motif_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.utils.get_motif_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes pwm log odds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>encoded_sequences</strong> (<em>4darray</em>) &#8211; </li>
+<li><strong>motif_names</strong> (<em>list of strings</em>) &#8211; </li>
+<li><strong>max_scores</strong> (<em>int, optional</em>) &#8211; </li>
+<li><strong>return_positions</strong> (<em>boolean, optional</em>) &#8211; </li>
+<li><strong>GC_fraction</strong> (<em>float, optional</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>(num_samples, seq_length, num_motifs) complete score array by default.</em></li>
+<li><em>If max_scores, (num_samples, num_motifs*max_scores) max score array.</em></li>
+<li><em>If max_scores and return_positions, (num_samples, 2*num_motifs*max_scores)</em></li>
+<li><em>array with max scores and their positions.</em></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.utils.get_pssm_scores">
+<code class="descclassname">simdna.utils.</code><code class="descname">get_pssm_scores</code><span class="sig-paren">(</span><em>encoded_sequences</em>, <em>pssm</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simdna/utils.html#get_pssm_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#simdna.utils.get_pssm_scores" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 

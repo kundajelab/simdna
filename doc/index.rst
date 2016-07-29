@@ -14,6 +14,7 @@ Contents:
    synthetic
    simulations
    pwm
+   utils
 
 
 Indices and tables
