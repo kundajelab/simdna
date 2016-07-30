@@ -116,6 +116,9 @@ def printSequences(outputFileName, sequenceSetGenerator,
 
 class DefaultNameMixin(object):
     """Basic functionality for classes that have a self.name attribute
+    
+    Arguments:
+        name: string
     """
     def __init__(self, name):
         if (name == None):
@@ -135,22 +138,51 @@ class AbstractPositionGenerator(DefaultNameMixin):
     """
 
     def generatePos(self, lenBackground, lenSubstring, additionalInfo=None):
+        """Generate the position to embed in.
+
+        Arguments:
+            lenBackground: int, length of background sequence
+
+            lenSubstring: int, lenght of substring to embed
+
+            additionalInfo: optional, instance of :class:`.AdditionalInfo`. Is
+                used to leave a trace that this positionGenerator was called
+
+        Returns:
+            An integer which is the start index to embed in.
+        """
         if (additionalInfo is not None):
             additionalInfo.updateTrace(self.name)
         return self._generatePos(lenBackground, lenSubstring, additionalInfo)
 
     def _generatePos(self, lenBackground, lenSubstring, additionalInfo):
+        """Generate the position to embed in - this method should be
+        overriden by the subclass. See
+        :func:`.AbstractPositionGenerator.generatePos` for documentaiton
+        on the arguments.
+        """
         raise NotImplementedError()
 
     def getJsonableObject(self):
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+            python primitives), which can be converted to json to
+            record the exact details of what was simualted.
+        """
         raise NotImplementedError()
 
 
 class UniformPositionGenerator(AbstractPositionGenerator):
-    """
-        samples a start position to embed the substring in uniformly at random;
+    """Sample position uniformly at random.
+    
+    Samples a start position to embed the substring in uniformly at random;
         does not return positions that are too close to the end of the
         background sequence to embed the full substring.
+
+    Arguments:
+        name: string, see :class:`.DefaultNameMixin`
     """
 
     def __init__(self, name=None):
@@ -160,23 +192,32 @@ class UniformPositionGenerator(AbstractPositionGenerator):
         return sampleIndexWithinRegionOfLength(lenBackground, lenSubstring)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return "uniform"
+
+#instantiate a UniformPositionGenerator for general use
 uniformPositionGenerator = UniformPositionGenerator()
 
 
 class InsideCentralBp(AbstractPositionGenerator):
-    """
-        returns a position within the central region of a background
+    """For embedding within only the central region of a background.
+        
+    Returns a position within the central region of a background
         sequence, sampled uniformly at random
+
+    Arguments:
+        centralBp: int, the number of bp, centered in the
+            middle of the background, from which to sample the position.
+            Is NOT +/- centralBp around the middle
+            (is +/- centralBp/2 around the middle). If the background
+            sequence is even and centralBp is odd, the shorter region
+            will go on the left.
+        name: string - see :class:`.DefaultNameMixin`
     """
 
     def __init__(self, centralBp, name=None):
         """
-            centralBp: the number of bp, centered in the middle of the background,
-            from which to sample the position. Is NOT +/- centralBp around the
-            middle (is +/- centralBp/2 around the middle).
-            If the background sequence is even and centralBp is odd, the shorter
-            region will go on the left.
         """
         self.centralBp = centralBp
         super(InsideCentralBp, self).__init__(name)
@@ -192,13 +233,21 @@ class InsideCentralBp(AbstractPositionGenerator):
         return int(indexToSample)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return "insideCentral-" + str(self.centralBp)
 
 
 class OutsideCentralBp(AbstractPositionGenerator):
-    """
-        Returns a position OUTSIDE the central region of a background sequence,
+    """For embedding only OUTSIDE a central region of a background seq.
+
+    Returns a position OUTSIDE the central region of a background sequence,
         sampled uniformly at random. Complement of InsideCentralBp.
+
+    Arguments:
+        centralBp: int, the centralBp to avoid embedding in. See the docs
+            for :class:`.InsideCentralBp` for more details (this is the
+            complement).
     """
 
     def __init__(self, centralBp, name=None):
@@ -229,22 +278,25 @@ class OutsideCentralBp(AbstractPositionGenerator):
         return int(indexToSample)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return "outsideCentral-" + str(self.centralBp)
 
 
 class GeneratedSequence(object):
-    """
-        An object representing a sequence that has been
-        generated.
+    """An object representing a sequence that has been generated.
+
+    Arguments:
+        seqName: string representing the name/id of the sequence
+
+        seq: string representing the final generated sequence
+
+        embeddings: an array of :class:`.Embedding` objects.
+
+        additionalInfo: an instance of :class:`.AdditionalInfo`
     """
 
     def __init__(self, seqName, seq, embeddings, additionalInfo):
-        """
-            seqName: string
-            seq: generated sequence (string)
-            embeddings: array of Embedding objects
-            additionalInfo: instance of AdditionalInfo
-        """
         self.seqName = seqName
         self.seq = seq
         self.embeddings = embeddings
@@ -252,17 +304,19 @@ class GeneratedSequence(object):
 
 
 class Embedding(object):
-    """
-        Represents something that has been embedded in
-        a sequence
+    """Represents something that has been embedded in a sequence.
+
+    Think of this as a combination of an embeddable + a start position.
+
+    Arguments:
+        what: object representing the thing that has been embedded.
+            Should have __str__ and __len__ defined. Often is an instance
+            of :class:`.AbstractEmbeddable`
+        startPos: int, the position relative to the start of the parent
+            sequence at which seq has been embedded
     """
 
     def __init__(self, what, startPos):
-        """
-            what: object representing the thing that has been embedded. Should have __str__ and __len__ defined
-            startPos: that position relative to the start of the
-            parent sequence at which seq has been embedded
-        """
         self.what = what
         self.startPos = startPos
 
@@ -271,16 +325,41 @@ class Embedding(object):
 
     @classmethod
     def fromString(cls, string, whatClass=None):
+        """Recreate an :class:`.Embedding` object from a string.
+
+        Arguments:
+            string: assumed to have format:
+                description[-|_]startPos[-|_]whatString, where
+                whatString will be provided to whatClass
+            whatClass: the class (usually a :class:`.AbstractEmbeddable`) that
+                will be used to instantiate the what from the whatString
+
+        Returns:
+            The Embedding class called with
+            what=whatClass.fromString(whatString), startPos=int(startPos)
+        """
         if (whatClass is None):
             whatClass = StringEmbeddable
         # was printed out as pos-[startPos]_[what], but the
         #[what] may contain underscores, hence the maxsplit
         # to avoid splitting on them.
         prefix, startPos, whatString = re.split("-|_", string, maxsplit=2)
-        return cls(what=whatClass.fromString(whatString), startPos=startPos)
+        return cls(what=whatClass.fromString(whatString),
+                   startPos=int(startPos))
 
 
 def getEmbeddingsFromString(string):
+    """Get a series of :class:`.Embedding` objects from a string.
+    
+    Splits the string on commas, and then passes the comma-separated vals
+        to :func:`.Embedding.fromString`
+
+    Arguments:
+        string: The string to turn into an array of Embedding objects
+
+    Returns:
+        an array of :class:`.Embedding` objects
+    """
     if len(string) == 0:
         return []
     else:
@@ -289,46 +368,58 @@ def getEmbeddingsFromString(string):
 
 
 class AbstractSequenceSetGenerator(object):
-    """
-        class that is used to return a generator for a collection
-        of generated sequences.
+    """A generator for a collection of generated sequences.
     """
 
     def generateSequences(self):
-        """
-            returns a generator of GeneratedSequence objects
+        """The generator; implementation should have a yield.
+
+        Called as
+        ``generatedSequences = sequenceSetGenerator.generateSequences()``
+
+        ``generateSequences`` can then be iterated over.
+
+        Returns:
+            A generator of GeneratedSequence objects
         """
         raise NotImplementedError()
 
     def getJsonableObject(self):
-        """
-            returns an object representing the details of this, which
-            can be converted to json.
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+            python primitives), which can be converted to json to
+            record the exact details of what was simualted.
         """
         raise NotImplementedError()
 
 
 class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
-    """
-        If you just want to use a generator of a single sequence and
-        call it N times, use this class.
+    """Call a :class:`.AbstractSingleSequenceGenerator` N times.
+            
+    Arguments:
+        singleSetGenerator: an instance of
+            :class:`.AbstractSequenceSetGenerator`
+        N: integer, the number of times to call singleSetGenerator
     """
 
     def __init__(self, singleSetGenerator, N):
-        """
-            singleSetGenerator: an instance of AbstractSequenceSetGenerator
-        """
         self.singleSetGenerator = singleSetGenerator
         self.N = N
 
     def generateSequences(self):
-        """
-            calls singleSetGenerator N times.
+        """A generator that calls self.singleSetGenerator N times.
+
+        Returns:
+            a generator that will call self.singleSetGenerator N times. 
         """
         for i in range(self.N):
             yield self.singleSetGenerator.generateSequence()
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("numSeq", self.N), ("singleSetGenerator", self.singleSetGenerator.getJsonableObject())])
 
 
@@ -358,18 +449,20 @@ class AbstractSingleSequenceGenerator(object):
         """Get JSON object representation.
 
         Returns:
-            An json-friendly object (built of dictionaries, lists and
-                python primitives), which can be converted to json to
-                record the exact details of what was simualted.
+            A json-friendly object (built of dictionaries, lists and
+            python primitives), which can be converted to json to
+            record the exact details of what was simualted.
         """
         raise NotImplementedError()
 
 
 class AdditionalInfo(object):
-    """Used to keep track of which embedders were called and how many times.
+    """Used to keep track of which embedders/ops were
+    called and how many times.
 
     An instance of AdditionalInfo is meant to be an attribute of
-        a :class:`.GeneratedSequence` object.
+        a :class:`.GeneratedSequence` object. It keeps track of things
+        like embedders, position generators, etc.
 
     Has self.trace which is a dictionary from operatorName->int
         and which records operations that were called in the
@@ -456,80 +549,104 @@ class EmbedInABackground(AbstractSingleSequenceGenerator):
 
 
 class AbstractPriorEmbeddedThings(object):
-    """
-        class that is used to keep track of what has already been embedded in a sequence
+    """Keeps track of what has already been embedded in a sequence.
     """
 
     def canEmbed(self, startPos, endPos):
-        """
-            returns a boolean indicating whether the region from startPos to endPos is available for embedding
+        """Test whether startPos-endPos is available for embedding.
+
+        Arguments:
+            startPos: int, starting index
+            endPos: int, ending index+1 (same semantics as array-slicing)
+
+        Returns:
+            True if startPos:endPos is available for embedding
         """
         raise NotImplementedError()
 
     def addEmbedding(self, startPos, what):
-        """
-            embeds "what" from startPos to startPos+len(what). Creates an Embedding object
+        """Records the embedding of a :class:`AbstractEmbeddable`.
+
+        Embeds ``what`` from ``startPos`` to ``startPos+len(what)``.
+        Creates an :class:`Embedding` object.
+
+        Arguments:
+            startPos: int, the starting position at which to embed.
+            what: instance of :class:`AbstractEmbeddable`
         """
         raise NotImplementedError()
 
     def getNumOccupiedPos(self):
         """
-            returns the number of posiitons that are filled with some kind of embedding
+        Returns:
+            Number of posiitons that are filled with some kind of embedding
         """
         raise NotImplementedError()
 
     def getTotalPos(self):
         """
-            returns the total number of positions available to embed things in
+        Returns:
+            Total number of positions (occupied and unoccupoed) available
+        to embed things in.
         """
         raise NotImplementedError()
 
     def getEmbeddings(self):
         """
-            returns a collection of Embedding objects
+        Returns:
+            A collection of Embedding objects
         """
         raise NotImplementedError()
 
 
 class PriorEmbeddedThings_numpyArrayBacked(AbstractPriorEmbeddedThings):
-    """
-        uses a numpy array where positions are set to 1 if they are occupied,
-        to determin which positions are occupied and which are not.
-        See parent for more documentation.
+    """A numpy-array based implementation of
+    :class:`.AbstractPriorEmbeddedThings`.
+
+    Uses a numpy array where positions are set to 1 if they are occupied,
+    to determine which positions are occupied and which are not.
+    See parent for more documentation.
+
+    Arguments:
+        seqLen: integer indicating length of the sequence you are embedding in
     """
 
     def __init__(self, seqLen):
-        """
-            seqLen: integer indicating length of the sequence you are embedding in
-        """
         self.seqLen = seqLen
         self.arr = np.zeros(seqLen)
         self.embeddings = []
 
     def canEmbed(self, startPos, endPos):
+        """See superclass.
+        """
         return np.sum(self.arr[startPos:endPos]) == 0
 
     def addEmbedding(self, startPos, what):
-        """
-            what: instance of Embeddable
+        """See superclass.
         """
         self.arr[startPos:startPos + len(what)] = 1
         self.embeddings.append(Embedding(what=what, startPos=startPos))
 
     def getNumOccupiedPos(self):
+        """See superclass.
+        """
         return np.sum(self.arr)
 
     def getTotalPos(self):
+        """See superclass.
+        """
         return len(self.arr)
 
     def getEmbeddings(self):
+        """See superclass.
+        """
         return self.embeddings
 
 
 class AbstractEmbeddable(object):
-    """
-        Represents a thing which can be embedded. Note that
-        an Embeddable + a position = an embedding.
+    """Represents a thing which can be embedded.
+
+        An :class:`.AbstractEmbeddable` + a position = an :class:`.Embedding`
     """
 
     def __len__(self):
@@ -539,39 +656,50 @@ class AbstractEmbeddable(object):
         raise NotImplementedError()
 
     def getDescription(self):
+        """Return a concise description of the embeddable.
+
+        This should be concise and shouldn't contain spaces. It will often
+        be used when generating the __str__ representation of the embedabled.
+        """
         raise NotImplementedError()
 
     def canEmbed(self, priorEmbeddedThings, startPos):
         """Checks whether embedding is possible at a given pos.
 
         Accepts an instance of :class:`AbstractPriorEmbeddedThings` and
-            a startPos, and checks if startPos is viable given the
-            contents of priorEmbeddedThings
+        a ``startPos``, and checks if ``startPos`` is viable given the
+        contents of ``priorEmbeddedThings``.
 
         Arguments:
             priorEmbeddedThings: instance of
-                :class:`AbstractPriorEmbeddedThings`
+        :class:`AbstractPriorEmbeddedThings`
 
             startPos: int; the position you are considering embedding self at
 
         Returns:
             A boolean indicating whether self can be embedded at startPos,
-                given the things that have already been embedded.
+        given the things that have already been embedded.
         """
         raise NotImplementedError()
 
     def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
         """Embed self in a background string.
 
-        Will embed self at startPos in backgroundStringArr,
-            and will update priorEmbeddedThings accordingly
+        Will embed self at ``startPos`` in ``backgroundStringArr``,
+        and will update ``priorEmbeddedThings`` accordingly.
 
         Arguments:
             priorEmbeddedThings: instance of
-                :class:`AbstractPriorEmbeddedThings`
-            backgroundStringArr: an array of characters
-                representing the background
+        :class:`AbstractPriorEmbeddedThings`
+            backgroundStringArr: an array of characters representing
+        the background
             startPos: integer; the position to embed self at
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def fromString(cls, theString):
+        """Generate an instance of the embeddable from the provided string.
         """
         raise NotImplementedError()
 
@@ -580,7 +708,13 @@ class StringEmbeddable(AbstractEmbeddable):
     """A string that is to be embedded in a background.
 
     Represents a string (such as a sampling from a pwm) that is to
-        be embedded in a background. See docs for superclass.
+    be embedded in a background. See docs for superclass.
+
+    Arguments:
+        string: the core string to be embedded
+
+        stringDescription: a short descriptor prefixed before the
+        __str__ representation of the embeddable. Should not contain a hyphen.
     """
 
     def __init__(self, string, stringDescription=""):
@@ -594,17 +728,34 @@ class StringEmbeddable(AbstractEmbeddable):
         return self.stringDescription + ("-" if self.stringDescription != "" else "") + self.string
 
     def getDescription(self):
+        """See superclass.
+        """
         return self.stringDescription
 
     def canEmbed(self, priorEmbeddedThings, startPos):
+        """See superclass.
+        """
         return priorEmbeddedThings.canEmbed(startPos, startPos + len(self.string))
 
     def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
+        """See superclass.
+        """
         backgroundStringArr[startPos:startPos + len(self.string)] = self.string
         priorEmbeddedThings.addEmbedding(startPos, self)
 
     @classmethod
     def fromString(cls, theString):
+        """Generates a StringEmbeddable from the provided string.
+
+        Arguments:
+            theString: string of the format ``stringDescription-coreString``.
+        Will then return:
+        ``StringEmbeddable(string=coreString,
+                             stringDescription=stringDescription)``
+
+        Returns:
+            An instance of :class:`.StringEmbeddable`
+        """
         if ("-" in theString):
             stringDescription, coreString = theString.split("-")
             return cls(string=coreString, stringDescription=stringDescription)
@@ -613,7 +764,21 @@ class StringEmbeddable(AbstractEmbeddable):
 
 
 class PairEmbeddable_General(AbstractEmbeddable):
-    """Embeds two :class:`.AbstractEmbeddable` objects with some separation.
+    """Embed two embeddables with some separation.
+
+    Arguments:
+        embeddable1: first embeddable to be embedded
+
+        embeddable2: second embeddable to be embedded
+
+        separation: int of positions separating embeddable1 and embeddable2
+
+        embeddableDescription: a concise descriptive string prefixed in
+        front when generating a __str__ representation of the embeddable.
+        Should not contain a hyphen.
+
+        nothingInBetween: if true, then nothing else is allowed to be
+        embedded in the gap between embeddable1 and embeddable2.
     """
 
     def __init__(self, embeddable1, embeddable2, separation,
@@ -657,16 +822,24 @@ class PairEmbeddable_General(AbstractEmbeddable):
 class PairEmbeddable(AbstractEmbeddable):
     """Embed two strings with some separation. To be deprecated.
 
-        The use of PairEmbeddable_General instead should be favoured.
+    To be deprecated in favour of PairEmbeddable_General.
+
+    Arguments:
+        string1: first string to be embedded
+
+        string2: second string to be embedded
+
+        separation: int of positions separating string1 and string2
+
+        embeddableDescription: a concise descriptive string prefixed in
+        front when generating a __str__ representation of the embeddable.
+        Should not contain a hyphen.
+
+        nothingInBetween: if true, then nothing else is allowed to be
+        embedded in the gap between string1 and string2.
     """
 
     def __init__(self, string1, string2, separation, embeddableDescription, nothingInBetween=True):
-        """
-            separation: int of positions separating
-                string1 and string2
-            nothingInBetween: if true, then nothing else is allowed to be
-                embedded in the gap between string1 and string2.
-        """
         self.string1 = string1
         self.string2 = string2
         self.separation = separation
@@ -703,25 +876,48 @@ class PairEmbeddable(AbstractEmbeddable):
 
 
 class AbstractEmbedder(DefaultNameMixin):
-    """
-        class that is used to embed things in a sequence
+    """Produces :class:`AbstractEmbeddable` objects and
+    embeds them in a sequence.
     """
 
     def embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo=None):
-        """
-            backgroundStringArr: array of characters representing the background string
-            priorEmbeddedThings: instance of AbstractPriorEmbeddedThings.
-            additionalInfo: instance of AdditionalInfo; allows the embedder to send back info about what it did
-            modifies: backgroundStringArr to include whatever this class has embedded
+        """Embeds things in the provided ``backgroundStringArr``.
+
+        Modifies backgroundStringArr to include whatever has been embedded.
+
+        Arguments:
+            backgroundStringArr: array of characters
+        representing the background string
+
+            priorEmbeddedThings: instance of
+        :class:`.AbstractPriorEmbeddedThings`
+
+            additionalInfo: instance of :class:`.AdditionalInfo`;
+        allows the embedder to send back info about what it did
+
+        Returns:
+            The modifed ``backgroundStringArr``
         """
         if (additionalInfo is not None):
             additionalInfo.updateTrace(self.name)
         return self._embed(backgroundStringArr, priorEmbeddedThings, additionalInfo)
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
+        """The actual implementation of _embed to be overridden by
+        the subclass.
+
+        See docs for :func:`.AbstractEmbedder.embed`
+        """
         raise NotImplementedError()
 
     def getJsonableObject(self):
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+        python primitives), which can be converted to json to
+        record the exact details of what was simualted.
+        """
         raise NotImplementedError()
 
 
@@ -729,30 +925,30 @@ class EmbeddableEmbedder(AbstractEmbedder):
     """Embeds an instance of :class:`.AbstractEmbeddable` at a sampled pos.
 
     Embeds instances of :class:`.AbstractEmbeddable` within the
-        background sequence, at a position sampled from a distribution.
-        Only embeds at unoccupied positions.
+    background sequence, at a position sampled from a distribution.
+    Only embeds at unoccupied positions.
+
+    Arguments:
+        embeddableGenerator: instance of :class:`.AbstractEmbeddableGenerator`
+
+        positionGenerator: instance of :class:`.AbstractPositionGenerator`
     """
 
     def __init__(self, embeddableGenerator,
                        positionGenerator=uniformPositionGenerator, name=None):
-        """
-            embeddableGenerator: instance of
-                :class:`.AbstractEmbeddableGenerator`
-            positionGenerator: instance of
-                :class:`.AbstractPositionGenerator`
-        """
         self.embeddableGenerator = embeddableGenerator
         self.positionGenerator = positionGenerator
         super(EmbeddableEmbedder, self).__init__(name)
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
-        """
-            calls self.embeddableGenerator to determine the
-                embeddable to embed. Then calls self.positionGenerator to
-                determine the start position at which to embed it.
-                If the position is occupied, will resample from
-                self.positionGenerator. Will warn if tries to
-                resample too many times.
+        """See superclass.
+
+        Calls self.embeddableGenerator to determine the
+        embeddable to embed. Then calls self.positionGenerator to
+        determine the start position at which to embed it.
+        If the position is occupied, will resample from
+        ``self.positionGenerator``. Will warn if tries to
+        resample too many times.
         """
         embeddable = self.embeddableGenerator.generateEmbeddable()
         canEmbed = False
@@ -769,18 +965,23 @@ class EmbeddableEmbedder(AbstractEmbedder):
             priorEmbeddedThings, backgroundStringArr, startPos)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("embeddableGenerator", self.embeddableGenerator.getJsonableObject()), ("positionGenerator", self.positionGenerator.getJsonableObject())])
 
 
 class XOREmbedder(AbstractEmbedder):
     """Calls exactly one of the supplied embedders.
+
+    Arguments:
+        embedder1: instance of :class:`.AbstractEmbedder`
+
+        embedder2: instance of :class:`.AbstractEmbedder`
+
+        probOfFirst: probability of calling the first embedder
     """
 
     def __init__(self, embedder1, embedder2, probOfFirst, name=None):
-        """
-            embedder1 & embedder2: instances of AbstractEmbedder
-            probOfFirst: probability of calling the first embedder
-        """
         self.embedder1 = embedder1
         self.embedder2 = embedder2
         self.probOfFirst = probOfFirst
@@ -794,6 +995,8 @@ class XOREmbedder(AbstractEmbedder):
         return embedder.embed(backgroundStringArr, priorEmbeddedThings, additionalInfo)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "XOREmbedder"), ("embedder1", self.embedder1.getJsonableObject()), ("embedder2", self.embedder2.getJsonableObject()), ("probOfFirst", self.probOfFirst)])
 
 
@@ -801,8 +1004,10 @@ class AllEmbedders(AbstractEmbedder):
     """Wrapper around a list of embedders that calls each one in turn.
 
     Useful to nest under a :class:`.RandomSubsetOfEmbedders`
-    """
 
+    Arguments:
+        embedders: an iterable of :class:`.AbstractEmbedder` objects.
+    """
     def __init__(self, embedders, name=None):
         self.embedders = embedders
         super(AllEmbedders, self).__init__(name)
@@ -813,24 +1018,28 @@ class AllEmbedders(AbstractEmbedder):
                            priorEmbeddedThings, additionalInfo)
 
     def getJsonableObject(self):
-        return OrderedDict([("class", "AllEmbedders"), ("embedders", [x.getJsonableObject() for x in self.embedders])
-                            ])
+        """See superclass.
+        """
+        return OrderedDict([("class", "AllEmbedders"),
+                            ("embedders",
+                            [x.getJsonableObject() for x in self.embedders])
+                           ])
 
 
 class RandomSubsetOfEmbedders(AbstractEmbedder):
     """Call some random subset of supplied embedders.
 
     Takes a quantity generator that generates a quantity of
-        embedders, and executes that many embedders from a supplied set,
-        in sequence
+    embedders, and executes that many embedders from a supplied set,
+    in sequence
+
+    Arguments:
+        quantityGenerator: instance of :class:`.AbstractQuantityGenerator`
+
+        embedders: a list of :class:`.AbstractEmbedder` objects
     """
 
     def __init__(self, quantityGenerator, embedders, name=None):
-        """
-            Arguments:
-                quantityGenerator: instance of
-                    :class:`.AbstractQuantityGenerator`
-        """
         if (isinstance(quantityGenerator, int)):
             quantityGenerator = FixedQuantityGenerator(quantityGenerator)
         assert isinstance(quantityGenerator, AbstractQuantityGenerator)
@@ -850,6 +1059,8 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
                            priorEmbeddedThings, additionalInfo)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "RandomSubsetOfEmbedders"), ("setOfEmbedders", [x.getJsonableObject() for x in self.embedders])])
 
 
@@ -857,17 +1068,17 @@ class RepeatedEmbedder(AbstractEmbedder):
     """Call an embedded multiple times.
 
     Wrapper around an embedder to call it multiple times according to samples
-        from a distribution. First calls
-        self.quantityGenerator to get the quantity, then calls
-        self.embedder a number of times equal to the value returned.
+    from a distribution. First calls ``self.quantityGenerator`` to get the
+    quantity, then calls ``self.embedder`` a number of times equal
+    to the value returned.
+
+    Arguments:
+        embedder: instance of :class:`.AbstractEmbedder`
+
+        quantityGenerator: instance of :class:`.AbstractQuantityGenerator`
     """
 
     def __init__(self, embedder, quantityGenerator, name=None):
-        """
-        Arguments:
-            embedder: instance of :class:`.AbstractEmbedder`
-            quantityGenerator: instance of :class:`.AbstractQuantityGenerator`
-        """
         self.embedder = embedder
         self.quantityGenerator = quantityGenerator
         super(RepeatedEmbedder, self).__init__(name)
@@ -879,21 +1090,31 @@ class RepeatedEmbedder(AbstractEmbedder):
                                 priorEmbeddedThings, additionalInfo)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "RepeatedEmbedder"), ("embedder", self.embedder.getJsonableObject()), ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
 
 
 class AbstractQuantityGenerator(DefaultNameMixin):
-    """Class to sample according to a distribution.
+    """Class for sampling values from a distribution.
     """
 
     def generateQuantity(self):
-        """
+        """Sample a quantity from a distribution.
+
         Returns:
             The sampled value.
         """
         raise NotImplementedError()
 
     def getJsonableObject(self):
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+        python primitives), which can be converted to json to
+        record the exact details of what was simualted.
+        """
         raise NotImplementedError()
 
 
@@ -906,9 +1127,13 @@ class ChooseValueFromASet(AbstractQuantityGenerator):
         super(ChooseValueFromASet, self).__init__(name)
 
     def generateQuantity(self):
+        """See superclass.
+        """
         return self.setOfPossibleValues[int(random.random() * (len(self.setOfPossibleValues)))]
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "ChooseValueFromASet"), ("possibleValues", self.setOfPossibleValues)])
 
 
@@ -926,6 +1151,8 @@ class UniformIntegerGenerator(AbstractQuantityGenerator):
         return self.minVal + int(random.random() * (1 + self.maxVal - self.minVal))
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "UniformIntegerGenerator"), ("minVal", self.minVal), ("maxVal", self.maxVal)])
 
 
@@ -944,6 +1171,8 @@ class FixedQuantityGenerator(AbstractQuantityGenerator):
         return self.quantity
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return "fixedQuantity-" + str(self.quantity)
 
 
@@ -962,6 +1191,8 @@ class PoissonQuantityGenerator(AbstractQuantityGenerator):
         return np.random.poisson(self.mean)
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return "poisson-" + str(self.mean)
 
 
@@ -980,6 +1211,8 @@ class BernoulliQuantityGenerator(AbstractQuantityGenerator):
         return 1 if (np.random.random() <= self.prob) else 0
 
     def getJsonableObject(self):
+        """See sueprclass.
+        """
         return "bernoulli-" + str(self.prob)
 
 
@@ -1018,6 +1251,8 @@ class MinMaxWrapper(AbstractQuantityGenerator):
                       " tries at trying to sample from distribution with min/max limits")
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("min", self.theMin), ("max", self.theMax), ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
 
 
@@ -1049,6 +1284,8 @@ class ZeroInflater(AbstractQuantityGenerator):
             return self.quantityGenerator.generateQuantity()
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "ZeroInflater"), ("zeroProb", self.zeroProb), ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
 
 
@@ -1084,14 +1321,40 @@ class AbstractEmbeddableGenerator(DefaultNameMixin):
     """
 
     def generateEmbeddable(self):
+        """Generate an embeddable object.
+
+        Returns:
+            An instance of :class:`AbstractEmbeddable`
+        """
         raise NotImplementedError()
 
     def getJsonableObject(self):
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+            python primitives), which can be converted to json to
+            record the exact details of what was simualted.
+        """
         raise NotImplementedError()
 
 
 class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
+    """Embed a pair of embeddables with some separation. This class needs
+        to eventually replace :class:`.PairEmbeddableGenerator`
+        
+    Arguments:
+        emeddableGenerator1: instance of
+            :class:`.AbstractEmbeddableGenerator`
 
+        embeddableGenerator2: instance of
+            :class:`.AbstractEmbeddableGenerator`
+
+        separationGenerator: instance of
+            :class:`.AbstractQuantityGenerator`
+
+        name: string, see :class:`DefaultNameMixin`
+    """
     def __init__(self, embeddableGenerator1, embeddableGenerator2, separationGenerator, name=None):
         self.embeddableGenerator1 = embeddableGenerator1
         self.embeddableGenerator2 = embeddableGenerator2
@@ -1099,6 +1362,8 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
         super(PairEmbeddableGenerator, self).__init__(name)
 
     def generateEmbeddable(self):
+        """See superclass.
+        """
         embeddable1 = self.embeddableGenerator1.generateEmbeddable()
         embeddable2 = self.embeddableGenerator2.generateEmbeddable()
         return PairEmbeddable_General(
@@ -1108,33 +1373,39 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
         )
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "PairEmbeddableGenerator"), ("embeddableGenerator1", self.embeddableGenerator1.getJsonableObject()), ("embeddableenerator2", self.embeddableGenerator2.getJsonableObject()), ("separationGenerator", self.separationGenerator.getJsonableObject())
                             ])
 
 
 class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
+    """Embed a pair of substrings with some separation. This class needs
+        to be deprecated in favour of just using
+        :class:`.PairEmbeddableGenerator_General`
+        
+    Arguments:
+        substringGenerator1: instance of
+            :class:`.AbstractSubstringGenerator`
+
+        substringGenerator2: instance of
+            :class:`.AbstractSubstringGenerator`
+
+        separationGenerator: instance of
+            :class:`.AbstractQuantityGenerator`
+
+        name: string, see :class:`DefaultNameMixin`
+    """
 
     def __init__(self, substringGenerator1, substringGenerator2, separationGenerator, name=None):
-        """Embed a pair of substrings with some separation. This class needs
-            to be deprecated in favour of just using
-            :class:`.PairEmbeddableGenerator_General`
-            
-        Arguments:
-            substringGenerator1: instance of
-                :class:`.AbstractSubstringGenerator`
-
-            substringGenerator2: instance of
-                :class:`.AbstractSubstringGenerator`
-
-            separationGenerator: instance of
-                :class:`.AbstractQuantityGenerator`
-        """
         self.substringGenerator1 = substringGenerator1
         self.substringGenerator2 = substringGenerator2
         self.separationGenerator = separationGenerator
         super(PairEmbeddableGenerator, self).__init__(name)
 
     def generateEmbeddable(self):
+        """See superclass.
+        """
         string1, string1Description = self.substringGenerator1.generateSubstring()
         string2, string2Description = self.substringGenerator2.generateSubstring()
         return PairEmbeddable(
@@ -1143,6 +1414,8 @@ class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
         )
 
     def getJsonableObject(self):
+        """See superclass.
+        """
         return OrderedDict([("class", "PairEmbeddableGenerator"), ("substringGenerator1", self.substringGenerator1.getJsonableObject()), ("substringGenerator2", self.substringGenerator2.getJsonableObject()), ("separationGenerator", self.separationGenerator.getJsonableObject())
                             ])
 

@@ -13,7 +13,6 @@ Contents:
 
    synthetic
    simulations
-   pwm
    utils
 
 

@@ -159,6 +159,9 @@
 
 <div class="viewcode-block" id="DefaultNameMixin"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.DefaultNameMixin">[docs]</a><span class="k">class</span> <span class="nc">DefaultNameMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Basic functionality for classes that have a self.name attribute</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        name: string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
@@ -178,22 +181,51 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractPositionGenerator.generatePos"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPositionGenerator.generatePos">[docs]</a>    <span class="k">def</span> <span class="nf">generatePos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lenBackground</span><span class="p">,</span> <span class="n">lenSubstring</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate the position to embed in.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            lenBackground: int, length of background sequence</span>
+
+<span class="sd">            lenSubstring: int, lenght of substring to embed</span>
+
+<span class="sd">            additionalInfo: optional, instance of :class:`.AdditionalInfo`. Is</span>
+<span class="sd">                used to leave a trace that this positionGenerator was called</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An integer which is the start index to embed in.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">additionalInfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">additionalInfo</span><span class="o">.</span><span class="n">updateTrace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generatePos</span><span class="p">(</span><span class="n">lenBackground</span><span class="p">,</span> <span class="n">lenSubstring</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_generatePos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lenBackground</span><span class="p">,</span> <span class="n">lenSubstring</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate the position to embed in - this method should be</span>
+<span class="sd">        overriden by the subclass. See</span>
+<span class="sd">        :func:`.AbstractPositionGenerator.generatePos` for documentaiton</span>
+<span class="sd">        on the arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AbstractPositionGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPositionGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">            python primitives), which can be converted to json to</span>
+<span class="sd">            record the exact details of what was simualted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="UniformPositionGenerator"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.UniformPositionGenerator">[docs]</a><span class="k">class</span> <span class="nc">UniformPositionGenerator</span><span class="p">(</span><span class="n">AbstractPositionGenerator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        samples a start position to embed the substring in uniformly at random;</span>
+    <span class="sd">&quot;&quot;&quot;Sample position uniformly at random.</span>
+<span class="sd">    </span>
+<span class="sd">    Samples a start position to embed the substring in uniformly at random;</span>
 <span class="sd">        does not return positions that are too close to the end of the</span>
 <span class="sd">        background sequence to embed the full substring.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name: string, see :class:`.DefaultNameMixin`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -203,23 +235,32 @@
         <span class="k">return</span> <span class="n">sampleIndexWithinRegionOfLength</span><span class="p">(</span><span class="n">lenBackground</span><span class="p">,</span> <span class="n">lenSubstring</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UniformPositionGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.UniformPositionGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;uniform&quot;</span></div></div>
+
+<span class="c1">#instantiate a UniformPositionGenerator for general use</span>
 <span class="n">uniformPositionGenerator</span> <span class="o">=</span> <span class="n">UniformPositionGenerator</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="InsideCentralBp"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.InsideCentralBp">[docs]</a><span class="k">class</span> <span class="nc">InsideCentralBp</span><span class="p">(</span><span class="n">AbstractPositionGenerator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns a position within the central region of a background</span>
+    <span class="sd">&quot;&quot;&quot;For embedding within only the central region of a background.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns a position within the central region of a background</span>
 <span class="sd">        sequence, sampled uniformly at random</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        centralBp: int, the number of bp, centered in the</span>
+<span class="sd">            middle of the background, from which to sample the position.</span>
+<span class="sd">            Is NOT +/- centralBp around the middle</span>
+<span class="sd">            (is +/- centralBp/2 around the middle). If the background</span>
+<span class="sd">            sequence is even and centralBp is odd, the shorter region</span>
+<span class="sd">            will go on the left.</span>
+<span class="sd">        name: string - see :class:`.DefaultNameMixin`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centralBp</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            centralBp: the number of bp, centered in the middle of the background,</span>
-<span class="sd">            from which to sample the position. Is NOT +/- centralBp around the</span>
-<span class="sd">            middle (is +/- centralBp/2 around the middle).</span>
-<span class="sd">            If the background sequence is even and centralBp is odd, the shorter</span>
-<span class="sd">            region will go on the left.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centralBp</span> <span class="o">=</span> <span class="n">centralBp</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">InsideCentralBp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -235,13 +276,21 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">indexToSample</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InsideCentralBp.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.InsideCentralBp.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;insideCentral-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralBp</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="OutsideCentralBp"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.OutsideCentralBp">[docs]</a><span class="k">class</span> <span class="nc">OutsideCentralBp</span><span class="p">(</span><span class="n">AbstractPositionGenerator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a position OUTSIDE the central region of a background sequence,</span>
+    <span class="sd">&quot;&quot;&quot;For embedding only OUTSIDE a central region of a background seq.</span>
+
+<span class="sd">    Returns a position OUTSIDE the central region of a background sequence,</span>
 <span class="sd">        sampled uniformly at random. Complement of InsideCentralBp.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        centralBp: int, the centralBp to avoid embedding in. See the docs</span>
+<span class="sd">            for :class:`.InsideCentralBp` for more details (this is the</span>
+<span class="sd">            complement).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centralBp</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -272,22 +321,25 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">indexToSample</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OutsideCentralBp.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.OutsideCentralBp.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;outsideCentral-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralBp</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="GeneratedSequence"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.GeneratedSequence">[docs]</a><span class="k">class</span> <span class="nc">GeneratedSequence</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        An object representing a sequence that has been</span>
-<span class="sd">        generated.</span>
+    <span class="sd">&quot;&quot;&quot;An object representing a sequence that has been generated.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        seqName: string representing the name/id of the sequence</span>
+
+<span class="sd">        seq: string representing the final generated sequence</span>
+
+<span class="sd">        embeddings: an array of :class:`.Embedding` objects.</span>
+
+<span class="sd">        additionalInfo: an instance of :class:`.AdditionalInfo`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seqName</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            seqName: string</span>
-<span class="sd">            seq: generated sequence (string)</span>
-<span class="sd">            embeddings: array of Embedding objects</span>
-<span class="sd">            additionalInfo: instance of AdditionalInfo</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seqName</span> <span class="o">=</span> <span class="n">seqName</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="n">seq</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span>
@@ -295,17 +347,19 @@
 
 
 <div class="viewcode-block" id="Embedding"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.Embedding">[docs]</a><span class="k">class</span> <span class="nc">Embedding</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Represents something that has been embedded in</span>
-<span class="sd">        a sequence</span>
+    <span class="sd">&quot;&quot;&quot;Represents something that has been embedded in a sequence.</span>
+
+<span class="sd">    Think of this as a combination of an embeddable + a start position.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        what: object representing the thing that has been embedded.</span>
+<span class="sd">            Should have __str__ and __len__ defined. Often is an instance</span>
+<span class="sd">            of :class:`.AbstractEmbeddable`</span>
+<span class="sd">        startPos: int, the position relative to the start of the parent</span>
+<span class="sd">            sequence at which seq has been embedded</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span> <span class="n">startPos</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            what: object representing the thing that has been embedded. Should have __str__ and __len__ defined</span>
-<span class="sd">            startPos: that position relative to the start of the</span>
-<span class="sd">            parent sequence at which seq has been embedded</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">what</span> <span class="o">=</span> <span class="n">what</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">startPos</span> <span class="o">=</span> <span class="n">startPos</span>
 
@@ -314,16 +368,41 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="Embedding.fromString"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.Embedding.fromString">[docs]</a>    <span class="k">def</span> <span class="nf">fromString</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">whatClass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recreate an :class:`.Embedding` object from a string.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            string: assumed to have format:</span>
+<span class="sd">                description[-|_]startPos[-|_]whatString, where</span>
+<span class="sd">                whatString will be provided to whatClass</span>
+<span class="sd">            whatClass: the class (usually a :class:`.AbstractEmbeddable`) that</span>
+<span class="sd">                will be used to instantiate the what from the whatString</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Embedding class called with</span>
+<span class="sd">            what=whatClass.fromString(whatString), startPos=int(startPos)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">whatClass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">whatClass</span> <span class="o">=</span> <span class="n">StringEmbeddable</span>
         <span class="c1"># was printed out as pos-[startPos]_[what], but the</span>
         <span class="c1">#[what] may contain underscores, hence the maxsplit</span>
         <span class="c1"># to avoid splitting on them.</span>
         <span class="n">prefix</span><span class="p">,</span> <span class="n">startPos</span><span class="p">,</span> <span class="n">whatString</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-|_&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">whatClass</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">whatString</span><span class="p">),</span> <span class="n">startPos</span><span class="o">=</span><span class="n">startPos</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">whatClass</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">whatString</span><span class="p">),</span>
+                   <span class="n">startPos</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">startPos</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="getEmbeddingsFromString"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.getEmbeddingsFromString">[docs]</a><span class="k">def</span> <span class="nf">getEmbeddingsFromString</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a series of :class:`.Embedding` objects from a string.</span>
+<span class="sd">    </span>
+<span class="sd">    Splits the string on commas, and then passes the comma-separated vals</span>
+<span class="sd">        to :func:`.Embedding.fromString`</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        string: The string to turn into an array of Embedding objects</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        an array of :class:`.Embedding` objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -332,46 +411,58 @@
 
 
 <div class="viewcode-block" id="AbstractSequenceSetGenerator"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractSequenceSetGenerator">[docs]</a><span class="k">class</span> <span class="nc">AbstractSequenceSetGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        class that is used to return a generator for a collection</span>
-<span class="sd">        of generated sequences.</span>
+    <span class="sd">&quot;&quot;&quot;A generator for a collection of generated sequences.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractSequenceSetGenerator.generateSequences"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractSequenceSetGenerator.generateSequences">[docs]</a>    <span class="k">def</span> <span class="nf">generateSequences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns a generator of GeneratedSequence objects</span>
+        <span class="sd">&quot;&quot;&quot;The generator; implementation should have a yield.</span>
+
+<span class="sd">        Called as</span>
+<span class="sd">        ``generatedSequences = sequenceSetGenerator.generateSequences()``</span>
+
+<span class="sd">        ``generateSequences`` can then be iterated over.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A generator of GeneratedSequence objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractSequenceSetGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractSequenceSetGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns an object representing the details of this, which</span>
-<span class="sd">            can be converted to json.</span>
+        <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">            python primitives), which can be converted to json to</span>
+<span class="sd">            record the exact details of what was simualted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="GenerateSequenceNTimes"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.GenerateSequenceNTimes">[docs]</a><span class="k">class</span> <span class="nc">GenerateSequenceNTimes</span><span class="p">(</span><span class="n">AbstractSequenceSetGenerator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If you just want to use a generator of a single sequence and</span>
-<span class="sd">        call it N times, use this class.</span>
+    <span class="sd">&quot;&quot;&quot;Call a :class:`.AbstractSingleSequenceGenerator` N times.</span>
+<span class="sd">            </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        singleSetGenerator: an instance of</span>
+<span class="sd">            :class:`.AbstractSequenceSetGenerator`</span>
+<span class="sd">        N: integer, the number of times to call singleSetGenerator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">singleSetGenerator</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            singleSetGenerator: an instance of AbstractSequenceSetGenerator</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">singleSetGenerator</span> <span class="o">=</span> <span class="n">singleSetGenerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
 
 <div class="viewcode-block" id="GenerateSequenceNTimes.generateSequences"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.GenerateSequenceNTimes.generateSequences">[docs]</a>    <span class="k">def</span> <span class="nf">generateSequences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            calls singleSetGenerator N times.</span>
+        <span class="sd">&quot;&quot;&quot;A generator that calls self.singleSetGenerator N times.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            a generator that will call self.singleSetGenerator N times. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleSetGenerator</span><span class="o">.</span><span class="n">generateSequence</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GenerateSequenceNTimes.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.GenerateSequenceNTimes.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;numSeq&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;singleSetGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleSetGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())])</span></div></div>
 
 
@@ -401,18 +492,20 @@
         <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            An json-friendly object (built of dictionaries, lists and</span>
-<span class="sd">                python primitives), which can be converted to json to</span>
-<span class="sd">                record the exact details of what was simualted.</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">            python primitives), which can be converted to json to</span>
+<span class="sd">            record the exact details of what was simualted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="AdditionalInfo"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AdditionalInfo">[docs]</a><span class="k">class</span> <span class="nc">AdditionalInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Used to keep track of which embedders were called and how many times.</span>
+    <span class="sd">&quot;&quot;&quot;Used to keep track of which embedders/ops were</span>
+<span class="sd">    called and how many times.</span>
 
 <span class="sd">    An instance of AdditionalInfo is meant to be an attribute of</span>
-<span class="sd">        a :class:`.GeneratedSequence` object.</span>
+<span class="sd">        a :class:`.GeneratedSequence` object. It keeps track of things</span>
+<span class="sd">        like embedders, position generators, etc.</span>
 
 <span class="sd">    Has self.trace which is a dictionary from operatorName-&gt;int</span>
 <span class="sd">        and which records operations that were called in the</span>
@@ -499,80 +592,104 @@
 
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings">[docs]</a><span class="k">class</span> <span class="nc">AbstractPriorEmbeddedThings</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        class that is used to keep track of what has already been embedded in a sequence</span>
+    <span class="sd">&quot;&quot;&quot;Keeps track of what has already been embedded in a sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings.canEmbed"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings.canEmbed">[docs]</a>    <span class="k">def</span> <span class="nf">canEmbed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startPos</span><span class="p">,</span> <span class="n">endPos</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns a boolean indicating whether the region from startPos to endPos is available for embedding</span>
+        <span class="sd">&quot;&quot;&quot;Test whether startPos-endPos is available for embedding.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            startPos: int, starting index</span>
+<span class="sd">            endPos: int, ending index+1 (same semantics as array-slicing)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if startPos:endPos is available for embedding</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings.addEmbedding"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings.addEmbedding">[docs]</a>    <span class="k">def</span> <span class="nf">addEmbedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startPos</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            embeds &quot;what&quot; from startPos to startPos+len(what). Creates an Embedding object</span>
+        <span class="sd">&quot;&quot;&quot;Records the embedding of a :class:`AbstractEmbeddable`.</span>
+
+<span class="sd">        Embeds ``what`` from ``startPos`` to ``startPos+len(what)``.</span>
+<span class="sd">        Creates an :class:`Embedding` object.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            startPos: int, the starting position at which to embed.</span>
+<span class="sd">            what: instance of :class:`AbstractEmbeddable`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings.getNumOccupiedPos"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings.getNumOccupiedPos">[docs]</a>    <span class="k">def</span> <span class="nf">getNumOccupiedPos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns the number of posiitons that are filled with some kind of embedding</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Number of posiitons that are filled with some kind of embedding</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings.getTotalPos"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings.getTotalPos">[docs]</a>    <span class="k">def</span> <span class="nf">getTotalPos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns the total number of positions available to embed things in</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Total number of positions (occupied and unoccupoed) available</span>
+<span class="sd">        to embed things in.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractPriorEmbeddedThings.getEmbeddings"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractPriorEmbeddedThings.getEmbeddings">[docs]</a>    <span class="k">def</span> <span class="nf">getEmbeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            returns a collection of Embedding objects</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A collection of Embedding objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked">[docs]</a><span class="k">class</span> <span class="nc">PriorEmbeddedThings_numpyArrayBacked</span><span class="p">(</span><span class="n">AbstractPriorEmbeddedThings</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        uses a numpy array where positions are set to 1 if they are occupied,</span>
-<span class="sd">        to determin which positions are occupied and which are not.</span>
-<span class="sd">        See parent for more documentation.</span>
+    <span class="sd">&quot;&quot;&quot;A numpy-array based implementation of</span>
+<span class="sd">    :class:`.AbstractPriorEmbeddedThings`.</span>
+
+<span class="sd">    Uses a numpy array where positions are set to 1 if they are occupied,</span>
+<span class="sd">    to determine which positions are occupied and which are not.</span>
+<span class="sd">    See parent for more documentation.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        seqLen: integer indicating length of the sequence you are embedding in</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seqLen</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            seqLen: integer indicating length of the sequence you are embedding in</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seqLen</span> <span class="o">=</span> <span class="n">seqLen</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">seqLen</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked.canEmbed"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked.canEmbed">[docs]</a>    <span class="k">def</span> <span class="nf">canEmbed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startPos</span><span class="p">,</span> <span class="n">endPos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arr</span><span class="p">[</span><span class="n">startPos</span><span class="p">:</span><span class="n">endPos</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked.addEmbedding"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked.addEmbedding">[docs]</a>    <span class="k">def</span> <span class="nf">addEmbedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startPos</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            what: instance of Embeddable</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arr</span><span class="p">[</span><span class="n">startPos</span><span class="p">:</span><span class="n">startPos</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">what</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Embedding</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">what</span><span class="p">,</span> <span class="n">startPos</span><span class="o">=</span><span class="n">startPos</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked.getNumOccupiedPos"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked.getNumOccupiedPos">[docs]</a>    <span class="k">def</span> <span class="nf">getNumOccupiedPos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked.getTotalPos"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked.getTotalPos">[docs]</a>    <span class="k">def</span> <span class="nf">getTotalPos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PriorEmbeddedThings_numpyArrayBacked.getEmbeddings"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PriorEmbeddedThings_numpyArrayBacked.getEmbeddings">[docs]</a>    <span class="k">def</span> <span class="nf">getEmbeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span></div></div>
 
 
 <div class="viewcode-block" id="AbstractEmbeddable"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddable">[docs]</a><span class="k">class</span> <span class="nc">AbstractEmbeddable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Represents a thing which can be embedded. Note that</span>
-<span class="sd">        an Embeddable + a position = an embedding.</span>
+    <span class="sd">&quot;&quot;&quot;Represents a thing which can be embedded.</span>
+
+<span class="sd">        An :class:`.AbstractEmbeddable` + a position = an :class:`.Embedding`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -582,39 +699,50 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AbstractEmbeddable.getDescription"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddable.getDescription">[docs]</a>    <span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a concise description of the embeddable.</span>
+
+<span class="sd">        This should be concise and shouldn&#39;t contain spaces. It will often</span>
+<span class="sd">        be used when generating the __str__ representation of the embedabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractEmbeddable.canEmbed"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddable.canEmbed">[docs]</a>    <span class="k">def</span> <span class="nf">canEmbed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">startPos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Checks whether embedding is possible at a given pos.</span>
 
 <span class="sd">        Accepts an instance of :class:`AbstractPriorEmbeddedThings` and</span>
-<span class="sd">            a startPos, and checks if startPos is viable given the</span>
-<span class="sd">            contents of priorEmbeddedThings</span>
+<span class="sd">        a ``startPos``, and checks if ``startPos`` is viable given the</span>
+<span class="sd">        contents of ``priorEmbeddedThings``.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            priorEmbeddedThings: instance of</span>
-<span class="sd">                :class:`AbstractPriorEmbeddedThings`</span>
+<span class="sd">        :class:`AbstractPriorEmbeddedThings`</span>
 
 <span class="sd">            startPos: int; the position you are considering embedding self at</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A boolean indicating whether self can be embedded at startPos,</span>
-<span class="sd">                given the things that have already been embedded.</span>
+<span class="sd">        given the things that have already been embedded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractEmbeddable.embedInBackgroundStringArr"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddable.embedInBackgroundStringArr">[docs]</a>    <span class="k">def</span> <span class="nf">embedInBackgroundStringArr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">startPos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Embed self in a background string.</span>
 
-<span class="sd">        Will embed self at startPos in backgroundStringArr,</span>
-<span class="sd">            and will update priorEmbeddedThings accordingly</span>
+<span class="sd">        Will embed self at ``startPos`` in ``backgroundStringArr``,</span>
+<span class="sd">        and will update ``priorEmbeddedThings`` accordingly.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            priorEmbeddedThings: instance of</span>
-<span class="sd">                :class:`AbstractPriorEmbeddedThings`</span>
-<span class="sd">            backgroundStringArr: an array of characters</span>
-<span class="sd">                representing the background</span>
+<span class="sd">        :class:`AbstractPriorEmbeddedThings`</span>
+<span class="sd">            backgroundStringArr: an array of characters representing</span>
+<span class="sd">        the background</span>
 <span class="sd">            startPos: integer; the position to embed self at</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AbstractEmbeddable.fromString"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddable.fromString">[docs]</a>    <span class="k">def</span> <span class="nf">fromString</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">theString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an instance of the embeddable from the provided string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
@@ -623,7 +751,13 @@
     <span class="sd">&quot;&quot;&quot;A string that is to be embedded in a background.</span>
 
 <span class="sd">    Represents a string (such as a sampling from a pwm) that is to</span>
-<span class="sd">        be embedded in a background. See docs for superclass.</span>
+<span class="sd">    be embedded in a background. See docs for superclass.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        string: the core string to be embedded</span>
+
+<span class="sd">        stringDescription: a short descriptor prefixed before the</span>
+<span class="sd">        __str__ representation of the embeddable. Should not contain a hyphen.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">stringDescription</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
@@ -637,17 +771,34 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stringDescription</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stringDescription</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">string</span>
 
 <div class="viewcode-block" id="StringEmbeddable.getDescription"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.StringEmbeddable.getDescription">[docs]</a>    <span class="k">def</span> <span class="nf">getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stringDescription</span></div>
 
 <div class="viewcode-block" id="StringEmbeddable.canEmbed"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.StringEmbeddable.canEmbed">[docs]</a>    <span class="k">def</span> <span class="nf">canEmbed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">startPos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">priorEmbeddedThings</span><span class="o">.</span><span class="n">canEmbed</span><span class="p">(</span><span class="n">startPos</span><span class="p">,</span> <span class="n">startPos</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="StringEmbeddable.embedInBackgroundStringArr"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.StringEmbeddable.embedInBackgroundStringArr">[docs]</a>    <span class="k">def</span> <span class="nf">embedInBackgroundStringArr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">startPos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">backgroundStringArr</span><span class="p">[</span><span class="n">startPos</span><span class="p">:</span><span class="n">startPos</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string</span>
         <span class="n">priorEmbeddedThings</span><span class="o">.</span><span class="n">addEmbedding</span><span class="p">(</span><span class="n">startPos</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="StringEmbeddable.fromString"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.StringEmbeddable.fromString">[docs]</a>    <span class="k">def</span> <span class="nf">fromString</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">theString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates a StringEmbeddable from the provided string.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            theString: string of the format ``stringDescription-coreString``.</span>
+<span class="sd">        Will then return:</span>
+<span class="sd">        ``StringEmbeddable(string=coreString,</span>
+<span class="sd">                             stringDescription=stringDescription)``</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An instance of :class:`.StringEmbeddable`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">theString</span><span class="p">):</span>
             <span class="n">stringDescription</span><span class="p">,</span> <span class="n">coreString</span> <span class="o">=</span> <span class="n">theString</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="n">coreString</span><span class="p">,</span> <span class="n">stringDescription</span><span class="o">=</span><span class="n">stringDescription</span><span class="p">)</span>
@@ -656,7 +807,21 @@
 
 
 <div class="viewcode-block" id="PairEmbeddable_General"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddable_General">[docs]</a><span class="k">class</span> <span class="nc">PairEmbeddable_General</span><span class="p">(</span><span class="n">AbstractEmbeddable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Embeds two :class:`.AbstractEmbeddable` objects with some separation.</span>
+    <span class="sd">&quot;&quot;&quot;Embed two embeddables with some separation.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        embeddable1: first embeddable to be embedded</span>
+
+<span class="sd">        embeddable2: second embeddable to be embedded</span>
+
+<span class="sd">        separation: int of positions separating embeddable1 and embeddable2</span>
+
+<span class="sd">        embeddableDescription: a concise descriptive string prefixed in</span>
+<span class="sd">        front when generating a __str__ representation of the embeddable.</span>
+<span class="sd">        Should not contain a hyphen.</span>
+
+<span class="sd">        nothingInBetween: if true, then nothing else is allowed to be</span>
+<span class="sd">        embedded in the gap between embeddable1 and embeddable2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddable1</span><span class="p">,</span> <span class="n">embeddable2</span><span class="p">,</span> <span class="n">separation</span><span class="p">,</span>
@@ -700,16 +865,24 @@
 <div class="viewcode-block" id="PairEmbeddable"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddable">[docs]</a><span class="k">class</span> <span class="nc">PairEmbeddable</span><span class="p">(</span><span class="n">AbstractEmbeddable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Embed two strings with some separation. To be deprecated.</span>
 
-<span class="sd">        The use of PairEmbeddable_General instead should be favoured.</span>
+<span class="sd">    To be deprecated in favour of PairEmbeddable_General.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        string1: first string to be embedded</span>
+
+<span class="sd">        string2: second string to be embedded</span>
+
+<span class="sd">        separation: int of positions separating string1 and string2</span>
+
+<span class="sd">        embeddableDescription: a concise descriptive string prefixed in</span>
+<span class="sd">        front when generating a __str__ representation of the embeddable.</span>
+<span class="sd">        Should not contain a hyphen.</span>
+
+<span class="sd">        nothingInBetween: if true, then nothing else is allowed to be</span>
+<span class="sd">        embedded in the gap between string1 and string2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string1</span><span class="p">,</span> <span class="n">string2</span><span class="p">,</span> <span class="n">separation</span><span class="p">,</span> <span class="n">embeddableDescription</span><span class="p">,</span> <span class="n">nothingInBetween</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            separation: int of positions separating</span>
-<span class="sd">                string1 and string2</span>
-<span class="sd">            nothingInBetween: if true, then nothing else is allowed to be</span>
-<span class="sd">                embedded in the gap between string1 and string2.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">string1</span> <span class="o">=</span> <span class="n">string1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">string2</span> <span class="o">=</span> <span class="n">string2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">separation</span> <span class="o">=</span> <span class="n">separation</span>
@@ -746,25 +919,48 @@
 
 
 <div class="viewcode-block" id="AbstractEmbedder"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbedder">[docs]</a><span class="k">class</span> <span class="nc">AbstractEmbedder</span><span class="p">(</span><span class="n">DefaultNameMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        class that is used to embed things in a sequence</span>
+    <span class="sd">&quot;&quot;&quot;Produces :class:`AbstractEmbeddable` objects and</span>
+<span class="sd">    embeds them in a sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractEmbedder.embed"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbedder.embed">[docs]</a>    <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            backgroundStringArr: array of characters representing the background string</span>
-<span class="sd">            priorEmbeddedThings: instance of AbstractPriorEmbeddedThings.</span>
-<span class="sd">            additionalInfo: instance of AdditionalInfo; allows the embedder to send back info about what it did</span>
-<span class="sd">            modifies: backgroundStringArr to include whatever this class has embedded</span>
+        <span class="sd">&quot;&quot;&quot;Embeds things in the provided ``backgroundStringArr``.</span>
+
+<span class="sd">        Modifies backgroundStringArr to include whatever has been embedded.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            backgroundStringArr: array of characters</span>
+<span class="sd">        representing the background string</span>
+
+<span class="sd">            priorEmbeddedThings: instance of</span>
+<span class="sd">        :class:`.AbstractPriorEmbeddedThings`</span>
+
+<span class="sd">            additionalInfo: instance of :class:`.AdditionalInfo`;</span>
+<span class="sd">        allows the embedder to send back info about what it did</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The modifed ``backgroundStringArr``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">additionalInfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">additionalInfo</span><span class="o">.</span><span class="n">updateTrace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embed</span><span class="p">(</span><span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual implementation of _embed to be overridden by</span>
+<span class="sd">        the subclass.</span>
+
+<span class="sd">        See docs for :func:`.AbstractEmbedder.embed`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AbstractEmbedder.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbedder.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">        python primitives), which can be converted to json to</span>
+<span class="sd">        record the exact details of what was simualted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
@@ -772,30 +968,30 @@
     <span class="sd">&quot;&quot;&quot;Embeds an instance of :class:`.AbstractEmbeddable` at a sampled pos.</span>
 
 <span class="sd">    Embeds instances of :class:`.AbstractEmbeddable` within the</span>
-<span class="sd">        background sequence, at a position sampled from a distribution.</span>
-<span class="sd">        Only embeds at unoccupied positions.</span>
+<span class="sd">    background sequence, at a position sampled from a distribution.</span>
+<span class="sd">    Only embeds at unoccupied positions.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        embeddableGenerator: instance of :class:`.AbstractEmbeddableGenerator`</span>
+
+<span class="sd">        positionGenerator: instance of :class:`.AbstractPositionGenerator`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddableGenerator</span><span class="p">,</span>
                        <span class="n">positionGenerator</span><span class="o">=</span><span class="n">uniformPositionGenerator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            embeddableGenerator: instance of</span>
-<span class="sd">                :class:`.AbstractEmbeddableGenerator`</span>
-<span class="sd">            positionGenerator: instance of</span>
-<span class="sd">                :class:`.AbstractPositionGenerator`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator</span> <span class="o">=</span> <span class="n">embeddableGenerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">positionGenerator</span> <span class="o">=</span> <span class="n">positionGenerator</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EmbeddableEmbedder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            calls self.embeddableGenerator to determine the</span>
-<span class="sd">                embeddable to embed. Then calls self.positionGenerator to</span>
-<span class="sd">                determine the start position at which to embed it.</span>
-<span class="sd">                If the position is occupied, will resample from</span>
-<span class="sd">                self.positionGenerator. Will warn if tries to</span>
-<span class="sd">                resample too many times.</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+
+<span class="sd">        Calls self.embeddableGenerator to determine the</span>
+<span class="sd">        embeddable to embed. Then calls self.positionGenerator to</span>
+<span class="sd">        determine the start position at which to embed it.</span>
+<span class="sd">        If the position is occupied, will resample from</span>
+<span class="sd">        ``self.positionGenerator``. Will warn if tries to</span>
+<span class="sd">        resample too many times.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">embeddable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator</span><span class="o">.</span><span class="n">generateEmbeddable</span><span class="p">()</span>
         <span class="n">canEmbed</span> <span class="o">=</span> <span class="kc">False</span>
@@ -812,18 +1008,23 @@
             <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">startPos</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EmbeddableEmbedder.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.EmbeddableEmbedder.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;embeddableGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;positionGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">positionGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())])</span></div></div>
 
 
 <div class="viewcode-block" id="XOREmbedder"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.XOREmbedder">[docs]</a><span class="k">class</span> <span class="nc">XOREmbedder</span><span class="p">(</span><span class="n">AbstractEmbedder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calls exactly one of the supplied embedders.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        embedder1: instance of :class:`.AbstractEmbedder`</span>
+
+<span class="sd">        embedder2: instance of :class:`.AbstractEmbedder`</span>
+
+<span class="sd">        probOfFirst: probability of calling the first embedder</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedder1</span><span class="p">,</span> <span class="n">embedder2</span><span class="p">,</span> <span class="n">probOfFirst</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            embedder1 &amp; embedder2: instances of AbstractEmbedder</span>
-<span class="sd">            probOfFirst: probability of calling the first embedder</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder1</span> <span class="o">=</span> <span class="n">embedder1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder2</span> <span class="o">=</span> <span class="n">embedder2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">probOfFirst</span> <span class="o">=</span> <span class="n">probOfFirst</span>
@@ -837,6 +1038,8 @@
         <span class="k">return</span> <span class="n">embedder</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">backgroundStringArr</span><span class="p">,</span> <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span>
 
 <div class="viewcode-block" id="XOREmbedder.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.XOREmbedder.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;XOREmbedder&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;embedder1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedder1</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;embedder2&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedder2</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;probOfFirst&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">probOfFirst</span><span class="p">)])</span></div></div>
 
 
@@ -844,8 +1047,10 @@
     <span class="sd">&quot;&quot;&quot;Wrapper around a list of embedders that calls each one in turn.</span>
 
 <span class="sd">    Useful to nest under a :class:`.RandomSubsetOfEmbedders`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
+<span class="sd">    Arguments:</span>
+<span class="sd">        embedders: an iterable of :class:`.AbstractEmbedder` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedders</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedders</span> <span class="o">=</span> <span class="n">embedders</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">AllEmbedders</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -856,24 +1061,28 @@
                            <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AllEmbedders.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AllEmbedders.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;AllEmbedders&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;embedders&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedders</span><span class="p">])</span>
-                            <span class="p">])</span></div></div>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;AllEmbedders&quot;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s2">&quot;embedders&quot;</span><span class="p">,</span>
+                            <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedders</span><span class="p">])</span>
+                           <span class="p">])</span></div></div>
 
 
 <div class="viewcode-block" id="RandomSubsetOfEmbedders"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.RandomSubsetOfEmbedders">[docs]</a><span class="k">class</span> <span class="nc">RandomSubsetOfEmbedders</span><span class="p">(</span><span class="n">AbstractEmbedder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Call some random subset of supplied embedders.</span>
 
 <span class="sd">    Takes a quantity generator that generates a quantity of</span>
-<span class="sd">        embedders, and executes that many embedders from a supplied set,</span>
-<span class="sd">        in sequence</span>
+<span class="sd">    embedders, and executes that many embedders from a supplied set,</span>
+<span class="sd">    in sequence</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        quantityGenerator: instance of :class:`.AbstractQuantityGenerator`</span>
+
+<span class="sd">        embedders: a list of :class:`.AbstractEmbedder` objects</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantityGenerator</span><span class="p">,</span> <span class="n">embedders</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Arguments:</span>
-<span class="sd">                quantityGenerator: instance of</span>
-<span class="sd">                    :class:`.AbstractQuantityGenerator`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">quantityGenerator</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="n">quantityGenerator</span> <span class="o">=</span> <span class="n">FixedQuantityGenerator</span><span class="p">(</span><span class="n">quantityGenerator</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quantityGenerator</span><span class="p">,</span> <span class="n">AbstractQuantityGenerator</span><span class="p">)</span>
@@ -893,6 +1102,8 @@
                            <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RandomSubsetOfEmbedders.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.RandomSubsetOfEmbedders.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;RandomSubsetOfEmbedders&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;setOfEmbedders&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedders</span><span class="p">])])</span></div></div>
 
 
@@ -900,17 +1111,17 @@
     <span class="sd">&quot;&quot;&quot;Call an embedded multiple times.</span>
 
 <span class="sd">    Wrapper around an embedder to call it multiple times according to samples</span>
-<span class="sd">        from a distribution. First calls</span>
-<span class="sd">        self.quantityGenerator to get the quantity, then calls</span>
-<span class="sd">        self.embedder a number of times equal to the value returned.</span>
+<span class="sd">    from a distribution. First calls ``self.quantityGenerator`` to get the</span>
+<span class="sd">    quantity, then calls ``self.embedder`` a number of times equal</span>
+<span class="sd">    to the value returned.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        embedder: instance of :class:`.AbstractEmbedder`</span>
+
+<span class="sd">        quantityGenerator: instance of :class:`.AbstractQuantityGenerator`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedder</span><span class="p">,</span> <span class="n">quantityGenerator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Arguments:</span>
-<span class="sd">            embedder: instance of :class:`.AbstractEmbedder`</span>
-<span class="sd">            quantityGenerator: instance of :class:`.AbstractQuantityGenerator`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span> <span class="o">=</span> <span class="n">embedder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantityGenerator</span> <span class="o">=</span> <span class="n">quantityGenerator</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RepeatedEmbedder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -922,21 +1133,31 @@
                                 <span class="n">priorEmbeddedThings</span><span class="p">,</span> <span class="n">additionalInfo</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RepeatedEmbedder.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.RepeatedEmbedder.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;RepeatedEmbedder&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;embedder&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;quantityGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantityGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())])</span></div></div>
 
 
 <div class="viewcode-block" id="AbstractQuantityGenerator"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractQuantityGenerator">[docs]</a><span class="k">class</span> <span class="nc">AbstractQuantityGenerator</span><span class="p">(</span><span class="n">DefaultNameMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class to sample according to a distribution.</span>
+    <span class="sd">&quot;&quot;&quot;Class for sampling values from a distribution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractQuantityGenerator.generateQuantity"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractQuantityGenerator.generateQuantity">[docs]</a>    <span class="k">def</span> <span class="nf">generateQuantity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sample a quantity from a distribution.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            The sampled value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractQuantityGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractQuantityGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">        python primitives), which can be converted to json to</span>
+<span class="sd">        record the exact details of what was simualted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
@@ -949,9 +1170,13 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">ChooseValueFromASet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ChooseValueFromASet.generateQuantity"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.ChooseValueFromASet.generateQuantity">[docs]</a>    <span class="k">def</span> <span class="nf">generateQuantity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">setOfPossibleValues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setOfPossibleValues</span><span class="p">)))]</span></div>
 
 <div class="viewcode-block" id="ChooseValueFromASet.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.ChooseValueFromASet.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;ChooseValueFromASet&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;possibleValues&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">setOfPossibleValues</span><span class="p">)])</span></div></div>
 
 
@@ -969,6 +1194,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minVal</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxVal</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minVal</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="UniformIntegerGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.UniformIntegerGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;UniformIntegerGenerator&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;minVal&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minVal</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;maxVal&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxVal</span><span class="p">)])</span></div></div>
 
 
@@ -987,6 +1214,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span></div>
 
 <div class="viewcode-block" id="FixedQuantityGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.FixedQuantityGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;fixedQuantity-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span></div></div>
 
 
@@ -1005,6 +1234,8 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PoissonQuantityGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PoissonQuantityGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;poisson-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span></div></div>
 
 
@@ -1023,6 +1254,8 @@
         <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="BernoulliQuantityGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.BernoulliQuantityGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See sueprclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;bernoulli-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">)</span></div></div>
 
 
@@ -1061,6 +1294,8 @@
                       <span class="s2">&quot; tries at trying to sample from distribution with min/max limits&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MinMaxWrapper.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.MinMaxWrapper.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theMin</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theMax</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;quantityGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantityGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())])</span></div></div>
 
 
@@ -1092,6 +1327,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantityGenerator</span><span class="o">.</span><span class="n">generateQuantity</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ZeroInflater.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.ZeroInflater.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;ZeroInflater&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;zeroProb&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeroProb</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;quantityGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantityGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())])</span></div></div>
 
 
@@ -1127,14 +1364,40 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractEmbeddableGenerator.generateEmbeddable"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddableGenerator.generateEmbeddable">[docs]</a>    <span class="k">def</span> <span class="nf">generateEmbeddable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an embeddable object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An instance of :class:`AbstractEmbeddable`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AbstractEmbeddableGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.AbstractEmbeddableGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get JSON object representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A json-friendly object (built of dictionaries, lists and</span>
+<span class="sd">            python primitives), which can be converted to json to</span>
+<span class="sd">            record the exact details of what was simualted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="PairEmbeddableGenerator_General"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator_General">[docs]</a><span class="k">class</span> <span class="nc">PairEmbeddableGenerator_General</span><span class="p">(</span><span class="n">AbstractEmbeddableGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Embed a pair of embeddables with some separation. This class needs</span>
+<span class="sd">        to eventually replace :class:`.PairEmbeddableGenerator`</span>
+<span class="sd">        </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        emeddableGenerator1: instance of</span>
+<span class="sd">            :class:`.AbstractEmbeddableGenerator`</span>
 
+<span class="sd">        embeddableGenerator2: instance of</span>
+<span class="sd">            :class:`.AbstractEmbeddableGenerator`</span>
+
+<span class="sd">        separationGenerator: instance of</span>
+<span class="sd">            :class:`.AbstractQuantityGenerator`</span>
+
+<span class="sd">        name: string, see :class:`DefaultNameMixin`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddableGenerator1</span><span class="p">,</span> <span class="n">embeddableGenerator2</span><span class="p">,</span> <span class="n">separationGenerator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator1</span> <span class="o">=</span> <span class="n">embeddableGenerator1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator2</span> <span class="o">=</span> <span class="n">embeddableGenerator2</span>
@@ -1142,6 +1405,8 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">PairEmbeddableGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PairEmbeddableGenerator_General.generateEmbeddable"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator_General.generateEmbeddable">[docs]</a>    <span class="k">def</span> <span class="nf">generateEmbeddable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">embeddable1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator1</span><span class="o">.</span><span class="n">generateEmbeddable</span><span class="p">()</span>
         <span class="n">embeddable2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator2</span><span class="o">.</span><span class="n">generateEmbeddable</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">PairEmbeddable_General</span><span class="p">(</span>
@@ -1151,33 +1416,39 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="PairEmbeddableGenerator_General.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator_General.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;PairEmbeddableGenerator&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;embeddableGenerator1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator1</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;embeddableenerator2&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddableGenerator2</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;separationGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">separationGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())</span>
                             <span class="p">])</span></div></div>
 
 
 <div class="viewcode-block" id="PairEmbeddableGenerator"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator">[docs]</a><span class="k">class</span> <span class="nc">PairEmbeddableGenerator</span><span class="p">(</span><span class="n">AbstractEmbeddableGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Embed a pair of substrings with some separation. This class needs</span>
+<span class="sd">        to be deprecated in favour of just using</span>
+<span class="sd">        :class:`.PairEmbeddableGenerator_General`</span>
+<span class="sd">        </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        substringGenerator1: instance of</span>
+<span class="sd">            :class:`.AbstractSubstringGenerator`</span>
+
+<span class="sd">        substringGenerator2: instance of</span>
+<span class="sd">            :class:`.AbstractSubstringGenerator`</span>
+
+<span class="sd">        separationGenerator: instance of</span>
+<span class="sd">            :class:`.AbstractQuantityGenerator`</span>
+
+<span class="sd">        name: string, see :class:`DefaultNameMixin`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substringGenerator1</span><span class="p">,</span> <span class="n">substringGenerator2</span><span class="p">,</span> <span class="n">separationGenerator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Embed a pair of substrings with some separation. This class needs</span>
-<span class="sd">            to be deprecated in favour of just using</span>
-<span class="sd">            :class:`.PairEmbeddableGenerator_General`</span>
-<span class="sd">            </span>
-<span class="sd">        Arguments:</span>
-<span class="sd">            substringGenerator1: instance of</span>
-<span class="sd">                :class:`.AbstractSubstringGenerator`</span>
-
-<span class="sd">            substringGenerator2: instance of</span>
-<span class="sd">                :class:`.AbstractSubstringGenerator`</span>
-
-<span class="sd">            separationGenerator: instance of</span>
-<span class="sd">                :class:`.AbstractQuantityGenerator`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator1</span> <span class="o">=</span> <span class="n">substringGenerator1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator2</span> <span class="o">=</span> <span class="n">substringGenerator2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">separationGenerator</span> <span class="o">=</span> <span class="n">separationGenerator</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PairEmbeddableGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PairEmbeddableGenerator.generateEmbeddable"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator.generateEmbeddable">[docs]</a>    <span class="k">def</span> <span class="nf">generateEmbeddable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">string1</span><span class="p">,</span> <span class="n">string1Description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator1</span><span class="o">.</span><span class="n">generateSubstring</span><span class="p">()</span>
         <span class="n">string2</span><span class="p">,</span> <span class="n">string2Description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator2</span><span class="o">.</span><span class="n">generateSubstring</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">PairEmbeddable</span><span class="p">(</span>
@@ -1186,6 +1457,8 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="PairEmbeddableGenerator.getJsonableObject"><a class="viewcode-back" href="../../synthetic.html#simdna.synthetic.PairEmbeddableGenerator.getJsonableObject">[docs]</a>    <span class="k">def</span> <span class="nf">getJsonableObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;PairEmbeddableGenerator&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;substringGenerator1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator1</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;substringGenerator2&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">substringGenerator2</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">()),</span> <span class="p">(</span><span class="s2">&quot;separationGenerator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">separationGenerator</span><span class="o">.</span><span class="n">getJsonableObject</span><span class="p">())</span>
                             <span class="p">])</span></div></div>
 
