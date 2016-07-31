@@ -1942,20 +1942,25 @@ class BestHitPwmFromLoadedMotifs(BestHitPwm):
 
 
 class AbstractLoadedMotifs(object):
-    """
-        A class that contains instances of pwm.PWM loaded from a file.
-        The pwms can be accessed by name.
+    """Class representing loaded PWMs.
+
+    A class that contains instances of ``pwm.PWM`` loaded from a file.
+    The pwms can be accessed by name.
+
+    Arguments:
+        fileName: string, the path to the file to laod
+
+        pseudocountProb: if some of the pwms have 0 probability for
+    some of the positions, will add the specified ``pseudocountProb``
+    to the rows of the pwm and renormalise.
+
+        background: a dictionary with ACGT as the keys and the frequency as
+    the values. Defaults to ``util.DEFAULT_BACKGROUND_FREQ``
     """
 
     def __init__(self, fileName,
                        pseudocountProb=0.0,
                        background=util.DEFAULT_BACKGROUND_FREQ):
-        """
-            fileName: the path to the file to laod
-            pseudocountProb: if some of the pwms have 0 probability for
-            some of the positions, will add the specified pseudocountProb
-            to the rows of the pwm and renormalise.
-        """
         self.fileName = fileName
         fileHandle = fp.getFileHandle(fileName)
         self.pseudocountProb = pseudocountProb
@@ -1969,16 +1974,24 @@ class AbstractLoadedMotifs(object):
             pwm.finalise(pseudocountProb=self.pseudocountProb)
 
     def getPwm(self, name):
-        """
-            returns the pwm.PWM instance with the specified name.
+        """Get a specific PWM.
+
+        Returns:
+            The ``pwm.PWM`` instance with the specified name.
         """
         return self.recordedPwms[name]
 
     def getReadPwmAction(self, recordedPwms):
-        """
-            This is the action that is to be performed on each line of the
-            file when it is read in. recordedPwms is an OrderedDict that
-            stores instances of pwm.PWM
+        """Action performed when each line of the pwm text file is read in.
+
+        This function is to be overridden by a specific implementation.
+        It is executed on each line of the file when it is read in, and
+        when PWMs are ready they will get inserted into ``recordedPwms``.
+
+        Arguments:
+            recordedPwms: an ``OrderedDict`` that will be filled with PWMs.
+        The keys will be the names of the PWMs and the
+        values will be instances of ``pwm.PWM``
         """
         raise NotImplementedError()
 
@@ -1990,16 +2003,28 @@ class AbstractLoadedMotifs(object):
         python primitives), which can be converted to json to
         record the exact details of what was simualted.
         """
-        return OrderedDict([("fileName", self.fileName), ("pseudocountProb", self.pseudocountProb), ("background", self.background)])
+        return OrderedDict([
+    ("fileName", self.fileName),
+    ("pseudocountProb", self.pseudocountProb),
+    ("background", self.background)])
 
 
 class LoadedEncodeMotifs(AbstractLoadedMotifs):
-    """
-        This class is specifically for reading files in the encode motif
-        format - specifically the motifs.txt file that contains Pouya's motifs
+    """A class for reading in a motifs file in the ENCODE motifs format.
+
+    This class is specifically for reading files in the encode motif
+    format - specifically the motifs.txt file that contains Pouya's motifs
+    (http://compbio.mit.edu/encode-motifs/motifs.txt)
+
+    Basically, the motif declarations start with a >, the first
+    characters after > until the first space are taken as the motif name,
+    the lines after the line with a > have the format:
+    "<ignored character> <prob of A> <prob of C> <prob of G> <prob of T>"
     """
 
     def getReadPwmAction(self, recordedPwms):
+        """See superclass.
+        """
         currentPwm = util.VariableWrapper(None)
 
         def action(inp, lineNumber):
@@ -2019,11 +2044,13 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
 
 
 class AbstractBackgroundGenerator(object):
-    """
-        Returns the sequence that the embeddings are subsequently inserted into.
+    """Returns the sequence that :class:`.AbstractEmbeddable` objects
+    are to be embedded into.
     """
 
     def generateBackground(self):
+        """Returns a sequence that is the background.
+        """
         raise NotImplementedError()
 
     def getJsonableObject(self):
@@ -2038,14 +2065,24 @@ class AbstractBackgroundGenerator(object):
 
 
 class RepeatedSubstringBackgroundGenerator(AbstractBackgroundGenerator):
+    """Repeatedly call a substring generator and concatenate the result.
+
+    Can be used to generate variable-length sequences.
+
+    Arguments:
+        substringGenerator: instance of :class:`.AbstractSubstringGenerator`
+
+        repetitions: instance of :class:`.AbstractQuantityGenerator`.
+        If pass an int, will create a
+        :class:`.FixedQuantityGenerator` from the int. This will be called
+        to determine the number of times to generate a substring from
+        ``self.substringGenerator``
+
+    Returns:
+        The concatenation of all the calls to ``self.substringGenerator``
+    """
 
     def __init__(self, substringGenerator, repetitions):
-        """
-            substringGenerator: instance of AbstractSubstringGenerator
-            repetitions: instance of AbstractQuantityGenerator. If pass an int,
-                will create a FixedQuantityGenerator from the int.
-            returns the concatenation of all the calls to the substringGenerator
-        """
         self.substringGenerator = substringGenerator
         if isinstance(repetitions, int):
             self.repetitions = FixedQuantityGenerator(repetitions)
@@ -2063,15 +2100,24 @@ class RepeatedSubstringBackgroundGenerator(AbstractBackgroundGenerator):
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("class", "RepeatedSubstringBackgroundGenerator"), ("substringGenerator", self.substringGenerator.getJsonableObject()), ("repetitions", self.repetitions.getJsonableObject())])
+        return OrderedDict([
+    ("class", "RepeatedSubstringBackgroundGenerator"),
+    ("substringGenerator", self.substringGenerator.getJsonableObject()),
+    ("repetitions", self.repetitions.getJsonableObject())])
 
 
 class SampleFromDiscreteDistributionSubstringGenerator(AbstractSubstringGenerator):
+    """Generate a substring by sampling from a distribution.
+
+    If the "substrings" are single characters (A/C/G/T), can be used
+    in conjunction with :class:`.RepeatedSubstringBackgroundGenerator` to
+    generate sequences with a certain GC content.
+
+    Arguments:
+        discreteDistribution: instance of ``util.DiscreteDistribution``
+    """
 
     def __init__(self, discreteDistribution):
-        """
-            discreteDistribution: instance of ``util.DiscreteDistribution``
-        """
         self.discreteDistribution = discreteDistribution
 
     def generateSubstring(self):
@@ -2080,7 +2126,9 @@ class SampleFromDiscreteDistributionSubstringGenerator(AbstractSubstringGenerato
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("class", "SampleFromDiscreteDistributionSubstringGenerator"), ("discreteDistribution", self.discreteDistribution.valToFreq)])
+        return OrderedDict([
+    ("class", "SampleFromDiscreteDistributionSubstringGenerator"),
+    ("discreteDistribution", self.discreteDistribution.valToFreq)])
 
 
 class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
@@ -2096,6 +2144,7 @@ class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
     """
 
     def __init__(self, seqLength, discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
-        """
         super(ZeroOrderBackgroundGenerator, self).__init__(
-            SampleFromDiscreteDistributionSubstringGenerator(discreteDistribution), seqLength)
+    SampleFromDiscreteDistributionSubstringGenerator(discreteDistribution),
+    seqLength)
+
