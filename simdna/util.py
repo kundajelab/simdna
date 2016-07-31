@@ -13,6 +13,32 @@ from collections import OrderedDict
 from collections import namedtuple
 
 
+DEFAULT_BACKGROUND_FREQ = OrderedDict(
+    [('A', 0.27), ('C', 0.23), ('G', 0.23), ('T', 0.27)])
+
+
+class DiscreteDistribution(object):
+
+    def __init__(self, valToFreq):
+        """
+            valToFreq: OrderedDict where the keys are the possible things to sample, and the values are their frequencies
+        """
+        self.valToFreq = valToFreq
+        self.freqArr = valToFreq.values()  # array representing only the probabilities
+        # map from index in freqArr to the corresponding value it represents
+        self.indexToVal = dict((x[0], x[1])
+                               for x in enumerate(valToFreq.keys()))
+
+    def sample(self):
+        """Sample from the distribution.
+        """
+        return self.indexToVal[util.sampleFromProbsArr(self.freqArr)]
+
+
+DEFAULT_BASE_DISCRETE_DISTRIBUTION = DiscreteDistribution(
+    DEFAULT_BACKGROUND_FREQ)
+
+
 def enum(**enums):
     class Enum(object):
         pass
@@ -184,26 +210,8 @@ def npArrayIfList(arr):
     else:
         return arr
 
+
 ArgsAndKwargs = namedtuple("ArgsAndKwargs", ["args", "kwargs"])
-
-DEFAULT_LETTER_ORDERING = ['A', 'C', 'G', 'T']
-DEFAULT_BACKGROUND_FREQ = OrderedDict(
-    [('A', 0.27), ('C', 0.23), ('G', 0.23), ('T', 0.27)])
-
-
-class DiscreteDistribution(object):
-
-    def __init__(self, valToFreq):
-        """
-            valToFreq: OrderedDict where the keys are the possible things to sample, and the values are their frequencies
-        """
-        self.valToFreq = valToFreq
-        self.freqArr = valToFreq.values()  # array representing only the probabilities
-        # map from index in freqArr to the corresponding value it represents
-        self.indexToVal = dict((x[0], x[1])
-                               for x in enumerate(valToFreq.keys()))
-DEFAULT_BASE_DISCRETE_DISTRIBUTION = DiscreteDistribution(
-    DEFAULT_BACKGROUND_FREQ)
 
 
 class GetBest(object):
@@ -820,8 +828,14 @@ def normaliseByRowsAndColumns(theMatrix):
 
 
 def sampleFromProbsArr(arrWithProbs):
-    """
-        Will return a sampled index
+    """Samples from a discrete distribution.
+
+    Arguments:
+        arrWithProbs: array of probabilities
+
+    Returns:
+        an index, sampled with the probability of that index in
+    array of probabilities.
     """
     randNum = random.random()
     cdfSoFar = 0
@@ -831,13 +845,6 @@ def sampleFromProbsArr(arrWithProbs):
             # letterIdx==(len(row)-1) clause because of potential floating point errors
             # that mean arrWithProbs doesn't sum to 1
             return idx
-
-
-def sampleFromDiscreteDistribution(discereteDistribution):
-    """
-        Expecting an instance of DiscreteDistribution
-    """
-    return discereteDistribution.indexToVal[sampleFromProbsArr(discereteDistribution.freqArr)]
 
 
 def sampleNinstancesFromDiscreteDistribution(N, discreteDistribution):

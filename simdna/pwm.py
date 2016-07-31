@@ -66,51 +66,6 @@ class PwmScore(object):
     def __str__(self):
         return str(self.score) + "\t" + str(self.posStart) + "\t" + str(self.posEnd)
 
-
-class Mutation(object):
-    """
-        class to represent a single bp mutation in a motif sequence
-    """
-
-    def __init__(self, index, previous, new, deltaScore, parentLength=None):
-        """
-            index: the position within the motif of the mutation
-            previous: the previous base at this position
-            new: the new base at this position after the mutation
-            deltaScore: change in some score corresponding to this mutation change
-            parentLength: optional; length of the motif. Used for assertion checks.
-        """
-        self.index = index
-        assert previous != new
-        self.previous = previous
-        self.new = new
-        self.deltaScore = deltaScore
-        # the length of the full sequence that self.index indexes into
-        self.parentLength = parentLength
-
-    def parentLengthAssertionCheck(self, stringArr):
-        """
-            checks that stringArr is consistent with parentLength if defined
-        """
-        assert self.parentLength is None or len(stringArr) == self.parentLength
-
-    def revert(self, stringArr):
-        """
-            set the base at the position of the mutation to the unmutated value
-            Modifies stringArr which is an array of characters.
-        """
-        self.parentLengthAssertionCheck(stringArr)
-        stringArr[self.index] = self.previous
-
-    def applyMutation(self, stringArr):
-        """
-            set the base at the position of the mutation to the mutated value.
-            Modifies stringArr which is an array of characters.
-        """
-        self.parentLengthAssertionCheck(stringArr)
-        assert stringArr[self.index] == self.previous
-        stringArr[self.index] = self.new
-
 BEST_HIT_MODE = util.enum(pwmProb="pwmProb", logOdds="logOdds")
 
 
