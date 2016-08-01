@@ -312,10 +312,11 @@ class Embedding(object):
     Think of this as a combination of an embeddable + a start position.
 
     Arguments:
-        what: object representing the thing that has been embedded.
-            Should have __str__ and __len__ defined. Often is an instance
-            of :class:`.AbstractEmbeddable`
-        startPos: int, the position relative to the start of the parent
+        what: object representing the thing that has been embedded.\
+            Should have`` __str__`` and ``__len__`` defined.\
+            Often is an instance of :class:`.AbstractEmbeddable`
+
+        startPos: int, the position relative to the start of the parent\
             sequence at which seq has been embedded
     """
 
@@ -331,15 +332,17 @@ class Embedding(object):
         """Recreate an :class:`.Embedding` object from a string.
 
         Arguments:
-            string: assumed to have format:
-                description[-|_]startPos[-|_]whatString, where
-                whatString will be provided to whatClass
-            whatClass: the class (usually a :class:`.AbstractEmbeddable`) that
+            string: assumed to have format:\
+                ``description[-|_]startPos[-|_]whatString``, where
+                ``whatString`` will be provided to ``whatClass``
+
+            whatClass: the class (usually a :class:`.AbstractEmbeddable`) that\
                 will be used to instantiate the what from the whatString
 
         Returns:
             The Embedding class called with
-            what=whatClass.fromString(whatString), startPos=int(startPos)
+            ``what=whatClass.fromString(whatString)`` and
+            ``startPos=int(startPos)``
         """
         if (whatClass is None):
             whatClass = StringEmbeddable
@@ -716,7 +719,7 @@ class StringEmbeddable(AbstractEmbeddable):
     Arguments:
         string: the core string to be embedded
 
-        stringDescription: a short descriptor prefixed before the
+        stringDescription: a short descriptor prefixed before the\
         __str__ representation of the embeddable. Should not contain a hyphen.
     """
 
@@ -751,10 +754,9 @@ class StringEmbeddable(AbstractEmbeddable):
         """Generates a StringEmbeddable from the provided string.
 
         Arguments:
-            theString: string of the format ``stringDescription-coreString``.
-        Will then return:
-        ``StringEmbeddable(string=coreString,
-                             stringDescription=stringDescription)``
+            theString: string of the format ``stringDescription-coreString``.\
+        Will then return:\
+      ``StringEmbeddable(string=coreString, stringDescription=stringDescription)``
 
         Returns:
             An instance of :class:`.StringEmbeddable`
@@ -776,11 +778,11 @@ class PairEmbeddable_General(AbstractEmbeddable):
 
         separation: int of positions separating embeddable1 and embeddable2
 
-        embeddableDescription: a concise descriptive string prefixed in
-        front when generating a __str__ representation of the embeddable.
+        embeddableDescription: a concise descriptive string prefixed in\
+        front when generating a __str__ representation of the embeddable.\
         Should not contain a hyphen.
 
-        nothingInBetween: if true, then nothing else is allowed to be
+        nothingInBetween: if true, then nothing else is allowed to be\
         embedded in the gap between embeddable1 and embeddable2.
     """
 
@@ -845,11 +847,11 @@ class PairEmbeddable(AbstractEmbeddable):
 
         separation: int of positions separating string1 and string2
 
-        embeddableDescription: a concise descriptive string prefixed in
-    front when generating a __str__ representation of the embeddable.
+        embeddableDescription: a concise descriptive string prefixed in\
+    front when generating a __str__ representation of the embeddable.\
     Should not contain a hyphen.
 
-        nothingInBetween: if true, then nothing else is allowed to be
+        nothingInBetween: if true, then nothing else is allowed to be\
     embedded in the gap between string1 and string2.
     """
 
@@ -907,13 +909,13 @@ class AbstractEmbedder(DefaultNameMixin):
         Modifies backgroundStringArr to include whatever has been embedded.
 
         Arguments:
-            backgroundStringArr: array of characters
+            backgroundStringArr: array of characters\
         representing the background string
 
-            priorEmbeddedThings: instance of
+            priorEmbeddedThings: instance of\
         :class:`.AbstractPriorEmbeddedThings`
 
-            additionalInfo: instance of :class:`.AdditionalInfo`;
+            additionalInfo: instance of :class:`.AdditionalInfo`;\
         allows the embedder to send back info about what it did
 
         Returns:
@@ -1319,11 +1321,11 @@ class ZeroInflater(AbstractQuantityGenerator):
     sample from the wrapped distribution (which may still return 0)
 
     Arguments:
-        quantityGenerator: an instance of :class:`.AbstractQuantityGenerator`;
-    represents the distribution to sample from with probability 1-zeroProb
+        quantityGenerator: an instance of :class:`.AbstractQuantityGenerator`;\
+    represents the distribution to sample from with probability ``1-zeroProb``
 
-        zeroProb: the probability of just returning 0 without sampling
-    from quantityGenerator
+        zeroProb: the probability of just returning 0 without sampling\
+    from ``quantityGenerator``
         
         name: see :class:`.DefaultNameMixin`. 
     """
@@ -1581,10 +1583,10 @@ class TransformedSubstringGenerator(AbstractSubstringGenerator):
 
         transformations: an iterable of :class:`.AbstractTransformation`
 
-        transformationsDescription: a string that will be prefixed in
-        front of ``substringDescription`` (generated by
-        ``substringGenerator.generateSubstring())`` to produce the
-        stringDescription.
+        transformationsDescription: a string that will be prefixed in\
+        front of ``substringDescription`` (generated by\
+        ``substringGenerator.generateSubstring())`` to produce the\
+        ``stringDescription``.
 
         name: see :class:`.DefaultNameMixin`.
     """
@@ -1948,13 +1950,13 @@ class AbstractLoadedMotifs(object):
     The pwms can be accessed by name.
 
     Arguments:
-        fileName: string, the path to the file to laod
+        fileName: string, the path to the file to load
 
-        pseudocountProb: if some of the pwms have 0 probability for
-    some of the positions, will add the specified ``pseudocountProb``
+        pseudocountProb: if some of the pwms have 0 probability for\
+    some of the positions, will add the specified ``pseudocountProb``\
     to the rows of the pwm and renormalise.
 
-        background: a dictionary with ACGT as the keys and the frequency as
+        background: a dictionary with ACGT as the keys and the frequency as\
     the values. Defaults to ``util.DEFAULT_BACKGROUND_FREQ``
     """
 
@@ -2072,10 +2074,10 @@ class RepeatedSubstringBackgroundGenerator(AbstractBackgroundGenerator):
     Arguments:
         substringGenerator: instance of :class:`.AbstractSubstringGenerator`
 
-        repetitions: instance of :class:`.AbstractQuantityGenerator`.
-        If pass an int, will create a
-        :class:`.FixedQuantityGenerator` from the int. This will be called
-        to determine the number of times to generate a substring from
+        repetitions: instance of :class:`.AbstractQuantityGenerator`.\
+        If pass an int, will create a\
+        :class:`.FixedQuantityGenerator` from the int. This will be called\
+        to determine the number of times to generate a substring from\
         ``self.substringGenerator``
 
     Returns:
@@ -2139,8 +2141,8 @@ class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
     Arguments:
         seqLength: int, length of the background 
 
-        discreteDistribution: instance of ``util.DiscreteDistribution`,
-    defaults to util.DEFAULT_BASE_DISCRETE_DISTRIBUTION
+        discreteDistribution: instance of ``util.DiscreteDistribution`,\
+    defaults to ``util.DEFAULT_BASE_DISCRETE_DISTRIBUTION``
     """
 
     def __init__(self, seqLength, discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
