@@ -720,7 +720,8 @@ class StringEmbeddable(AbstractEmbeddable):
         string: the core string to be embedded
 
         stringDescription: a short descriptor prefixed before the\
-        __str__ representation of the embeddable. Should not contain a hyphen.
+        ``__str__`` representation of the embeddable.\
+        Should not contain a hyphen. Defaults to "".
     """
 
     def __init__(self, string, stringDescription=""):
@@ -768,15 +769,18 @@ class StringEmbeddable(AbstractEmbeddable):
             return cls(string=theString)
 
 
-class PairEmbeddable_General(AbstractEmbeddable):
+class PairEmbeddable(AbstractEmbeddable):
     """Embed two embeddables with some separation.
 
     Arguments:
-        embeddable1: first embeddable to be embedded
+        embeddable1: instance of :class:`.AbstractEmbeddable`.\
+        First embeddable to be embedded. If a string is provided, will\
+        be wrapped in :class:`.StringEmbeddable`
 
-        embeddable2: second embeddable to be embedded
+        embeddable2: second embeddable to be embedded. Type information\
+        similar to that of ``embeddable1``
 
-        separation: int of positions separating embeddable1 and embeddable2
+        separation: int of distance separating embeddable1 and embeddable2
 
         embeddableDescription: a concise descriptive string prefixed in\
         front when generating a __str__ representation of the embeddable.\
@@ -787,7 +791,11 @@ class PairEmbeddable_General(AbstractEmbeddable):
     """
 
     def __init__(self, embeddable1, embeddable2, separation,
-                       embeddableDescription, nothingInBetween=True):
+                       embeddableDescription="", nothingInBetween=True):
+        if (isinstance(embeddable1, str)):
+            embeddable1 = StringEmbeddable(string=embeddable1)
+        if (isinstance(embeddable2, str)):
+            embeddable2 = StringEmbeddable(string=embeddable2)
         self.embeddable1 = embeddable1
         self.embeddable2 = embeddable2
         self.separation = separation
@@ -833,69 +841,6 @@ class PairEmbeddable_General(AbstractEmbeddable):
             priorEmbeddedThings.addEmbedding(startPos, self.embeddable1)
             priorEmbeddedThings.addEmbedding(
                 startPos + len(self.string1) + self.separation, self.embeddable2)
-
-
-class PairEmbeddable(AbstractEmbeddable):
-    """Embed two strings with some separation. To be deprecated.
-
-    To be deprecated in favour of PairEmbeddable_General.
-
-    Arguments:
-        string1: first string to be embedded
-
-        string2: second string to be embedded
-
-        separation: int of positions separating string1 and string2
-
-        embeddableDescription: a concise descriptive string prefixed in\
-    front when generating a __str__ representation of the embeddable.\
-    Should not contain a hyphen.
-
-        nothingInBetween: if true, then nothing else is allowed to be\
-    embedded in the gap between string1 and string2.
-    """
-
-    def __init__(self, string1, string2, separation, embeddableDescription, nothingInBetween=True):
-        self.string1 = string1
-        self.string2 = string2
-        self.separation = separation
-        self.embeddableDescription = embeddableDescription
-        self.nothingInBetween = nothingInBetween
-
-    def __len__(self):
-        return len(self.string1) + self.separation + len(self.string2)
-
-    def __str__(self):
-        return self.embeddableDescription + "-" + self.string1 + "-Gap" + str(self.separation) + "-" + self.string2
-
-    def getDescription(self):
-        return self.embeddableDescription
-
-    def canEmbed(self, priorEmbeddedThings, startPos):
-        if (self.nothingInBetween):
-            return priorEmbeddedThings.canEmbed(startPos, startPos + len(self))
-        else:
-            return (priorEmbeddedThings.canEmbed(startPos, startPos + len(self.string1))
-                    and priorEmbeddedThings.canEmbed(startPos + len(self.string1) + self.separation, startPos + len(self)))
-
-    def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
-        """See superclass.
-
-        If ``self.nothingInBetween``, then all the intervening positions
-        between the two embeddables will be marked as occupied. Otherwise,
-        only the positions occupied by the embeddables will be marked
-        as occupied.
-        """
-        backgroundStringArr[startPos:startPos +
-                            len(self.string1)] = self.string1
-        backgroundStringArr[
-            startPos + len(self.string1) + self.separation:startPos + len(self)] = self.string2
-        if (self.nothingInBetween):
-            priorEmbeddedThings.addEmbedding(startPos, self)
-        else:
-            priorEmbeddedThings.addEmbedding(startPos, self.string1)
-            priorEmbeddedThings.addEmbedding(
-                startPos + len(self.string1) + self.separation, self.string2)
 
 
 class AbstractEmbedder(DefaultNameMixin):
@@ -1408,18 +1353,17 @@ class AbstractEmbeddableGenerator(DefaultNameMixin):
         raise NotImplementedError()
 
 
-class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
-    """Embed a pair of embeddables with some separation. This class needs
-        to eventually replace :class:`.PairEmbeddableGenerator`
+class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
+    """Embed a pair of embeddables with some separation.
         
     Arguments:
-        emeddableGenerator1: instance of
+        emeddableGenerator1: instance of\
             :class:`.AbstractEmbeddableGenerator`
 
-        embeddableGenerator2: instance of
+        embeddableGenerator2: instance of\
             :class:`.AbstractEmbeddableGenerator`
 
-        separationGenerator: instance of
+        separationGenerator: instance of\
             :class:`.AbstractQuantityGenerator`
 
         name: string, see :class:`DefaultNameMixin`
@@ -1436,10 +1380,9 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
         """
         embeddable1 = self.embeddableGenerator1.generateEmbeddable()
         embeddable2 = self.embeddableGenerator2.generateEmbeddable()
-        return PairEmbeddable_General(
-            embeddable1, embeddable2,
-             self.separationGenerator.generateQuantity(
-            ), embeddable1.getDescription() + "+" + embeddable2.getDescription()
+        return PairEmbeddable(
+            embeddable1=embeddable1, embeddable2=embeddable2,
+            separation=self.separationGenerator.generateQuantity()
         )
 
     def getJsonableObject(self):
@@ -1450,47 +1393,6 @@ class PairEmbeddableGenerator_General(AbstractEmbeddableGenerator):
     ("embeddableGenerator1", self.embeddableGenerator1.getJsonableObject()),
     ("embeddableenerator2", self.embeddableGenerator2.getJsonableObject()),
     ("separationGenerator", self.separationGenerator.getJsonableObject())])
-
-
-class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
-    """Embed a pair of substrings with some separation. This class needs
-        to be deprecated in favour of just using
-        :class:`.PairEmbeddableGenerator_General`
-        
-    Arguments:
-        substringGenerator1: instance of
-            :class:`.AbstractSubstringGenerator`
-
-        substringGenerator2: instance of
-            :class:`.AbstractSubstringGenerator`
-
-        separationGenerator: instance of
-            :class:`.AbstractQuantityGenerator`
-
-        name: string, see :class:`DefaultNameMixin`
-    """
-
-    def __init__(self, substringGenerator1, substringGenerator2, separationGenerator, name=None):
-        self.substringGenerator1 = substringGenerator1
-        self.substringGenerator2 = substringGenerator2
-        self.separationGenerator = separationGenerator
-        super(PairEmbeddableGenerator, self).__init__(name)
-
-    def generateEmbeddable(self):
-        """See superclass.
-        """
-        string1, string1Description = self.substringGenerator1.generateSubstring()
-        string2, string2Description = self.substringGenerator2.generateSubstring()
-        return PairEmbeddable(
-            string1, string2, self.separationGenerator.generateQuantity(), string1Description +
-            "+" + string2Description
-        )
-
-    def getJsonableObject(self):
-        """See superclass.
-        """
-        return OrderedDict([("class", "PairEmbeddableGenerator"), ("substringGenerator1", self.substringGenerator1.getJsonableObject()), ("substringGenerator2", self.substringGenerator2.getJsonableObject()), ("separationGenerator", self.separationGenerator.getJsonableObject())
-                            ])
 
 
 class SubstringEmbeddableGenerator(AbstractEmbeddableGenerator):
