@@ -806,7 +806,10 @@ class PairEmbeddable(AbstractEmbeddable):
         return len(self.embeddable1) + self.separation + len(self.embeddable2)
 
     def __str__(self):
-        return self.embeddableDescription + ("-" if embeddableDescription != "" else "") + str(self.embeddable1) + "-Gap" + str(self.separation) + "-" + str(self.embeddable2)
+        return self.embeddableDescription +\
+               ("-" if self.embeddableDescription != "" else "") +\
+               str(self.embeddable1) + "-Gap" + str(self.separation) +\
+               "-" + str(self.embeddable2)
 
     def getDescription(self):
         """See superclass.
@@ -1358,18 +1361,26 @@ class PairEmbeddableGenerator(AbstractEmbeddableGenerator):
         
     Arguments:
         emeddableGenerator1: instance of\
-            :class:`.AbstractEmbeddableGenerator`
+        :class:`.AbstractEmbeddableGenerator`. If an
+        :class:`.AbstractSubstringGenerator` is provided, will be wrapped in\
+        an instance of :class:`.SubstringEmbeddableGenerator`.
 
-        embeddableGenerator2: instance of\
-            :class:`.AbstractEmbeddableGenerator`
+        embeddableGenerator2: same type information as for\
+        ``embeddableGenerator1``
 
         separationGenerator: instance of\
-            :class:`.AbstractQuantityGenerator`
+        :class:`.AbstractQuantityGenerator`
 
         name: string, see :class:`DefaultNameMixin`
     """
     def __init__(self, embeddableGenerator1,
                  embeddableGenerator2, separationGenerator, name=None):
+        if isinstance(embeddableGenerator1, AbstractSubstringGenerator):
+            embeddableGenerator1 =\
+                SubstringEmbeddableGenerator(embeddableGenerator1)
+        if (isinstance(embeddableGenerator2, AbstractSubstringGenerator)):
+            embeddableGenerator2 =\
+                SubstringEmbeddableGenerator(embeddableGenerator2)
         self.embeddableGenerator1 = embeddableGenerator1
         self.embeddableGenerator2 = embeddableGenerator2
         self.separationGenerator = separationGenerator
