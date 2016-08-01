@@ -32,7 +32,7 @@ class DiscreteDistribution(object):
     def sample(self):
         """Sample from the distribution.
         """
-        return self.indexToVal[util.sampleFromProbsArr(self.freqArr)]
+        return self.indexToVal[sampleFromProbsArr(self.freqArr)]
 
 
 DEFAULT_BASE_DISCRETE_DISTRIBUTION = DiscreteDistribution(
@@ -690,20 +690,18 @@ class ArgumentToAdd(object):
         Class to append runtime arguments to a string
         to facilitate auto-generation of output file names.
     """
-
     def __init__(self, val, argumentName=None, argNameAndValSep="-"):
-        self.val = val
-        self.argumentName = argumentName
-        self.argNameAndValSep = argNameAndValSep
-
+        self.val = val;
+        self.argumentName = argumentName;
+        self.argNameAndValSep = argNameAndValSep;
     def argNamePrefix(self):
-        return ("" if self.argumentName is None else self.argumentName + str(self.argNameAndValSep))
-
+        return ("" if self.argumentName is None else self.argumentName+str(self.argNameAndValSep))
     def transform(self):
-        string = (','.join([str(el) for el in self.val])
-                  if hasattr(self.val, "__len__") else str(self.val))
-        return self.argNamePrefix() + string
-        # return self.argNamePrefix()+str(self.val).replace(".","p")
+        string = (','.join([str(el) for el in self.val])\
+                   if (isinstance(self.val, str)==False and
+                       hasattr(self.val,"__len__")) else str(self.val))
+        return self.argNamePrefix()+string;
+        # return self.argNamePrefix()+str(self.val).replace(".","p");
 
 
 class BooleanArgument(ArgumentToAdd):
