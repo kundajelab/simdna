@@ -18,8 +18,7 @@ def do(options):
                                                                  util.ArgumentToAdd(options.numSeqs, "numSeqs")])
     
     loadedMotifs = synthetic.LoadedEncodeMotifs(options.pathToMotifs, pseudocountProb=0.001)
-    Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs  
- 
+    Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs   
     embedInBackground = synthetic.EmbedInABackground(
         backgroundGenerator=synthetic.ZeroOrderBackgroundGenerator(seqLength=options.seqLength) 
         , embedders=[
@@ -37,8 +36,6 @@ def do(options):
             for motifName in options.motifNames 
         ]
     )
-    loadedMotifs = synthetic.LoadedEncodeMotifs(options.pathToMotifs, pseudocountProb=0.001)
-
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, options.numSeqs)
     synthetic.printSequences(outputFileName_core+".simdata", sequenceSet,
                              includeFasta=True, includeEmbeddings=True,
