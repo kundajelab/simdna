@@ -10,7 +10,9 @@ config = {
     'setup_requires': [],
     'install_requires': ['numpy>=1.9', 'matplotlib', 'scipy'],
     'dependency_links': [],
-    'scripts': [],
+    'scripts': ['scripts/densityMotifSimulation.py',
+                'scripts/emptyBackground.py',
+                'scripts/motifGrammarSimulation.py'],
     'name': 'simdna'
 }
 

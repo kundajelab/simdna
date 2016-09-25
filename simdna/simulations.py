@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
+import simdna
 from simdna.synthetic import (
     RepeatedEmbedder, SubstringEmbedder, ReverseComplementWrapper,
     UniformPositionGenerator, InsideCentralBp,
@@ -10,10 +11,9 @@ from simdna.synthetic import (
     EmbeddableEmbedder, PairEmbeddableGenerator,
 )
 from simdna.util import DiscreteDistribution
-from pkg_resources import resource_filename
 
-ENCODE_MOTIFS_PATH = resource_filename('simdna.databases', 'encode_motifs.txt')
-loaded_motifs = LoadedEncodeMotifs(ENCODE_MOTIFS_PATH, pseudocountProb=0.001)
+loaded_motifs = LoadedEncodeMotifs(simdna.ENCODE_MOTIFS_PATH,
+                                   pseudocountProb=0.001)
 
 
 def get_distribution(GC_fraction):

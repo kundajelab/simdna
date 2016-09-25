@@ -1,3 +1,6 @@
+scripts/densityMotifSimulation.py
+scripts/emptyBackground.py
+scripts/motifGrammarSimulation.py
 simdna/__init__.py
 simdna/fileProcessing.py
 simdna/pwm.py

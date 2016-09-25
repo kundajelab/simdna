@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import simdna
 import simdna.util as util
 import simdna.synthetic as synthetic
 import argparse
@@ -40,13 +41,14 @@ def do(options):
 
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, options.numSeqs)
     synthetic.printSequences(outputFileName_core+".simdata", sequenceSet,
-                             includeFasta=False, includeEmbeddings=True,
+                             includeFasta=True, includeEmbeddings=True,
                              prefix=options.prefix)
    
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--prefix")
-    parser.add_argument("--pathToMotifs", default="encode_motifs.txt")
+    parser.add_argument("--pathToMotifs",
+        default=simdna.ENCODE_MOTIFS_PATH)
     parser.add_argument("--bestHit", action="store_true")
     parser.add_argument("--motifNames", type=str, nargs='+', required=True)
     parser.add_argument("--max-motifs",type=int, required=True)
