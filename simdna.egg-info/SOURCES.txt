@@ -13,4 +13,4 @@ simdna.egg-info/SOURCES.txt
 simdna.egg-info/dependency_links.txt
 simdna.egg-info/requires.txt
 simdna.egg-info/top_level.txt
-simdna/databases/__init__.py
+simdna/resources/__init__.py
