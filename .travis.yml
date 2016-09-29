@@ -24,6 +24,4 @@ install:
   - pip install .
 
 # run a simulation from simulations.py
-script: python -c 'from simdna.simulations import simulate_single_motif_detection;\
-                   sequences, labels = simulate_single_motif_detection("SPI1_disc1", 20, 500, 500, 0.4);\
-                   print sequences[0]'
+script: python -c 'from simdna.simulations import simulate_single_motif_detection; sequences, labels = simulate_single_motif_detection("SPI1_disc1", 20, 500, 500, 0.4)'
