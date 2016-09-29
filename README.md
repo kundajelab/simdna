@@ -1,4 +1,5 @@
 # simdna: simulations of DNA
+[![Build Status](https://travis-ci.org/kundajelab/simdna.svg?branch=master)](https://travis-ci.org/kundajelab/simdna)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)
 ## Installation
 ```
