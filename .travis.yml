@@ -1,0 +1,29 @@
+# Config file for automatic testing at travis-ci.org
+# Conda testing for Travis CI from https://gist.github.com/dan-blanchard/7045057
+language: python
+
+python:
+  - 2.7
+
+notifications:
+  email: false
+  
+# Setup Anaconda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  # Install in batch mode
+  - ./miniconda.sh -b  -p $HOME/miniconda
+  - export PATH=$HOME/miniconda/bin:$PATH
+  - conda update --yes conda
+
+install:
+  # pip cannot easily install scipy or matplotlib on the Travis CI server
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION scipy matplotlib graphviz
+  # Install the cloned dragonn package from source using Anaconda
+  - pip install .
+
+# run a simulation from simulations.py
+script: python -c 'from simdna.simulations import simulate_single_motif_detection;\
+	       	   sequences, labels = simulate_single_motif_detection("SPI1_disc1", 20, 500, 500, 0.4);\
+		   print sequences[0]'
