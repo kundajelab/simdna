@@ -101,6 +101,234 @@
             
   <div class="section" id="simulations-module">
 <h1>simulations module<a class="headerlink" href="#simulations-module" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-simdna.simulations"></span><dl class="function">
+<dt id="simdna.simulations.get_distribution">
+<code class="descclassname">simdna.simulations.</code><code class="descname">get_distribution</code><span class="sig-paren">(</span><em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.get_distribution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.motif_density">
+<code class="descclassname">simdna.simulations.</code><code class="descname">motif_density</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>num_seqs</em>, <em>min_counts</em>, <em>max_counts</em>, <em>GC_fraction</em>, <em>central_bp=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.motif_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns sequences with motif density.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simple_motif_embedding">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simple_motif_embedding</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>num_seqs</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simple_motif_embedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns sequence array</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_differential_accessibility">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_differential_accessibility</code><span class="sig-paren">(</span><em>pos_motif_names</em>, <em>neg_motif_names</em>, <em>seq_length</em>, <em>min_num_motifs</em>, <em>max_num_motifs</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_differential_accessibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates data for differential accessibility task.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos_motif_names</strong> (<em>list</em>) &#8211; List of strings.</li>
+<li><strong>neg_motif_names</strong> (<em>list</em>) &#8211; List of strings.</li>
+<li><strong>seq_length</strong> (<em>int</em>) &#8211; </li>
+<li><strong>min_num_motifs</strong> (<em>int</em>) &#8211; </li>
+<li><strong>max_num_motifs</strong> (<em>int</em>) &#8211; </li>
+<li><strong>num_pos</strong> (<em>int</em>) &#8211; </li>
+<li><strong>num_neg</strong> (<em>int</em>) &#8211; </li>
+<li><strong>GC_fraction</strong> (<em>float</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
+<li><strong>y</strong> (<em>1darray</em>) &#8211; Contains labels.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_heterodimer_grammar">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_heterodimer_grammar</code><span class="sig-paren">(</span><em>motif1</em>, <em>motif2</em>, <em>seq_length</em>, <em>min_spacing</em>, <em>max_spacing</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_heterodimer_grammar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Simulates two classes of sequences with motif1 and motif2:</dt>
+<dd><ul class="first simple">
+<li>Positive class sequences with motif1 and motif2 positioned
+min_spacing and max_spacing</li>
+<li>Negative class sequences with independent motif1 and motif2 positioned</li>
+</ul>
+<p class="last">anywhere in the sequence, not as a heterodimer grammar</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>seq_length</strong> (<em>int, length of sequence</em>) &#8211; </li>
+<li><strong>GC_fraction</strong> (<em>float, GC fraction in background sequence</em>) &#8211; </li>
+<li><strong>num_pos</strong> (<em>int, number of positive class sequences</em>) &#8211; </li>
+<li><strong>num_neg</strong> (<em>int, number of negatice class sequences</em>) &#8211; </li>
+<li><strong>motif1</strong> (<em>str, encode motif name</em>) &#8211; </li>
+<li><strong>motif2</strong> (<em>str, encode motif name</em>) &#8211; </li>
+<li><strong>min_spacing</strong> (<em>int, minimum inter motif spacing</em>) &#8211; </li>
+<li><strong>max_spacing</strong> (<em>int, maximum inter motif spacing</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Array with sequence strings.</li>
+<li><strong>y</strong> (<em>1darray</em>) &#8211; Array with positive/negative class labels.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_motif_counting">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_motif_counting</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>pos_counts</em>, <em>neg_counts</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_motif_counting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates data for motif counting task.
+:param motif_name:
+:type motif_name: str
+:param seq_length:
+:type seq_length: int
+:param pos_counts: (min_counts, max_counts) for positive set.
+:type pos_counts: list
+:param neg_counts: (min_counts, max_counts) for negative set.
+:type neg_counts: list
+:param num_pos:
+:type num_pos: int
+:param num_neg:
+:type num_neg: int
+:param GC_fraction:
+:type GC_fraction: float</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
+<li><strong>y</strong> (<em>1darray</em>) &#8211; Contains labels.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_motif_density_localization">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_motif_density_localization</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>center_size</em>, <em>min_motif_counts</em>, <em>max_motif_counts</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_motif_density_localization" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Simulates two classes of seqeuences:</dt>
+<dd><ul class="first last simple">
+<li>Positive class sequences with multiple motif instances
+in center of the sequence.</li>
+<li>Negative class sequences with multiple motif instances
+anywhere in the sequence.</li>
+</ul>
+</dd>
+</dl>
+<p>The number of motif instances is uniformly sampled
+between minimum and maximum motif counts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>motif_name</strong> (<em>str</em>) &#8211; encode motif name</li>
+<li><strong>seq_length</strong> (<em>int</em>) &#8211; length of sequence</li>
+<li><strong>center_size</strong> (<em>int</em>) &#8211; length of central part of the sequence where motifs can be positioned</li>
+<li><strong>min_motif_counts</strong> (<em>int</em>) &#8211; minimum number of motif instances</li>
+<li><strong>max_motif_counts</strong> (<em>int</em>) &#8211; maximum number of motif instances</li>
+<li><strong>num_pos</strong> (<em>int</em>) &#8211; number of positive class sequences</li>
+<li><strong>num_neg</strong> (<em>int</em>) &#8211; number of negative class sequences</li>
+<li><strong>GC_fraction</strong> (<em>float</em>) &#8211; GC fraction in background sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
+<li><strong>y</strong> (<em>1darray</em>) &#8211; Contains labels.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_multi_motif_embedding">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_multi_motif_embedding</code><span class="sig-paren">(</span><em>motif_names</em>, <em>seq_length</em>, <em>min_num_motifs</em>, <em>max_num_motifs</em>, <em>num_seqs</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_multi_motif_embedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates data for multi motif recognition task.
+:param motif_names: List of strings.
+:type motif_names: list
+:param seq_length:
+:type seq_length: int
+:param min_num_motifs:
+:type min_num_motifs: int
+:param max_num_motifs:
+:type max_num_motifs: int
+:param num_seqs:
+:type num_seqs: int
+:param GC_fraction:
+:type GC_fraction: float</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
+<li><strong>y</strong> (<em>ndarray</em>) &#8211; Contains labels for each motif.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="simdna.simulations.simulate_single_motif_detection">
+<code class="descclassname">simdna.simulations.</code><code class="descname">simulate_single_motif_detection</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_single_motif_detection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Simulates two classes of seqeuences:</dt>
+<dd><ul class="first last simple">
+<li>Positive class sequence with a motif
+embedded anywhere in the sequence</li>
+<li>Negative class sequence without the motif</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>motif_name</strong> (<em>str</em>) &#8211; encode motif name</li>
+<li><strong>seq_length</strong> (<em>int</em>) &#8211; length of sequence</li>
+<li><strong>num_pos</strong> (<em>int</em>) &#8211; number of positive class sequences</li>
+<li><strong>num_neg</strong> (<em>int</em>) &#8211; number of negative class sequences</li>
+<li><strong>GC_fraction</strong> (<em>float</em>) &#8211; GC fraction in background sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Array with sequence strings.</li>
+<li><strong>y</strong> (<em>1darray</em>) &#8211; Array with positive/negative class labels.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 
