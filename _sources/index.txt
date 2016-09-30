@@ -1,17 +1,26 @@
-Welcome to SimDNA's documentation!
-==================================
+simdna package
+==============
 
-Contents:
+simdna.simulations module
+-------------------------
 
-.. toctree::
-   :maxdepth: 4
+.. automodule:: simdna.simulations
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-   synthetic
+simdna.synthetic module
+-----------------------
 
+.. automodule:: simdna.synthetic
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Indices and tables
-==================
+Module contents
+---------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. automodule:: simdna
+    :members:
+    :undoc-members:
+    :show-inheritance:
