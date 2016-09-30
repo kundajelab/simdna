@@ -192,29 +192,27 @@ min_spacing and max_spacing</li>
 <dl class="function">
 <dt id="simdna.simulations.simulate_motif_counting">
 <code class="descclassname">simdna.simulations.</code><code class="descname">simulate_motif_counting</code><span class="sig-paren">(</span><em>motif_name</em>, <em>seq_length</em>, <em>pos_counts</em>, <em>neg_counts</em>, <em>num_pos</em>, <em>num_neg</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_motif_counting" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates data for motif counting task.
-:param motif_name:
-:type motif_name: str
-:param seq_length:
-:type seq_length: int
-:param pos_counts: (min_counts, max_counts) for positive set.
-:type pos_counts: list
-:param neg_counts: (min_counts, max_counts) for negative set.
-:type neg_counts: list
-:param num_pos:
-:type num_pos: int
-:param num_neg:
-:type num_neg: int
-:param GC_fraction:
-:type GC_fraction: float</p>
+<dd><p>Generates data for motif counting task.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>motif_name</strong> (<em>str</em>) &#8211; </li>
+<li><strong>seq_length</strong> (<em>int</em>) &#8211; </li>
+<li><strong>pos_counts</strong> (<em>list</em>) &#8211; (min_counts, max_counts) for positive set.</li>
+<li><strong>neg_counts</strong> (<em>list</em>) &#8211; (min_counts, max_counts) for negative set.</li>
+<li><strong>num_pos</strong> (<em>int</em>) &#8211; </li>
+<li><strong>num_neg</strong> (<em>int</em>) &#8211; </li>
+<li><strong>GC_fraction</strong> (<em>float</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
 <li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
 <li><strong>y</strong> (<em>1darray</em>) &#8211; Contains labels.</li>
 </ul>
+</p>
 </td>
 </tr>
 </tbody>
@@ -266,27 +264,26 @@ between minimum and maximum motif counts.</p>
 <dl class="function">
 <dt id="simdna.simulations.simulate_multi_motif_embedding">
 <code class="descclassname">simdna.simulations.</code><code class="descname">simulate_multi_motif_embedding</code><span class="sig-paren">(</span><em>motif_names</em>, <em>seq_length</em>, <em>min_num_motifs</em>, <em>max_num_motifs</em>, <em>num_seqs</em>, <em>GC_fraction</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simulations.simulate_multi_motif_embedding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates data for multi motif recognition task.
-:param motif_names: List of strings.
-:type motif_names: list
-:param seq_length:
-:type seq_length: int
-:param min_num_motifs:
-:type min_num_motifs: int
-:param max_num_motifs:
-:type max_num_motifs: int
-:param num_seqs:
-:type num_seqs: int
-:param GC_fraction:
-:type GC_fraction: float</p>
+<dd><p>Generates data for multi motif recognition task.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>motif_names</strong> (<em>list</em>) &#8211; List of strings.</li>
+<li><strong>seq_length</strong> (<em>int</em>) &#8211; </li>
+<li><strong>min_num_motifs</strong> (<em>int</em>) &#8211; </li>
+<li><strong>max_num_motifs</strong> (<em>int</em>) &#8211; </li>
+<li><strong>num_seqs</strong> (<em>int</em>) &#8211; </li>
+<li><strong>GC_fraction</strong> (<em>float</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
 <li><strong>sequence_arr</strong> (<em>1darray</em>) &#8211; Contains sequence strings.</li>
 <li><strong>y</strong> (<em>ndarray</em>) &#8211; Contains labels for each motif.</li>
 </ul>
+</p>
 </td>
 </tr>
 </tbody>
