@@ -1,4 +1,17 @@
-.. toctree::
-   :maxdepth: 2
+Welcome to SimDNA's documentation!
+==================================
 
-   includeme
+Contents:
+
+.. toctree::
+   :maxdepth: 4
+
+   synthetic
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
