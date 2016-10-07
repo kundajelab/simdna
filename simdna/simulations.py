@@ -117,6 +117,7 @@ def simulate_motif_counting(motif_name, seq_length, pos_counts, neg_counts,
                             num_pos, num_neg, GC_fraction):
     """
     Generates data for motif counting task.
+
     Parameters
     ----------
     motif_name : str
@@ -128,6 +129,7 @@ def simulate_motif_counting(motif_name, seq_length, pos_counts, neg_counts,
     num_pos : int
     num_neg : int
     GC_fraction : float
+
     Returns
     -------
     sequence_arr : 1darray
@@ -203,6 +205,7 @@ def simulate_multi_motif_embedding(motif_names, seq_length, min_num_motifs,
                                    max_num_motifs, num_seqs, GC_fraction):
     """
     Generates data for multi motif recognition task.
+
     Parameters
     ----------
     motif_names : list
@@ -212,6 +215,7 @@ def simulate_multi_motif_embedding(motif_names, seq_length, min_num_motifs,
     max_num_motifs : int
     num_seqs : int
     GC_fraction : float
+
     Returns
     -------
     sequence_arr : 1darray
