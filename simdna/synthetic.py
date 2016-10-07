@@ -929,8 +929,8 @@ class EmbeddableEmbedder(AbstractEmbedder):
             startPos = self.positionGenerator.generatePos(
                 len(backgroundStringArr), len(embeddable), additionalInfo)
             canEmbed = embeddable.canEmbed(priorEmbeddedThings, startPos)
-            if (tries % 10 == 0):
-                print("Warning: made " + str(tries) + " at trying to embed " + str(embeddable) + " in region of length " + str(
+            if (tries % 10 == 0): 
+                print("Warning: made " + str(tries) + " attemps at trying to embed " + str(embeddable) + " in region of length " + str(
                     priorEmbeddedThings.getTotalPos()) + " with " + str(priorEmbeddedThings.getNumOccupiedPos()) + " occupied sites")
         embeddable.embedInBackgroundStringArr(
             priorEmbeddedThings, backgroundStringArr, startPos)
