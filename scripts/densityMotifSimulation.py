@@ -7,6 +7,12 @@ import simdna.synthetic as synthetic
 import argparse
 
 def do(options):
+    if (options.seed is not None):
+        import numpy as np
+        np.random.seed(options.seed) 
+        import random
+        random.seed(options.seed)
+        
     outputFileName_core = util.addArguments("DensityEmbedding", [util.ArgumentToAdd(options.prefix, "prefix"),
                                                                  util.BooleanArgument(options.bestHit, "bestHit"),
                                                                  util.ArrArgument(options.motifNames, "motifs"),
@@ -54,5 +60,6 @@ if __name__=="__main__":
     parser.add_argument("--zero-prob",type=float, required=False, default=0)
     parser.add_argument("--seqLength", type=int, required=True)
     parser.add_argument("--numSeqs", type=int, required=True)
+    parser.add_argument("--seed", type=int, default=None)
     options = parser.parse_args()
     do(options)
