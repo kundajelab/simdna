@@ -115,6 +115,25 @@ def printSequences(outputFileName, sequenceSetGenerator,
     ofh.close()
 
 
+def read_simdata_file(simdata_file, one_hot_encode=False):
+    ids = []
+    sequences = []
+    embeddings = []
+    def action(inp, line_number):
+        if (line_number > 1):
+            ids.append(inp[0]) 
+            sequences.append(inp[1])
+            embeddings.append(getEmbeddingsFromString(inp[2]))
+    fp.performActionOnEachLineOfFile(
+        fileHandle=fp.getFileHandle(simdata_file),
+        action=action,
+        transformation=fp.defaultTabSeppd)
+    return util.enum(
+            ids=ids,
+            sequences=sequences,
+            embeddings=embeddings)
+
+
 class DefaultNameMixin(object):
     """Basic functionality for classes that have a self.name attribute.
     
