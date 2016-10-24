@@ -7,6 +7,7 @@ import math
 from collections import OrderedDict
 import json
 import re
+import itertools
 
 
 class LabelGenerator(object):
@@ -399,6 +400,34 @@ class AbstractSequenceSetGenerator(object):
         record the exact details of what was simualted.
         """
         raise NotImplementedError()
+
+
+class ChainSequenceSetGenerators(AbstractSequenceSetGenerator):
+    """Chains several generators together.
+
+    Arguments:
+        generators: instances of :class:`.AbstractSequenceSetGenerator`.
+    """
+
+    def __init__(self, *generators):
+        self.generators = generators
+
+    def generateSequences(self):
+        """A chain of generators
+
+        Returns:
+            A chain of generators
+        """
+        for item in itertools.chain(*[generator.generateSequences()
+                                      for generator in self.generators]):
+            yield item
+
+    def getJsonableObject(self):
+        """See superclass 
+        """
+        return OrderedDict([('generators',
+                             [x.getJsonableObject() for x
+                             in self.generators])]) 
 
 
 class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
