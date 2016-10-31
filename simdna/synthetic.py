@@ -115,15 +115,20 @@ def printSequences(outputFileName, sequenceSetGenerator,
     ofh.close()
 
 
-def read_simdata_file(simdata_file, one_hot_encode=False):
+def read_simdata_file(simdata_file, one_hot_encode=False, ids_to_load=None):
     ids = []
     sequences = []
     embeddings = []
+    labels = []
+    if (ids_to_load is not None):
+        ids_to_load = set(ids_to_load)
     def action(inp, line_number):
         if (line_number > 1):
-            ids.append(inp[0]) 
-            sequences.append(inp[1])
-            embeddings.append(getEmbeddingsFromString(inp[2]))
+            if (ids_to_load is None or (inp[0] in ids_to_load)):
+                ids.append(inp[0]) 
+                sequences.append(inp[1])
+                embeddings.append(getEmbeddingsFromString(inp[2]))
+                labels.append([int(x) for x in inp[3:]])
     fp.performActionOnEachLineOfFile(
         fileHandle=fp.getFileHandle(simdata_file),
         action=action,
@@ -131,7 +136,8 @@ def read_simdata_file(simdata_file, one_hot_encode=False):
     return util.enum(
             ids=ids,
             sequences=sequences,
-            embeddings=embeddings)
+            embeddings=embeddings,
+            labels=np.array(labels))
 
 
 class DefaultNameMixin(object):
@@ -369,7 +375,10 @@ class Embedding(object):
         # was printed out as pos-[startPos]_[what], but the
         #[what] may contain underscores, hence the maxsplit
         # to avoid splitting on them.
-        prefix, startPos, whatString = re.split("-|_", string, maxsplit=2)
+        p = re.compile(r"pos\-(\d+)_(.*)$")
+        m = p.search(string)
+        startPos = m.group(1)
+        whatString = m.group(2) 
         return cls(what=whatClass.fromString(whatString),
                    startPos=int(startPos))
 
@@ -811,7 +820,10 @@ class StringEmbeddable(AbstractEmbeddable):
             An instance of :class:`.StringEmbeddable`
         """
         if ("-" in theString):
-            stringDescription, coreString = theString.split("-")
+            p = re.compile(r"((revComp\-)?(.*))\-(.*)$")
+            m = p.search(theString)
+            stringDescription = m.group(1)
+            coreString = m.group(4)
             return cls(string=coreString, stringDescription=stringDescription)
         else:
             return cls(string=theString)
