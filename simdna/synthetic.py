@@ -118,11 +118,13 @@ def read_simdata_file(simdata_file, one_hot_encode=False):
     ids = []
     sequences = []
     embeddings = []
+    labels = []
     def action(inp, line_number):
         if (line_number > 1):
             ids.append(inp[0]) 
             sequences.append(inp[1])
             embeddings.append(getEmbeddingsFromString(inp[2]))
+            labels.append(inp[3:])
     fp.performActionOnEachLineOfFile(
         fileHandle=fp.getFileHandle(simdata_file),
         action=action,
@@ -130,7 +132,8 @@ def read_simdata_file(simdata_file, one_hot_encode=False):
     return util.enum(
             ids=ids,
             sequences=sequences,
-            embeddings=embeddings)
+            embeddings=embeddings,
+            labels=np.array(labels))
 
 
 class DefaultNameMixin(object):
