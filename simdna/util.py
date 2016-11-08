@@ -14,7 +14,26 @@ from collections import namedtuple
 
 
 DEFAULT_BACKGROUND_FREQ = OrderedDict(
-    [('A', 0.27), ('C', 0.23), ('G', 0.23), ('T', 0.27)])
+    [('A', 0.3), ('C', 0.2), ('G', 0.2), ('T', 0.3)])
+
+DEFAULT_DINUC_FREQ = OrderedDict([
+ ('AA',0.095),
+ ('AC',0.050),
+ ('AG',0.071),
+ ('AT',0.075),
+ ('CA',0.073),
+ ('CC',0.054),
+ ('CG',0.010),
+ ('CT',0.072),
+ ('GA',0.060),
+ ('GC',0.044),
+ ('GG',0.054),
+ ('GT',0.050),
+ ('TA',0.064),
+ ('TC',0.060),
+ ('TG',0.073),
+ ('TT',0.095),
+])
 
 
 class DiscreteDistribution(object):

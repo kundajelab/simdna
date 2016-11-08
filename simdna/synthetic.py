@@ -2123,3 +2123,52 @@ class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
     SampleFromDiscreteDistributionSubstringGenerator(discreteDistribution),
     seqLength)
 
+
+class FirstOrderBackgroundGenerator(AbstractBackgroundGenerator):
+    """Returns a sequence from a first order markov chain with defined
+    gc content
+
+    Each base is sampled independently.
+
+    Arguments:
+        seqLength: int, length of the background 
+        priorFrequencies: ordered dictionary with freqs of starting base
+        dinucFrequencies: dictionary with the frequences of the dinucs
+    """
+
+    def __init__(self,
+                 seqLength,
+                 priorFrequencies=util.DEFAULT_BACKGROUND_FREQ,
+                 dinucFrequencies=util.DEFAULT_DINUC_FREQ):
+        self.seqLength = seqLength
+        assert self.seqLength > 0
+
+        #do some sanity checks on dinucFrequencies
+        assert abs(sum(dinucFrequencies.values())-1.0) < 10**-7,\
+         sum(dinucFrequencies.values())
+        assert all(len(key)==2 for key in dinucFrequencies.keys())
+
+        #build a transition matrix and priors matrix
+        chars = set([key[0] for key in dinucFrequencies]) 
+        transitionMatrix = {}
+        for char in chars:
+            probOnSecondChar = OrderedDict()
+            totalProb = 0.0
+            for key in dinucFrequencies:
+                if key[0]==char:
+                    probOnSecondChar[key[1]] = dinucFrequencies[key]
+                    totalProb += probOnSecondChar[key[1]]
+            probOnSecondChar = util.DiscreteDistribution(
+                OrderedDict([(key,val/totalProb) for key,val
+                in probOnSecondChar.items()]))
+            transitionMatrix[char] = probOnSecondChar
+
+        self.transitionMatrix = transitionMatrix
+        self.priorFrequencies = util.DiscreteDistribution(priorFrequencies)
+
+    def generateBackground(self):
+        generatedCharacters = [self.priorFrequencies.sample()]
+        for i in range(self.seqLength-1):
+            generatedCharacters.append(
+                self.transitionMatrix[generatedCharacters[-1]].sample())
+        return "".join(generatedCharacters)
