@@ -1,0 +1,16 @@
+{
+    "dnaseSimulationFile": "temp_dnaseSimulationFile.txt",
+    "loadedMotifs": {
+        "fileName": "/Users/avantishrikumar/Research/simdna/simdna/resources/encode_motifs.txt",
+        "pseudocountProb": 0.001,
+        "background": {
+            "A": 0.3,
+            "C": 0.2,
+            "G": 0.2,
+            "T": 0.3
+        }
+    },
+    "shuffler": {
+        "class": "DinucleotideShuffler"
+    }
+}

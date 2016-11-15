@@ -8,6 +8,7 @@ from collections import OrderedDict
 import json
 import re
 import itertools
+from . import dinuc_shuffle
 
 
 class LabelGenerator(object):
@@ -430,6 +431,93 @@ class AbstractSequenceSetGenerator(object):
         raise NotImplementedError()
 
 
+def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
+    """Parse a string representing a motif and position
+
+    Arguments:
+        embedderString: of format <motif name>-<position in sequence>
+        loadedMotifs: instance of :class:`.AbstractLoadedMotifs`
+
+    Returns:
+        An instance of :class:`FixedEmbeddableWithPosEmbedder`
+    """
+    motifName,pos = embedderString.split("-") 
+    pwmSampler = PwmSamplerFromLoadedMotifs(
+                    motifName=motifName,
+                    loadedMotifs=loadedMotifs) 
+    embeddableGenerator = SubstringEmbeddableGenerator(
+                           substringGenerator=pwmSampler)
+    return FixedEmbeddableWithPosEmbedder(
+            embeddableGenerator=embeddableGenerator,
+            startPos=int(pos))
+
+def parseDnaseSimulationFile(dnaseSimulationFile, loadedMotifs, shuffler):
+    """Parse a file detailing the dnase simulation
+
+    Arguments:
+        dnaseSimulationFile: file with a title, and columns:
+            sequenceName<tab>sequence<tab>motif1-pos1,motif2-pos2...
+        loadedMotifs: instance of :class:`.AbstractLoadedMotifs`
+        shuffler: instance of :class:`.AbstractShuffler`
+
+    Returns:
+        A list of :class:`.SingleDnaseSequenceGenerator` objects
+    """
+    singleDnaseSequenceGenerators = []
+    def action(inp, lineNumber):
+        sequenceName = inp[0]
+        backgroundGenerator = ShuffledBackgroundGenerator(
+                    string=inp[1], shuffler=shuffler)
+        embedders = [parseDnaseMotifEmbedderString(
+                      embedderString, loadedMotifs)
+                     for embedderString in inp[2].split(",")]
+        singleDnaseSequenceGenerators.append(
+            SingleDnaseSequenceGenerator(
+                backgroundGenerator=backgroundGenerator,
+                dnaseMotifEmbedders=embedders,
+                sequenceName=sequenceName)) 
+
+    fp.performActionOnEachLineOfFile(
+        fileHandle=fp.getFileHandle(dnaseSimulationFile),
+        ignoreInputTitle=True,
+        action=action,
+        transformation=fp.defaultTabSeppd) 
+
+    return singleDnaseSequenceGenerators
+
+class DnaseSimulation(AbstractSequenceSetGenerator):
+    """Simulation based on a file that details the sequences (which may be
+    shuffled) and the motifs+positions in the sequences
+
+    Arguments:
+        dnaseSimulationFile: file with a title, and columns:
+            sequenceName<tab>sequence<tab>motif1-pos1,motif2-pos2...
+        loadedMotifs: instance of :class:`.AbstractLoadedMotifs`
+        shuffler: instance of :class:`.AbstractShuffler`
+    """
+
+    def __init__(self, dnaseSimulationFile, loadedMotifs, shuffler):
+        self.dnaseSimulationFile = dnaseSimulationFile
+        self.loadedMotifs = loadedMotifs
+        self.shuffler=shuffler
+        self.singleDnaseSequenceGenerators =\
+            parseDnaseSimulationFile(
+                dnaseSimulationFile=self.dnaseSimulationFile,
+                loadedMotifs=self.loadedMotifs, shuffler=self.shuffler) 
+
+    def generateSequences(self):
+        for dnaseSequenceGenerator in self.singleDnaseSequenceGenerators:
+            yield dnaseSequenceGenerator.generateSequence() 
+
+    def getJsonableObject(self):
+        """See superclass 
+        """
+        return OrderedDict(
+            [('dnaseSimulationFile', self.dnaseSimulationFile),
+             ('loadedMotifs', self.loadedMotifs.getJsonableObject()),
+             ('shuffler', self.shuffler.getJsonableObject())]) 
+
+
 class ChainSequenceSetGenerators(AbstractSequenceSetGenerator):
     """Chains several generators together.
 
@@ -498,7 +586,6 @@ class AbstractSingleSequenceGenerator(object):
 
     def __init__(self, namePrefix=None):
         self.namePrefix = namePrefix if namePrefix is not None else "synth"
-        self.sequenceCounter = 0
 
     def generateSequence(self):
         """Generate the sequence.
@@ -517,6 +604,87 @@ class AbstractSingleSequenceGenerator(object):
         record the exact details of what was simualted.
         """
         raise NotImplementedError()
+
+
+class SingleDnaseSequenceGenerator(object):
+    def __init__(self, backgroundGenerator, dnaseMotifEmbedders, sequenceName):
+        self.backgroundGenerator = backgroundGenerator 
+        self.dnaseMotifEmbedders = dnaseMotifEmbedders
+        self.sequenceName = sequenceName
+
+    def generateSequence(self):
+        return EmbedInABackground.\
+         generateSequenceGivenBackgroundGeneratorAndEmbedders(
+            backgroundGenerator=self.backgroundGenerator,
+            embedders=self.dnaseMotifEmbedders,
+            sequenceName=self.sequenceName) 
+
+
+class EmbedInABackground(AbstractSingleSequenceGenerator):
+    """Generate a background sequence and embed smaller sequences in it.
+    
+    Takes a backgroundGenerator and a series of embedders. Will
+    generate the background and then call each of the embedders in
+    succession. Then returns the result.
+
+    Arguments:
+        backgroundGenerator: instance of
+            :class:`.AbstractBackgroundGenerator`
+        embedders: array of instances of :class:`.AbstractEmbedder`
+        namePrefix: see parent
+    """
+
+    def __init__(self, backgroundGenerator, embedders, namePrefix=None):
+        super(EmbedInABackground, self).__init__(namePrefix)
+        self.backgroundGenerator = backgroundGenerator
+        self.embedders = embedders
+        self.sequenceCounter = 0
+
+    @staticmethod
+    def generateSequenceGivenBackgroundGeneratorAndEmbedders(
+        backgroundGenerator, embedders, sequenceName):
+        additionalInfo = AdditionalInfo()
+        backgroundString = backgroundGenerator.generateBackground()
+        backgroundStringArr = [x for x in backgroundString]
+        # priorEmbeddedThings keeps track of what has already been embedded
+        priorEmbeddedThings = PriorEmbeddedThings_numpyArrayBacked(
+            len(backgroundStringArr))
+        for embedder in embedders:
+            embedder.embed(backgroundStringArr,
+                           priorEmbeddedThings, additionalInfo)
+        return GeneratedSequence(sequenceName,
+                                 "".join(backgroundStringArr),
+                                 priorEmbeddedThings.getEmbeddings(),
+                                 additionalInfo)
+ 
+    def generateSequence(self):
+        """Produce the sequence.
+        
+        Generates a background using self.backgroundGenerator,
+        splits it into an array, and passes it to each of
+        self.embedders in turn for embedding things.
+
+        Returns:
+            An instance of :class:`.GeneratedSequence`
+        """
+        toReturn = EmbedInABackground.\
+         generateSequenceGivenBackgroundGeneratorAndEmbedders(
+            backgroundGenerator=self.backgroundGenerator,
+            embedders=self.embedders,
+            sequenceName=self.namePrefix + str(self.sequenceCounter))
+        self.sequenceCounter += 1
+        return toReturn
+
+    def getJsonableObject(self):
+        """See superclass.
+        """
+        return OrderedDict([("class", "EmbedInABackground"),
+                            ("namePrefix", self.namePrefix),
+                            ("backgroundGenerator",
+                             self.backgroundGenerator.getJsonableObject()),
+                            ("embedders",
+                             [x.getJsonableObject() for x in self.embedders])
+                            ])
 
 
 class AdditionalInfo(object):
@@ -553,62 +721,6 @@ class AdditionalInfo(object):
         """Can be used to store any additional information on operatorName.
         """
         self.additionaInfo[operatorName] = value
-
-
-class EmbedInABackground(AbstractSingleSequenceGenerator):
-    """Generate a background sequence and embed smaller sequences in it.
-    
-    Takes a backgroundGenerator and a series of embedders. Will
-    generate the background and then call each of the embedders in
-    succession. Then returns the result.
-
-    Arguments:
-        backgroundGenerator: instance of
-            :class:`.AbstractBackgroundGenerator`
-        embedders: array of instances of :class:`.AbstractEmbedder`
-        namePrefix: see parent
-    """
-
-    def __init__(self, backgroundGenerator, embedders, namePrefix=None):
-        super(EmbedInABackground, self).__init__(namePrefix)
-        self.backgroundGenerator = backgroundGenerator
-        self.embedders = embedders
-
-    def generateSequence(self):
-        """Produce the sequence.
-        
-        Generates a background using self.backgroundGenerator,
-        splits it into an array, and passes it to each of
-        self.embedders in turn for embedding things.
-
-        Returns:
-            An instance of :class:`.GeneratedSequence`
-        """
-        additionalInfo = AdditionalInfo()
-        backgroundString = self.backgroundGenerator.generateBackground()
-        backgroundStringArr = [x for x in backgroundString]
-        # priorEmbeddedThings keeps track of what has already been embedded
-        priorEmbeddedThings = PriorEmbeddedThings_numpyArrayBacked(
-            len(backgroundStringArr))
-        for embedder in self.embedders:
-            embedder.embed(backgroundStringArr,
-                           priorEmbeddedThings, additionalInfo)
-        self.sequenceCounter += 1
-        return GeneratedSequence(self.namePrefix + str(self.sequenceCounter),
-                                 "".join(backgroundStringArr),
-                                 priorEmbeddedThings.getEmbeddings(),
-                                 additionalInfo)
-
-    def getJsonableObject(self):
-        """See superclass.
-        """
-        return OrderedDict([("class", "EmbedInABackground"),
-                            ("namePrefix", self.namePrefix),
-                            ("backgroundGenerator",
-                             self.backgroundGenerator.getJsonableObject()),
-                            ("embedders",
-                             [x.getJsonableObject() for x in self.embedders])
-                            ])
 
 
 class AbstractPriorEmbeddedThings(object):
@@ -948,6 +1060,44 @@ class AbstractEmbedder(DefaultNameMixin):
             A json-friendly object (built of dictionaries, lists and
         python primitives), which can be converted to json to
         record the exact details of what was simualted.
+        """
+        raise NotImplementedError()
+
+
+class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
+    """Embeds a given :class:`.AbstractEmbeddable` at a given pos.
+
+    Embeds a given instance of :class:`.AbstractEmbeddable` within the
+    background sequence, at a given position. Could result in overlapping
+    embeddings if positions are too close.
+
+    Arguments:
+        embeddable: instance of :class:`.AbstractEmbeddable`
+        startPos: an int
+    """
+
+    def __init__(self, embeddableGenerator, startPos):
+        self.embeddableGenerator = embeddableGenerator
+        self.startPos = startPos
+        super(FixedEmbeddableWithPosEmbedder, self).__init__(None)
+
+    def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
+        """Shoves the designated embeddable at the designated position
+        Skips if some of the positions are already occupied.
+        """
+        embeddable = self.embeddableGenerator.generateEmbeddable()
+        canEmbed = embeddable.canEmbed(priorEmbeddedThings, self.startPos)
+        if (canEmbed == False):
+            print("Warning: can't embed " + str(embeddable)
+                  + " at position " + str(self.position)
+                  + " - already occupied")
+        embeddable.embedInBackgroundStringArr(
+         priorEmbeddedThings=priorEmbeddedThings,
+         backgroundStringArr=backgroundStringArr,
+         startPos=self.startPos)
+
+    def getJsonableObject(self):
+        """See superclass.
         """
         raise NotImplementedError()
 
@@ -2018,6 +2168,22 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
         return action
 
 
+class AbstractShuffler(object):
+    """Implements a method to shuffle a supplied sequence"""
+
+    def shuffle(self, string):
+        raise NotImplementedError()
+
+    def getJsonableObject(self):
+        return OrderedDict([('class', type(self).__name__)])
+
+
+class DinucleotideShuffler(AbstractShuffler):
+
+    def shuffle(self, string):
+        return dinuc_shuffle.dinuc_shuffle(string)  
+
+
 class AbstractBackgroundGenerator(object):
     """Returns the sequence that :class:`.AbstractEmbeddable` objects
     are to be embedded into.
@@ -2035,6 +2201,29 @@ class AbstractBackgroundGenerator(object):
             A json-friendly object (built of dictionaries, lists and
         python primitives), which can be converted to json to
         record the exact details of what was simualted.
+        """
+        raise NotImplementedError()
+
+
+class ShuffledBackgroundGenerator(AbstractBackgroundGenerator):
+    """Shuffles a given sequence
+
+    Arguments:
+        string: the string to shuffle 
+        shuffler: instance of :class:`.AbstractShuffler`.
+
+    Returns:
+        The shuffled string
+    """
+    def __init__(self, string, shuffler):
+        self.string = string
+        self.shuffler = shuffler
+
+    def generateBackground(self):
+        return self.shuffler.shuffle(self.string)
+
+    def getJsonableObject(self):
+        """See superclass.
         """
         raise NotImplementedError()
 

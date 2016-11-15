@@ -13,15 +13,16 @@ def do(options):
         import random
         random.seed(options.seed)
         
-    outputFileName_core = util.addArguments("DensityEmbedding", [util.ArgumentToAdd(options.prefix, "prefix"),
-                                                                 util.BooleanArgument(options.bestHit, "bestHit"),
-                                                                 util.ArrArgument(options.motifNames, "motifs"),
-                                                                 util.ArgumentToAdd(options.min_motifs, "min"),
-                                                                 util.ArgumentToAdd(options.max_motifs, "max"),
-                                                                 util.ArgumentToAdd(options.mean_motifs, "mean"),
-                                                                 util.ArgumentToAdd(options.zero_prob, "zeroProb"),
-                                                                 util.ArgumentToAdd(options.seqLength, "seqLength"),
-                                                                 util.ArgumentToAdd(options.numSeqs, "numSeqs")])
+    outputFileName_core = util.addArguments("DensityEmbedding",
+                        [util.ArgumentToAdd(options.prefix, "prefix"),
+                         util.BooleanArgument(options.bestHit, "bestHit"),
+                         util.ArrArgument(options.motifNames, "motifs"),
+                         util.ArgumentToAdd(options.min_motifs, "min"),
+                         util.ArgumentToAdd(options.max_motifs, "max"),
+                         util.ArgumentToAdd(options.mean_motifs, "mean"),
+                         util.ArgumentToAdd(options.zero_prob, "zeroProb"),
+                         util.ArgumentToAdd(options.seqLength, "seqLength"),
+                         util.ArgumentToAdd(options.numSeqs, "numSeqs")])
     
     loadedMotifs = synthetic.LoadedEncodeMotifs(options.pathToMotifs, pseudocountProb=0.001)
     Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs   
