@@ -2168,6 +2168,32 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
         return action
 
 
+class LoadedHomerMotifs(AbstractLoadedMotifs):
+    """A class for reading in a motifs file in the Homer motifs format.
+
+    Eg: HOCOMOCOv10_HUMAN_mono_homer_format_0.001.motif in resources
+    """
+
+    def getReadPwmAction(self, recordedPwms):
+        """See superclass.
+        """
+        currentPwm = util.VariableWrapper(None)
+
+        def action(inp, lineNumber):
+            if (inp.startswith(">")):
+                inp = inp.lstrip(">")
+                inpArr = inp.split()
+                motifName = inpArr[1]
+                currentPwm.var = pwm.PWM(motifName, background=self.background)
+                recordedPwms[currentPwm.var.name] = currentPwm.var
+            else:
+                # assume that it's a line of the pwm
+                assert currentPwm.var is not None
+                inpArr = inp.split()
+                currentPwm.var.addRow([float(x) for x in inpArr[0:]])
+        return action
+
+
 class AbstractShuffler(object):
     """Implements a method to shuffle a supplied sequence"""
 
