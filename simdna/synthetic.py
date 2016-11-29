@@ -514,7 +514,6 @@ class DnaseSimulation(AbstractSequenceSetGenerator):
         """
         return OrderedDict(
             [('dnaseSimulationFile', self.dnaseSimulationFile),
-             ('loadedMotifs', self.loadedMotifs.getJsonableObject()),
              ('shuffler', self.shuffler.getJsonableObject())]) 
 
 
@@ -2011,7 +2010,6 @@ class PwmSamplerFromLoadedMotifs(PwmSampler):
         """See superclass.
         """
         obj = super(PwmSamplerFromLoadedMotifs, self).getJsonableObject()
-        obj['loadedMotifs'] = self.loadedMotifs.getJsonableObject()
         return obj
 
 
@@ -2062,11 +2060,45 @@ class BestHitPwmFromLoadedMotifs(BestHitPwm):
         """See superclass.
         """
         obj = super(BestHitPwmFromLoadedMotifs, self).getJsonableObject()
-        obj['loadedMotifs'] = self.loadedMotifs.getJsonableObject()
         return obj
 
 
 class AbstractLoadedMotifs(object):
+    """Class representing loaded PWMs.
+
+    A class that contains instances of ``pwm.PWM`` loaded from a file.
+    The pwms can be accessed by name.
+
+    Arguments:
+        loadedMotifs: dictionary mapping names of motifs
+    to instances of ``pwm.PWM`` 
+    """
+
+    def __init__(self, loadedMotifs):
+        self.loadedMotifs = loadedMotifs
+
+    def getPwm(self, name):
+        """Get a specific PWM.
+
+        Returns:
+            The ``pwm.PWM`` instance with the specified name.
+        """
+        return self.loadedMotifs[name]
+
+    def addMotifs(self, abstractLoadedMotifs):
+        """Adds the motifs in abstractLoadedMotifs to this.
+
+        Arguments:
+            abstractLoadedMotifs: instance of :class:`.AbstractLoadedMotifs`
+
+        Returns:
+            self, as a convenience
+        """
+        self.loadedMotifs.update(abstractLoadedMotifs.loadedMotifs)
+        return self #convenience return
+
+
+class AbstractLoadedMotifsFromFile(AbstractLoadedMotifs):
     """Class representing loaded PWMs.
 
     A class that contains instances of ``pwm.PWM`` loaded from a file.
@@ -2090,51 +2122,31 @@ class AbstractLoadedMotifs(object):
         fileHandle = fp.getFileHandle(fileName)
         self.pseudocountProb = pseudocountProb
         self.background = background
-        self.recordedPwms = OrderedDict()
-        action = self.getReadPwmAction(self.recordedPwms)
+        self.loadedMotifs = OrderedDict()
+        action = self.getReadPwmAction(self.loadedMotifs)
         fp.performActionOnEachLineOfFile(
             fileHandle=fileHandle, transformation=fp.trimNewline, action=action
         )
-        for pwm in self.recordedPwms.values():
+        for pwm in self.loadedMotifs.values():
             pwm.finalise(pseudocountProb=self.pseudocountProb)
+        super(AbstractLoadedMotifsFromFile, self).__init__(self.loadedMotifs)
 
-    def getPwm(self, name):
-        """Get a specific PWM.
-
-        Returns:
-            The ``pwm.PWM`` instance with the specified name.
-        """
-        return self.recordedPwms[name]
-
-    def getReadPwmAction(self, recordedPwms):
+    def getReadPwmAction(self, loadedMotifs):
         """Action performed when each line of the pwm text file is read in.
 
         This function is to be overridden by a specific implementation.
         It is executed on each line of the file when it is read in, and
-        when PWMs are ready they will get inserted into ``recordedPwms``.
+        when PWMs are ready they will get inserted into ``loadedMotifs``.
 
         Arguments:
-            recordedPwms: an ``OrderedDict`` that will be filled with PWMs.
+            loadedMotifs: an ``OrderedDict`` that will be filled with PWMs.
         The keys will be the names of the PWMs and the
         values will be instances of ``pwm.PWM``
         """
         raise NotImplementedError()
 
-    def getJsonableObject(self):
-        """Get JSON object representation.
 
-        Returns:
-            A json-friendly object (built of dictionaries, lists and
-        python primitives), which can be converted to json to
-        record the exact details of what was simualted.
-        """
-        return OrderedDict([
-    ("fileName", self.fileName),
-    ("pseudocountProb", self.pseudocountProb),
-    ("background", self.background)])
-
-
-class LoadedEncodeMotifs(AbstractLoadedMotifs):
+class LoadedEncodeMotifs(AbstractLoadedMotifsFromFile):
     """A class for reading in a motifs file in the ENCODE motifs format.
 
     This class is specifically for reading files in the encode motif
@@ -2147,7 +2159,7 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
     "<ignored character> <prob of A> <prob of C> <prob of G> <prob of T>"
     """
 
-    def getReadPwmAction(self, recordedPwms):
+    def getReadPwmAction(self, loadedMotifs):
         """See superclass.
         """
         currentPwm = util.VariableWrapper(None)
@@ -2158,7 +2170,7 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
                 inpArr = inp.split()
                 motifName = inpArr[0]
                 currentPwm.var = pwm.PWM(motifName, background=self.background)
-                recordedPwms[currentPwm.var.name] = currentPwm.var
+                loadedMotifs[currentPwm.var.name] = currentPwm.var
             else:
                 # assume that it's a line of the pwm
                 assert currentPwm.var is not None
@@ -2168,13 +2180,13 @@ class LoadedEncodeMotifs(AbstractLoadedMotifs):
         return action
 
 
-class LoadedHomerMotifs(AbstractLoadedMotifs):
+class LoadedHomerMotifs(AbstractLoadedMotifsFromFile):
     """A class for reading in a motifs file in the Homer motifs format.
 
     Eg: HOCOMOCOv10_HUMAN_mono_homer_format_0.001.motif in resources
     """
 
-    def getReadPwmAction(self, recordedPwms):
+    def getReadPwmAction(self, loadedMotifs):
         """See superclass.
         """
         currentPwm = util.VariableWrapper(None)
@@ -2185,7 +2197,7 @@ class LoadedHomerMotifs(AbstractLoadedMotifs):
                 inpArr = inp.split()
                 motifName = inpArr[1]
                 currentPwm.var = pwm.PWM(motifName, background=self.background)
-                recordedPwms[currentPwm.var.name] = currentPwm.var
+                loadedMotifs[currentPwm.var.name] = currentPwm.var
             else:
                 # assume that it's a line of the pwm
                 assert currentPwm.var is not None
