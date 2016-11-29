@@ -35,7 +35,7 @@ class TestRun(unittest.TestCase):
             dnaseSimulationFile=dnaseSimulationFileName,
             loadedMotifs=sn.LoadedHomerMotifs(
                 simdna.HOCOMOCO_MOTIFS_PATH,
-                pseudocountProb=0.001),
+                pseudocountProb=0.000),
             shuffler=sn.DinucleotideShuffler())
         sn.printSequences("temp_dnaseSimulation.simdata", dnaseSimulation,       
                              includeFasta=False, includeEmbeddings=True,         
