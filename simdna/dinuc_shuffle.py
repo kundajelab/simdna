@@ -32,6 +32,7 @@ def traverse_edges(s, edges):
 
 
 def dinuc_shuffle(s):
+    s = s.upper()
     return traverse_edges(s, shuffle_edges(prepare_edges(s)))
     
     

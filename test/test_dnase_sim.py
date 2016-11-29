@@ -9,8 +9,8 @@ class TestRun(unittest.TestCase):
         dnaseSimulationFileName="temp_dnaseSimulationFile.txt"
         dnaseSimFh = fp.getFileHandle(dnaseSimulationFileName,'w')
         dnaseSimFh.write("sequenceName\tsequence\tmotifs\n")
-        dnaseSimFh.write("seq1\tACGTGATATGATAGCACATGTCGTCAGTACCATGGTCGCCGCTTGCATAGGCAAACATAATTGG\tGATA4_HUMAN.H10MO.B-10,TAL1_known1-30\n")
-        dnaseSimFh.write("seq2\tACGTGATATGATAGCACATGTCGTCAGTACCATGGTCGCCGCTTGCATAGGCAAACATAATTGG\tGATA4_HUMAN.H10MO.B-5,TAL1_known1-35\n")
+        dnaseSimFh.write("seq1\tACGTgaTATGATAGCACATGTCGTCAGTACCATGGTCGCCGCTTGCATAGGCAAACATAATTGG\tGATA4_HUMAN.H10MO.B-10,TAL1_known1-30\n")
+        dnaseSimFh.write("seq2\tACGTGAtaTGATAGCACATGTCGTCAGTACCATGGTCGCCGCTTGCATAGGCAAACATAATTGG\tGATA4_HUMAN.H10MO.B-5,TAL1_known1-35\n")
         dnaseSimFh.close()
 
         dnaseSimulation = sn.DnaseSimulation(
