@@ -446,7 +446,8 @@ def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
                     motifName=motifName,
                     loadedMotifs=loadedMotifs) 
     embeddableGenerator = SubstringEmbeddableGenerator(
-                           substringGenerator=pwmSampler)
+                           substringGenerator=
+                            ReverseComplementWrapper(pwmSampler))
     return FixedEmbeddableWithPosEmbedder(
             embeddableGenerator=embeddableGenerator,
             startPos=int(pos))
