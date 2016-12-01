@@ -452,39 +452,6 @@ def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
             embeddableGenerator=embeddableGenerator,
             startPos=int(pos))
 
-def parseDnaseSimulationFile(dnaseSimulationFile, loadedMotifs, shuffler):
-    """Parse a file detailing the dnase simulation
-
-    Arguments:
-        dnaseSimulationFile: file with a title, and columns:
-            sequenceName<tab>sequence<tab>motif1-pos1,motif2-pos2...
-        loadedMotifs: instance of :class:`.AbstractLoadedMotifs`
-        shuffler: instance of :class:`.AbstractShuffler`
-
-    Returns:
-        A list of :class:`.SingleDnaseSequenceGenerator` objects
-    """
-    singleDnaseSequenceGenerators = []
-    def action(inp, lineNumber):
-        sequenceName = inp[0]
-        backgroundGenerator = ShuffledBackgroundGenerator(
-                    string=inp[1], shuffler=shuffler)
-        embedders = [parseDnaseMotifEmbedderString(
-                      embedderString, loadedMotifs)
-                     for embedderString in inp[2].split(",")]
-        singleDnaseSequenceGenerators.append(
-            SingleDnaseSequenceGenerator(
-                backgroundGenerator=backgroundGenerator,
-                dnaseMotifEmbedders=embedders,
-                sequenceName=sequenceName)) 
-
-    fp.performActionOnEachLineOfFile(
-        fileHandle=fp.getFileHandle(dnaseSimulationFile),
-        ignoreInputTitle=True,
-        action=action,
-        transformation=fp.defaultTabSeppd) 
-
-    return singleDnaseSequenceGenerators
 
 class DnaseSimulation(AbstractSequenceSetGenerator):
     """Simulation based on a file that details the sequences (which may be
@@ -501,14 +468,22 @@ class DnaseSimulation(AbstractSequenceSetGenerator):
         self.dnaseSimulationFile = dnaseSimulationFile
         self.loadedMotifs = loadedMotifs
         self.shuffler=shuffler
-        self.singleDnaseSequenceGenerators =\
-            parseDnaseSimulationFile(
-                dnaseSimulationFile=self.dnaseSimulationFile,
-                loadedMotifs=self.loadedMotifs, shuffler=self.shuffler) 
 
     def generateSequences(self):
-        for dnaseSequenceGenerator in self.singleDnaseSequenceGenerators:
-            yield dnaseSequenceGenerator.generateSequence() 
+        fileHandle = fp.getFileHandle(self.dnaseSimulationFile)
+        for lineNumber, line in enumerate(fileHandle):
+            if (lineNumber > 0): #ignore title
+                inp = fp.defaultTabSeppd(line)
+                sequenceName = inp[0]
+                backgroundGenerator = ShuffledBackgroundGenerator(
+                            string=inp[1], shuffler=self.shuffler)
+                embedders = [parseDnaseMotifEmbedderString(
+                              embedderString, self.loadedMotifs)
+                             for embedderString in inp[2].split(",")]
+                yield SingleDnaseSequenceGenerator(
+                    backgroundGenerator=backgroundGenerator,
+                    dnaseMotifEmbedders=embedders,
+                    sequenceName=sequenceName).generateSequence()
 
     def getJsonableObject(self):
         """See superclass 
