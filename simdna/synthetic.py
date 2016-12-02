@@ -1062,10 +1062,10 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
         """
         embeddable = self.embeddableGenerator.generateEmbeddable()
         canEmbed = embeddable.canEmbed(priorEmbeddedThings, self.startPos)
-        if (canEmbed == False):
-            print("Warning: trying to embed " + str(embeddable)
-                  + " at position " + str(self.startPos)
-                  + " which is already occupied")
+        #if (canEmbed == False):
+            #print("Warning: trying to embed " + str(embeddable)
+            #      + " at position " + str(self.startPos)
+            #      + " which is already occupied")
         embeddable.embedInBackgroundStringArr(
          priorEmbeddedThings=priorEmbeddedThings,
          backgroundStringArr=backgroundStringArr,
