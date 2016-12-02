@@ -888,10 +888,22 @@ class StringEmbeddable(AbstractEmbeddable):
         """
         return priorEmbeddedThings.canEmbed(startPos, startPos + len(self.string))
 
-    def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
+    def embedInBackgroundStringArr(self, priorEmbeddedThings,
+                                         backgroundStringArr, startPos):
         """See superclass.
         """
-        backgroundStringArr[startPos:startPos + len(self.string)] = self.string
+        positions_left = len(backgroundStringArr)-startPos
+        if (positions_left < len(self.string)):
+            print("Warning: length of background is "
+                  +str(len(backgroundStringArr))
+                  +" but was asked to embed string of length "
+                  +str(len(self.string))+" at position "
+                  +str(startPos)+"; truncating")
+            string_to_embed = self.string[:positions_left]
+        else:
+            string_to_embed = self.string
+        backgroundStringArr[startPos:
+         startPos+len(string_to_embed)] = string_to_embed
         priorEmbeddedThings.addEmbedding(startPos, self)
 
     @classmethod
