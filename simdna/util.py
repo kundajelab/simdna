@@ -42,6 +42,7 @@ class DiscreteDistribution(object):
         """
             valToFreq: OrderedDict where the keys are the possible things to sample, and the values are their frequencies
         """
+        assert isinstance(valToFreq, OrderedDict)
         self.valToFreq = valToFreq
         self.freqArr = valToFreq.values()  # array representing only the probabilities
         # map from index in freqArr to the corresponding value it represents

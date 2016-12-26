@@ -1,4 +1,5 @@
 from __future__ import absolute_import, division, print_function
+from collections import OrderedDict
 import numpy as np
 import simdna
 from simdna.synthetic import (
@@ -17,9 +18,9 @@ loaded_motifs = LoadedEncodeMotifs(simdna.ENCODE_MOTIFS_PATH,
 
 
 def get_distribution(GC_fraction):
-    return DiscreteDistribution({
-        'A': (1 - GC_fraction) / 2, 'C': GC_fraction / 2,
-        'G': GC_fraction / 2, 'T': (1 - GC_fraction) / 2})
+    return DiscreteDistribution(OrderedDict((
+        ('A', (1 - GC_fraction) / 2), ('C', GC_fraction / 2),
+        ('G', (GC_fraction / 2)), ('T', (1 - GC_fraction) / 2))))
 
 
 def simple_motif_embedding(motif_name, seq_length, num_seqs, GC_fraction):
