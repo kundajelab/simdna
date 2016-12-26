@@ -24,7 +24,25 @@ def get_distribution(GC_fraction):
 
 def simple_motif_embedding(motif_name, seq_length, num_seqs, GC_fraction):
     """
-    returns sequence array
+    Simulates sequences with a motif embedded anywhere in the sequence.
+
+    Parameters
+    ----------
+    motif_name : str
+        encode motif name
+    seq_length : int
+        length of sequence
+    num_seqs: int
+        number of sequences
+    GC_fraction : float
+        GC fraction in background sequence
+
+    Returns
+    -------
+    sequence_arr : 1darray
+        Array with sequence strings.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
     if motif_name is None:
         embedders = []
@@ -37,19 +55,18 @@ def simple_motif_embedding(motif_name, seq_length, num_seqs, GC_fraction):
         ZeroOrderBackgroundGenerator(
             seq_length, discreteDistribution=get_distribution(GC_fraction)),
         embedders)
-    generated_sequences = GenerateSequenceNTimes(
-        embed_in_background, num_seqs).generateSequences()
-    sequence_arr = np.asarray(
-        [generated_seq.seq for generated_seq in generated_sequences])
-
-    return sequence_arr
+    generated_sequences = tuple(GenerateSequenceNTimes(
+        embed_in_background, num_seqs).generateSequences())
+    sequence_arr = np.array([generated_seq.seq for generated_seq in generated_sequences])
+    embedding_arr = [generated_seq.embeddings for generated_seq in generated_sequences]
+    return sequence_arr, embedding_arr
 
 
 def motif_density(motif_name, seq_length, num_seqs,
                   min_counts, max_counts, GC_fraction,
                   central_bp=None):
     """
-    returns sequences with motif density.
+    returns sequences with motif density, along with embeddings array.
     """
     substring_generator = PwmSamplerFromLoadedMotifs(loaded_motifs, motif_name)
     if central_bp is not None:
@@ -67,12 +84,11 @@ def motif_density(motif_name, seq_length, num_seqs,
         ZeroOrderBackgroundGenerator(
             seq_length, discreteDistribution=get_distribution(GC_fraction)),
         embedders)
-    generated_sequences = GenerateSequenceNTimes(
-        embed_in_background, num_seqs).generateSequences()
-    sequence_arr = np.asarray(
-        [generated_seq.seq for generated_seq in generated_sequences])
-
-    return sequence_arr
+    generated_sequences = tuple(GenerateSequenceNTimes(
+        embed_in_background, num_seqs).generateSequences())
+    sequence_arr = np.array([generated_seq.seq for generated_seq in generated_sequences])
+    embedding_arr = [generated_seq.embeddings for generated_seq in generated_sequences]
+    return sequence_arr, embedding_arr
 
 
 def simulate_single_motif_detection(motif_name, seq_length,
@@ -102,15 +118,17 @@ def simulate_single_motif_detection(motif_name, seq_length,
         Array with sequence strings.
     y : 1darray
         Array with positive/negative class labels.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
-    motif_sequence_arr = simple_motif_embedding(
+    motif_sequence_arr, positive_embedding_arr = simple_motif_embedding(
         motif_name, seq_length, num_pos, GC_fraction)
-    random_sequence_arr = simple_motif_embedding(
+    random_sequence_arr, negative_embedding_arr = simple_motif_embedding(
         None, seq_length, num_neg, GC_fraction)
     sequence_arr = np.concatenate((motif_sequence_arr, random_sequence_arr))
     y = np.array([[True]] * num_pos + [[False]] * num_neg)
-
-    return sequence_arr, y
+    embedding_arr = positive_embedding_arr + negative_embedding_arr
+    return sequence_arr, y, embedding_arr
 
 
 def simulate_motif_counting(motif_name, seq_length, pos_counts, neg_counts,
@@ -136,18 +154,20 @@ def simulate_motif_counting(motif_name, seq_length, pos_counts, neg_counts,
         Contains sequence strings.
     y : 1darray
         Contains labels.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
-    pos_count_sequence_array = motif_density(
+    pos_count_sequence_array, positive_embedding_arr = motif_density(
         motif_name, seq_length, num_pos,
         pos_counts[0], pos_counts[1], GC_fraction)
-    neg_count_sequence_array = motif_density(
+    neg_count_sequence_array, negative_embedding_arr = motif_density(
         motif_name, seq_length, num_pos,
         neg_counts[0], neg_counts[1], GC_fraction)
     sequence_arr = np.concatenate(
         (pos_count_sequence_array, neg_count_sequence_array))
     y = np.array([[True]] * num_pos + [[False]] * num_neg)
-
-    return sequence_arr, y
+    embedding_arr = positive_embedding_arr + negative_embedding_arr
+    return sequence_arr, y, embedding_arr
 
 
 def simulate_motif_density_localization(
@@ -187,18 +207,20 @@ def simulate_motif_density_localization(
         Contains sequence strings.
     y : 1darray
         Contains labels.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
-    localized_density_sequence_array = motif_density(
+    localized_density_sequence_array, positive_embedding_arr = motif_density(
         motif_name, seq_length, num_pos,
         min_motif_counts, max_motif_counts, GC_fraction, center_size)
-    unlocalized_density_sequence_array = motif_density(
+    unlocalized_density_sequence_array, negative_embedding_arr = motif_density(
         motif_name, seq_length, num_neg,
         min_motif_counts, max_motif_counts, GC_fraction)
     sequence_arr = np.concatenate(
         (localized_density_sequence_array, unlocalized_density_sequence_array))
     y = np.array([[True]] * num_pos + [[False]] * num_neg)
-
-    return sequence_arr, y
+    embedding_arr = positive_embedding_arr + negative_embedding_arr
+    return sequence_arr, y, embedding_arr
 
 
 def simulate_multi_motif_embedding(motif_names, seq_length, min_num_motifs,
@@ -222,6 +244,8 @@ def simulate_multi_motif_embedding(motif_names, seq_length, min_num_motifs,
         Contains sequence strings.
     y : ndarray
         Contains labels for each motif.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
 
     def get_embedder(motif_name):
@@ -240,16 +264,14 @@ def simulate_multi_motif_embedding(motif_names, seq_length, min_num_motifs,
         ZeroOrderBackgroundGenerator(
             seq_length, discreteDistribution=get_distribution(GC_fraction)),
         combined_embedder)
-    generated_sequences = GenerateSequenceNTimes(
-        embed_in_background, num_seqs).generateSequences()
+    generated_sequences = tuple(GenerateSequenceNTimes(
+        embed_in_background, num_seqs).generateSequences())
+    sequence_arr = np.array([generated_seq.seq for generated_seq in generated_sequences])
     label_generator = IsInTraceLabelGenerator(np.asarray(motif_names))
-    data_arr = np.asarray(
-        [[generated_seq.seq] + label_generator.generateLabels(generated_seq)
-         for generated_seq in generated_sequences])
-    sequence_arr = data_arr[:, 0]
-    y = data_arr[:, 1:].astype(bool)
-
-    return sequence_arr, y
+    y = np.array([label_generator.generateLabels(generated_seq)
+                  for generated_seq in generated_sequences], dtype=bool)
+    embedding_arr = [generated_seq.embeddings for generated_seq in generated_sequences]
+    return sequence_arr, y, embedding_arr
 
 
 def simulate_differential_accessibility(
@@ -277,18 +299,20 @@ def simulate_differential_accessibility(
         Contains sequence strings.
     y : 1darray
         Contains labels.
+    embedding_arr: 1darray
+        Array of embedding objects.
     """
-    pos_motif_sequence_arr, _ = simulate_multi_motif_embedding(
+    pos_motif_sequence_arr, _, positive_embedding_arr = simulate_multi_motif_embedding(
         pos_motif_names, seq_length,
         min_num_motifs, max_num_motifs, num_pos, GC_fraction)
-    neg_motif_sequence_arr, _ = simulate_multi_motif_embedding(
+    neg_motif_sequence_arr, _, negative_embedding_arr = simulate_multi_motif_embedding(
         neg_motif_names, seq_length,
         min_num_motifs, max_num_motifs, num_neg, GC_fraction)
     sequence_arr = np.concatenate(
         (pos_motif_sequence_arr, neg_motif_sequence_arr))
     y = np.array([[True]] * num_pos + [[False]] * num_neg)
-
-    return sequence_arr, y
+    embedding_arr = positive_embedding_arr + negative_embedding_arr
+    return sequence_arr, y, embedding_arr
 
 
 def simulate_heterodimer_grammar(
@@ -318,6 +342,8 @@ def simulate_heterodimer_grammar(
         Array with sequence strings.
     y : 1darray
         Array with positive/negative class labels.
+    embedding_arr: list
+        List of embedding objects.
     """
 
     motif1_generator = PwmSamplerFromLoadedMotifs(loaded_motifs, motif1)
@@ -327,14 +353,14 @@ def simulate_heterodimer_grammar(
         motif1_generator, motif2_generator, separation_generator))
     embed_in_background = EmbedInABackground(ZeroOrderBackgroundGenerator(
         seq_length, discreteDistribution=get_distribution(GC_fraction)), [embedder])
-    generated_sequences = GenerateSequenceNTimes(
-        embed_in_background, num_pos).generateSequences()
-    grammar_sequence_arr = np.asarray(
-        [generated_seq.seq for generated_seq in generated_sequences])
-    nongrammar_sequence_arr, _ = simulate_multi_motif_embedding(
+    generated_sequences = tuple(GenerateSequenceNTimes(
+        embed_in_background, num_pos).generateSequences())
+    grammar_sequence_arr = np.array([generated_seq.seq for generated_seq in generated_sequences])
+    positive_embedding_arr = [generated_seq.embeddings for generated_seq in generated_sequences]
+    nongrammar_sequence_arr, _, negative_embedding_arr = simulate_multi_motif_embedding(
         [motif1, motif2], seq_length, 2, 2, num_neg, GC_fraction)
     sequence_arr = np.concatenate(
         (grammar_sequence_arr, nongrammar_sequence_arr))
     y = np.array([[True]] * num_pos + [[False]] * num_neg)
-
-    return sequence_arr, y
+    embedding_arr = positive_embedding_arr + negative_embedding_arr
+    return sequence_arr, y, embedding_arr
