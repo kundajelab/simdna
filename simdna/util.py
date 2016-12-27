@@ -40,14 +40,13 @@ class DiscreteDistribution(object):
 
     def __init__(self, valToFreq):
         """
-            valToFreq: OrderedDict where the keys are the possible things to sample, and the values are their frequencies
+            valToFreq: dict where the keys are the possible things to sample, and the values are their frequencies
         """
-        assert isinstance(valToFreq, OrderedDict)
         self.valToFreq = valToFreq
-        self.freqArr = valToFreq.values()  # array representing only the probabilities
+        self.keysOrder = valToFreq.keys()
+        self.freqArr = [valToFreq[key] for key in self.keysOrder]  # array representing only the probabilities
         # map from index in freqArr to the corresponding value it represents
-        self.indexToVal = dict((x[0], x[1])
-                               for x in enumerate(valToFreq.keys()))
+        self.indexToVal = dict((x[0], x[1]) for x in enumerate(self.keysOrder))
 
     def sample(self):
         """Sample from the distribution.
