@@ -2330,11 +2330,16 @@ class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
     Arguments:
         seqLength: int, length of the background 
 
-        discreteDistribution: instance of ``util.DiscreteDistribution`,\
+        discreteDistribution: either an instance of\
+    ``util.DiscreteDistribution` or a dict mapping values to frequency.\
     defaults to ``util.DEFAULT_BASE_DISCRETE_DISTRIBUTION``
     """
 
-    def __init__(self, seqLength, discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
+    def __init__(self, seqLength,
+        discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
+        if isinstance(discreteDistribution,dict):
+            discreteDistribution=util.DiscreteDistribution(
+                discreteDistribution)
         super(ZeroOrderBackgroundGenerator, self).__init__(
     SampleFromDiscreteDistributionSubstringGenerator(discreteDistribution),
     seqLength)

@@ -5,9 +5,12 @@ from simdna import synthetic as sn
 import numpy as np
 import random
 
-class TestRun(unittest.TestCase):
+class TestPairEmbeddable(unittest.TestCase):
 
     def test_simple_motif_grammar(self):
+        seq_len = 100
+        min_sep = 2
+        max_sep = 10
         random.seed(1234)
         np.random.seed(1234)
         loaded_motifs = sn.LoadedEncodeMotifs(
@@ -17,17 +20,18 @@ class TestRun(unittest.TestCase):
                             loaded_motifs, "SIX5_known5")
         motif2_generator = sn.PwmSamplerFromLoadedMotifs(
                             loaded_motifs, "ZNF143_known2")
-        separation_generator = sn.UniformIntegerGenerator(2,10)
+        separation_generator = sn.UniformIntegerGenerator(min_sep,max_sep)
         embedder = sn.EmbeddableEmbedder(
                     sn.PairEmbeddableGenerator(
                      motif1_generator, motif2_generator, separation_generator))
         embed_in_background = sn.EmbedInABackground(
-                               sn.ZeroOrderBackgroundGenerator(500),
+                               sn.ZeroOrderBackgroundGenerator(seq_len),
                                [embedder])
         generated_sequences = sn.GenerateSequenceNTimes(
                                embed_in_background, 500).generateSequences()
         generated_seqs = [seq for seq in generated_sequences]
         for seq in generated_seqs:
+            assert len(seq.seq == seq_len)
             embedding1 = seq.embeddings[0]
             embedding2 = seq.embeddings[1]
             embedding3 = seq.embeddings[2]
@@ -49,5 +53,5 @@ class TestRun(unittest.TestCase):
                                           + len(embedding1.what.string)))
                      == embedding3.what.separation)
             #testing the separation is in the right limits
-            assert embedding3.what.separation >= 2 
-            assert embedding3.what.separation <= 10 
+            assert embedding3.what.separation >= min_sep 
+            assert embedding3.what.separation <= max_sep

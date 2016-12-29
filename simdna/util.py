@@ -45,6 +45,7 @@ class DiscreteDistribution(object):
         self.valToFreq = valToFreq
         self.keysOrder = sorted(valToFreq.keys()) #sort the keys for determinism
         self.freqArr = [valToFreq[key] for key in self.keysOrder]  # array representing only the probabilities
+        assert abs(sum(self.freqArr)-1.0) < 10**-5
         # map from index in freqArr to the corresponding value it represents
         self.indexToVal = dict((x[0], x[1]) for x in enumerate(self.keysOrder))
 
