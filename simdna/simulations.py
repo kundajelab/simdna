@@ -347,8 +347,8 @@ def simulate_heterodimer_grammar(
         List of embedding objects.
     """
 
-    motif1_generator = PwmSamplerFromLoadedMotifs(loaded_motifs, motif1)
-    motif2_generator = PwmSamplerFromLoadedMotifs(loaded_motifs, motif2)
+    motif1_generator = ReverseComplementWrapper(PwmSamplerFromLoadedMotifs(loaded_motifs, motif1))
+    motif2_generator = ReverseComplementWrapper(PwmSamplerFromLoadedMotifs(loaded_motifs, motif2))
     separation_generator = UniformIntegerGenerator(min_spacing, max_spacing)
     embedder = EmbeddableEmbedder(PairEmbeddableGenerator(
         motif1_generator, motif2_generator, separation_generator))
