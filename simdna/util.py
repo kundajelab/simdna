@@ -43,7 +43,7 @@ class DiscreteDistribution(object):
             valToFreq: dict where the keys are the possible things to sample, and the values are their frequencies
         """
         self.valToFreq = valToFreq
-        self.keysOrder = valToFreq.keys()
+        self.keysOrder = sorted(valToFreq.keys()) #sort the keys for determinism
         self.freqArr = [valToFreq[key] for key in self.keysOrder]  # array representing only the probabilities
         # map from index in freqArr to the corresponding value it represents
         self.indexToVal = dict((x[0], x[1]) for x in enumerate(self.keysOrder))
