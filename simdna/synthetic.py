@@ -996,13 +996,14 @@ class PairEmbeddable(AbstractEmbeddable):
         self.embeddable1.embedInBackgroundStringArr(
             priorEmbeddedThings, backgroundStringArr, startPos)
         self.embeddable2.embedInBackgroundStringArr(
-            priorEmbeddedThings, backgroundStringArr, startPos + self.separation)
+            priorEmbeddedThings, backgroundStringArr,
+            startPos+len(self.embeddable1)+self.separation)
         if (self.nothingInBetween):
             priorEmbeddedThings.addEmbedding(startPos, self)
         else:
             priorEmbeddedThings.addEmbedding(startPos, self.embeddable1)
             priorEmbeddedThings.addEmbedding(
-                startPos + len(self.string1) + self.separation, self.embeddable2)
+                startPos + len(self.embeddable1) + self.separation, self.embeddable2)
 
 
 class AbstractEmbedder(DefaultNameMixin):
