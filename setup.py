@@ -6,7 +6,7 @@ config = {
     'download_url': 'https://github.com/kundajelab/simdna',
     'version': '0.1',
     'packages': ['simdna', 'simdna.resources'],
-    'package_data': {'simdna.resources': ['encode_motifs.txt']},
+    'package_data': {'simdna.resources': ['encode_motifs.txt.gz']},
     'setup_requires': [],
     'install_requires': ['numpy>=1.9', 'matplotlib', 'scipy'],
     'dependency_links': [],
