@@ -4,15 +4,17 @@ import simdna
 from simdna import synthetic as sn
 import numpy as np
 import random
+from collections import defaultdict
 
 class TestPairEmbeddable(unittest.TestCase):
 
     def test_simple_motif_grammar(self):
         seq_len = 100
         min_sep = 2
-        max_sep = 10
+        max_sep = 6
         random.seed(1234)
         np.random.seed(1234)
+        num_sequences = 4000
         loaded_motifs = sn.LoadedEncodeMotifs(
                          simdna.ENCODE_MOTIFS_PATH,
                          pseudocountProb=0.001)
@@ -28,10 +30,11 @@ class TestPairEmbeddable(unittest.TestCase):
                                sn.ZeroOrderBackgroundGenerator(seq_len),
                                [embedder])
         generated_sequences = sn.GenerateSequenceNTimes(
-                               embed_in_background, 500).generateSequences()
+                        embed_in_background, num_sequences).generateSequences()
         generated_seqs = [seq for seq in generated_sequences]
+        separations = defaultdict(lambda: 0) 
         for seq in generated_seqs:
-            assert len(seq.seq == seq_len)
+            assert len(seq.seq) == seq_len
             embedding1 = seq.embeddings[0]
             embedding2 = seq.embeddings[1]
             embedding3 = seq.embeddings[2]
@@ -52,6 +55,14 @@ class TestPairEmbeddable(unittest.TestCase):
             assert ((embedding2.startPos - (embedding1.startPos
                                           + len(embedding1.what.string)))
                      == embedding3.what.separation)
-            #testing the separation is in the right limits
+            #test separation is within the right limits 
             assert embedding3.what.separation >= min_sep 
             assert embedding3.what.separation <= max_sep
+            #log the separation; will later test distribution
+            separations[embedding3.what.separation] += 1
+
+        for possible_sep in range(min_sep, max_sep+1):
+            np.testing.assert_almost_equal(
+             separations[possible_sep]/float(num_sequences),
+             1.0/(max_sep-min_sep+1),2)
+             
