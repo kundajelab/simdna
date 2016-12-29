@@ -156,7 +156,7 @@ class DefaultNameMixin(object):
         self.name = name
 
     def getDefaultName(self):
-        return RuntimeError("No default name implementation")
+        return type(self).__name__
 
 
 class AbstractPositionGenerator(DefaultNameMixin):
