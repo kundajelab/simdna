@@ -204,6 +204,47 @@ class AbstractPositionGenerator(DefaultNameMixin):
         raise NotImplementedError()
 
 
+class NormalDistributionPositionGenerator(DefaultNameMixin):
+    """Generate position according to normal distribution with mean at
+    offsetFromCenter
+    """
+
+    def __init__(self, stdInBp, offsetFromCenter=0):
+        self.stdInBp = stdInBp
+        self.offsetFromCenter = offsetFromCenter
+        
+
+    def _generatePos(self, lenBackground, lenSubstring, additionalInfo):
+        import scipy.stats.norm as norm
+        center = (lenBackground-lenSubstring)/2.0
+        validPos = False
+        totalTries = 0
+        while (validPos == False):
+            sampledPos = int(norm.rvs(loc=center+std.offsetFromCenter,
+                          scale=self.stdInBp))
+            totalTries = 1
+            if (sampledPos < 0 or sampledPos > (lenBackground-lenSubstring)):
+                validPos = True
+            if (totalTries%10 == 0 and totalTries > 0):
+                print("Warning: made "+str(totalTries)+" attempts at sampling"
+                      +" a position with lenBackground "+str(lenBackground)
+                      +" and center "+str(center)+" and offset "
+                      +str(self.offsetFromCenter)) 
+        return sampledPos
+
+    def getJsonableObject(self):
+        """Get JSON object representation.
+
+        Returns:
+            A json-friendly object (built of dictionaries, lists and
+        python primitives), which can be converted to json to
+        record the exact details of what was simualted.
+        """
+        return OrderedDict([("class", "NormalDistributionPositionGenerator"),
+                            ("stdInBp", self.stdInBp),
+                            ("offsetFromCenter", self.offsetFromCenter)])
+
+
 class UniformPositionGenerator(AbstractPositionGenerator):
     """Sample position uniformly at random.
     
