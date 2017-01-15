@@ -204,23 +204,24 @@ class AbstractPositionGenerator(DefaultNameMixin):
         raise NotImplementedError()
 
 
-class NormalDistributionPositionGenerator(DefaultNameMixin):
+class NormalDistributionPositionGenerator(AbstractPositionGenerator):
     """Generate position according to normal distribution with mean at
     offsetFromCenter
     """
 
-    def __init__(self, stdInBp, offsetFromCenter=0):
+    def __init__(self, stdInBp, offsetFromCenter=0, name=None):
+        super(NormalDistributionPositionGenerator, self).__init__(name)
         self.stdInBp = stdInBp
         self.offsetFromCenter = offsetFromCenter
-        
+
 
     def _generatePos(self, lenBackground, lenSubstring, additionalInfo):
-        import scipy.stats.norm as norm
+        from scipy.stats import norm
         center = (lenBackground-lenSubstring)/2.0
         validPos = False
         totalTries = 0
         while (validPos == False):
-            sampledPos = int(norm.rvs(loc=center+std.offsetFromCenter,
+            sampledPos = int(norm.rvs(loc=center+self.offsetFromCenter,
                           scale=self.stdInBp))
             totalTries = 1
             if (sampledPos < 0 or sampledPos > (lenBackground-lenSubstring)):
