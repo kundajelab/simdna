@@ -223,8 +223,8 @@ class NormalDistributionPositionGenerator(AbstractPositionGenerator):
         while (validPos == False):
             sampledPos = int(norm.rvs(loc=center+self.offsetFromCenter,
                           scale=self.stdInBp))
-            totalTries = 1
-            if (sampledPos < 0 or sampledPos > (lenBackground-lenSubstring)):
+            totalTries += 1
+            if (sampledPos > 0 and sampledPos < (lenBackground-lenSubstring)):
                 validPos = True
             if (totalTries%10 == 0 and totalTries > 0):
                 print("Warning: made "+str(totalTries)+" attempts at sampling"
