@@ -4,7 +4,7 @@ config = {
     'include_package_data': True,
     'description': 'Simulations of DNA',
     'download_url': 'https://github.com/kundajelab/simdna',
-    'version': '0.2',
+    'version': '0.3',
     'packages': ['simdna', 'simdna.resources'],
     'package_data': {'simdna.resources': ['encode_motifs.txt.gz', 'HOCOMOCOv10_HUMAN_mono_homer_format_0.001.motif.gz']},
     'setup_requires': [],
