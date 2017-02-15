@@ -522,7 +522,7 @@ class DnaseSimulation(AbstractSequenceSetGenerator):
                 embedders = [parseDnaseMotifEmbedderString(
                               embedderString, self.loadedMotifs)
                              for embedderString in inp[2].split(",")
-                             if len(embedderString > 0)]
+                             if len(embedderString) > 0]
                 yield SingleDnaseSequenceGenerator(
                     backgroundGenerator=backgroundGenerator,
                     dnaseMotifEmbedders=embedders,
