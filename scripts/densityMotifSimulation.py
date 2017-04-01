@@ -20,7 +20,7 @@ def do(options):
                          util.ArgumentToAdd(options.min_motifs, "min"),
                          util.ArgumentToAdd(options.max_motifs, "max"),
                          util.ArgumentToAdd(options.mean_motifs, "mean"),
-                         util.ArgumentToAdd(options.zero_prob, "zeroProb"),
+                         util.FloatArgument(options.zero_prob, "zeroProb"),
                          util.ArgumentToAdd(options.seqLength, "seqLength"),
                          util.ArgumentToAdd(options.numSeqs, "numSeqs")])
     

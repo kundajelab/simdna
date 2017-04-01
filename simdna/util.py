@@ -247,6 +247,22 @@ class ArgumentToAdd(object):
         # return self.argNamePrefix()+str(self.val).replace(".","p");
 
 
+class FloatArgument(ArgumentToAdd):
+    """
+       Replace the period with a p 
+    """
+    def __init__(self, val, argumentName=None, argNameAndValSep="-"):
+        self.val = val;
+        self.argumentName = argumentName;
+        self.argNameAndValSep = argNameAndValSep;
+    def argNamePrefix(self):
+        return ("" if self.argumentName is None else self.argumentName+str(self.argNameAndValSep))
+    def transform(self):
+        string = str(self.val)
+        string = string.replace(".","p")
+        return self.argNamePrefix()+string
+
+
 class BooleanArgument(ArgumentToAdd):
 
     def transform(self):
