@@ -18,7 +18,6 @@ generationSettings = util.enum(
 def motifGrammarSimulation(options):
     pc = 0.001
     bestHit = options.bestHit
-    bestHitMode = options.bestHitMode
     pathToMotifs = options.pathToMotifs
     loadedMotifs = synthetic.LoadedEncodeMotifs(pathToMotifs, pseudocountProb=pc)
     motifName1 = options.motifName1
@@ -26,7 +25,7 @@ def motifGrammarSimulation(options):
     seqLength = options.seqLength
     numSeq = options.numSeq
     generationSetting = options.generationSetting
-    outputFileName = "motifGrammarSimulation_"+generationSetting+("_bestHit_mode-"+bestHitMode if bestHit else "")
+    outputFileName = "motifGrammarSimulation_"+generationSetting+("_bestHit" if bestHit else "")
     if (generationSetting is not generationSettings.singleMotif2):
         outputFileName+="_motif1-"+motifName1
     if (generationSetting is not generationSettings.singleMotif1):
@@ -36,7 +35,6 @@ def motifGrammarSimulation(options):
     kwargs={'loadedMotifs':loadedMotifs}
     if (bestHit):
         theClass=synthetic.BestHitPwmFromLoadedMotifs
-        kwargs['bestHitMode']=bestHitMode
     else:
         theClass=synthetic.PwmSamplerFromLoadedMotifs
         
@@ -100,9 +98,6 @@ if __name__ == "__main__":
     parser.add_argument("--motifName1", required=True)
     parser.add_argument("--motifName2", required=True)
     parser.add_argument("--bestHit", action="store_true")
-    parser.add_argument("--bestHitMode"
-                        , default=pwm.BEST_HIT_MODE.pwmProb
-                        , choices=pwm.BEST_HIT_MODE.vals)
     parser.add_argument("--seqLength", type=int, required=True)
     parser.add_argument("--numSeq", type=int, required=True)
     parser.add_argument("--generationSetting"

@@ -226,3 +226,65 @@ class FileNameParts(object):
 
 def format_as_json(jsonable_data):
     return json.dumps(jsonable_data, indent=4, separators=(',', ': '))
+
+
+class ArgumentToAdd(object):
+    """
+        Class to append runtime arguments to a string
+        to facilitate auto-generation of output file names.
+    """
+    def __init__(self, val, argumentName=None, argNameAndValSep="-"):
+        self.val = val;
+        self.argumentName = argumentName;
+        self.argNameAndValSep = argNameAndValSep;
+    def argNamePrefix(self):
+        return ("" if self.argumentName is None else self.argumentName+str(self.argNameAndValSep))
+    def transform(self):
+        string = (','.join([str(el) for el in self.val])\
+                   if (isinstance(self.val, str)==False and
+                       hasattr(self.val,"__len__")) else str(self.val))
+        return self.argNamePrefix()+string;
+        # return self.argNamePrefix()+str(self.val).replace(".","p");
+
+
+class BooleanArgument(ArgumentToAdd):
+
+    def transform(self):
+        assert self.val  # should be True if you're calling transformation
+        return self.argumentName
+
+
+class CoreFileNameArgument(ArgumentToAdd):
+
+    def transform(self):
+        import fileProcessing as fp
+        return self.argNamePrefix() + fp.getCoreFileName(self.val)
+
+
+class ArrArgument(ArgumentToAdd):
+
+    def __init__(self, val, argumentName, sep="+", toStringFunc=str):
+        super(ArrArgument, self).__init__(val, argumentName)
+        self.sep = sep
+        self.toStringFunc = toStringFunc
+
+    def transform(self):
+        return self.argNamePrefix() + self.sep.join([self.toStringFunc(x) for x in self.val])
+
+
+class ArrOfFileNamesArgument(ArrArgument):
+
+    def __init__(self, val, argumentName, sep="+"):
+        import fileProcessing as fp
+        super(ArrOfFileNamesArgument, self).__init__(val, argumentName,
+                                                     sep, toStringFunc=lambda x: fp.getCoreFileName(x))
+
+
+def addArguments(string, args, joiner="_"):
+    """
+        args is an array of ArgumentToAdd.
+    """
+    for arg in args:
+        string = string + ("" if arg.val is None or arg.val is False or (hasattr(
+            arg.val, "__len__") and len(arg.val) == 0) else joiner + arg.transform())
+    return string

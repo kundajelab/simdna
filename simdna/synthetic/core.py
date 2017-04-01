@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
+from simdna import util
 from collections import OrderedDict
 import numpy as np
-from simdna import util
 
 
 class DefaultNameMixin(object):

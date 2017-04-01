@@ -3,6 +3,7 @@ from simdna.synthetic.core import DefaultNameMixin
 from simdna.synthetic.embeddables import StringEmbeddable
 from simdna.synthetic.substringgen import AbstractSubstringGenerator
 from simdna.synthetic.embeddables import PairEmbeddable
+from collections import OrderedDict
 
 
 class AbstractEmbeddableGenerator(DefaultNameMixin):

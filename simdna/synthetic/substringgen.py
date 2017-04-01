@@ -3,6 +3,7 @@ from simdna.synthetic.core import DefaultNameMixin
 from simdna import pwm
 from simdna import util
 import random
+from collections import OrderedDict
 
 
 class AbstractSubstringGenerator(DefaultNameMixin):

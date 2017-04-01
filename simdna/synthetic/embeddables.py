@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
 
 
+
 class AbstractEmbeddable(object):
     """Represents a thing which can be embedded.
 

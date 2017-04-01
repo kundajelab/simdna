@@ -4,6 +4,7 @@ from simdna.synthetic.positiongen import uniformPositionGenerator
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from simdna.synthetic.quantitygen import AbstractQuantityGenerator
 from simdna import util
+from collections import OrderedDict
 
 
 class AbstractEmbedder(DefaultNameMixin):
