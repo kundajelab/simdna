@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 from simdna import util
 from collections import OrderedDict
 import numpy as np
+import re
 
 
 class DefaultNameMixin(object):
@@ -81,6 +82,7 @@ class Embedding(object):
             ``startPos=int(startPos)``
         """
         if (whatClass is None):
+            from simdna.synthetic.embeddables import StringEmbeddable
             whatClass = StringEmbeddable
         # was printed out as pos-[startPos]_[what], but the
         #[what] may contain underscores, hence the maxsplit
@@ -546,10 +548,10 @@ def read_simdata_file(simdata_file, one_hot_encode=False, ids_to_load=None):
                 sequences.append(inp[1])
                 embeddings.append(getEmbeddingsFromString(inp[2]))
                 labels.append([int(x) for x in inp[3:]])
-    fp.performActionOnEachLineOfFile(
-        fileHandle=fp.getFileHandle(simdata_file),
+    util.perform_action_on_each_line_of_file(
+        file_handle=util.get_file_handle(simdata_file),
         action=action,
-        transformation=fp.defaultTabSeppd)
+        transformation=util.default_tab_seppd)
     return util.enum(
             ids=ids,
             sequences=sequences,
