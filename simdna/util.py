@@ -3,7 +3,7 @@ import sys
 import os
 import datetime
 import smtplib
-import random
+from simdna import random
 import glob
 import json
 import copy

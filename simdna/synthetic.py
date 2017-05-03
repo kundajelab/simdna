@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 from . import util, pwm, fileProcessing as fp
 import argparse
 import numpy as np
-import random
+from simdna import random
 import math
 from collections import OrderedDict
 import json
