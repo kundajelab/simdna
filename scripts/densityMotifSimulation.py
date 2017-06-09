@@ -31,11 +31,12 @@ def do(options):
         , embedders=[
             synthetic.RepeatedEmbedder(
             synthetic.SubstringEmbedder(
-                #synthetic.ReverseComplementWrapper(
-                substringGenerator=Constructor(
-                    loadedMotifs=loadedMotifs,motifName=motifName)
-                #),
-                ,positionGenerator=synthetic.UniformPositionGenerator()),
+                synthetic.ReverseComplementWrapper(
+                    substringGenerator=Constructor(
+                        loadedMotifs=loadedMotifs,motifName=motifName),
+                    reverseComplementProb=options.rc_prob
+                ),
+                positionGenerator=synthetic.UniformPositionGenerator()),
             quantityGenerator=synthetic.ZeroInflater(synthetic.MinMaxWrapper(
                 synthetic.PoissonQuantityGenerator(options.mean_motifs),
                 theMax=options.max_motifs, theMin=options.min_motifs), zeroProb=options.zero_prob)
@@ -59,6 +60,7 @@ if __name__=="__main__":
     parser.add_argument("--min-motifs",type=int, default=0)
     parser.add_argument("--mean-motifs",type=int, required=True)
     parser.add_argument("--zero-prob",type=float, required=False, default=0)
+    parser.add_argument("--rc-prob",type=float, required=False, default=0)
     parser.add_argument("--seqLength", type=int, required=True)
     parser.add_argument("--numSeqs", type=int, required=True)
     parser.add_argument("--seed", type=int, default=None)
