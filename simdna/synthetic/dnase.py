@@ -120,6 +120,7 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
         validEmbeddingPos = self._getValidEmbeddingPos(
                                 embeddable=embeddable,
                                 priorEmbeddedThings=priorEmbeddedThings,
+                                backgroundStringArr=backgroundStringArr,
                                 startingPosToSearchFrom=self.startPos,
                                 searchLeft=searchLeft)
         #if couldn't find a valid pos, search in the other direction
@@ -127,8 +128,9 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
             validEmbeddingPos = self._getValidEmbeddingPos(
                                     embeddable=embeddable,
                                     priorEmbeddedThings=priorEmbeddedThings,
+                                    backgroundStringArr=backgroundStringArr,
                                     startingPosToSearchFrom=self.startPos,
-                                    searchLeft=searchLeft)
+                                    searchLeft=(searchLeft==False))
         if (validEmbeddingPos is None):
             print("Warning: could not find a place to embed "+str(embeddable)
                   +"; bailing")
@@ -141,15 +143,15 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
 
     def _getValidEmbeddingPos(self, embeddable,
                                     priorEmbeddedThings,
+                                    backgroundStringArr,
                                     startingPosToSearchFrom,
                                     searchLeft):
         posToQuery = startingPosToSearchFrom 
-        maxLen = backgroundStringArr
+        maxLen = len(backgroundStringArr)
         embeddableLen = len(embeddable)
-        posToQuery = None
         #search left/right (according to the value of searchLeft) for
         #a valid position at which to embed the embeddable
-        while (posToQuery > 0 and posToQuery <= maxLen-embeddableLen):
+        while (posToQuery > 0 and posToQuery < maxLen):
             canEmbed = embeddable.canEmbed(priorEmbeddedThings, posToQuery) 
             if (canEmbed):
                 return posToQuery
@@ -157,7 +159,7 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
                 posToQuery -= 1 
             else:
                 posToQuery += 1
-        return posToQuery 
+        return None 
 
     def getJsonableObject(self):
         """See superclass.
