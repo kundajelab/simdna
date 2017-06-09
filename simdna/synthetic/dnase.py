@@ -8,6 +8,7 @@ from simdna.synthetic.substringgen import (PwmSamplerFromLoadedMotifs,
                                            ReverseComplementWrapper)
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from collections import OrderedDict
+import random
 
 def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
     """Parse a string representing a motif and position
@@ -109,14 +110,54 @@ class FixedEmbeddableWithPosEmbedder(AbstractEmbedder):
         """
         embeddable = self.embeddableGenerator.generateEmbeddable()
         canEmbed = embeddable.canEmbed(priorEmbeddedThings, self.startPos)
-        #if (canEmbed == False):
-            #print("Warning: trying to embed " + str(embeddable)
-            #      + " at position " + str(self.startPos)
-            #      + " which is already occupied")
-        embeddable.embedInBackgroundStringArr(
-         priorEmbeddedThings=priorEmbeddedThings,
-         backgroundStringArr=backgroundStringArr,
-         startPos=self.startPos)
+        
+        #randomly pick a value for searchLeft
+        if random.random() < 0.5:
+            searchLeft=True
+        else:
+            searchLeft=False 
+
+        validEmbeddingPos = self._getValidEmbeddingPos(
+                                embeddable=embeddable,
+                                priorEmbeddedThings=priorEmbeddedThings,
+                                startingPosToSearchFrom=self.startPos,
+                                searchLeft=searchLeft)
+        #if couldn't find a valid pos, search in the other direction
+        if (validEmbeddingPos is None):
+            validEmbeddingPos = self._getValidEmbeddingPos(
+                                    embeddable=embeddable,
+                                    priorEmbeddedThings=priorEmbeddedThings,
+                                    startingPosToSearchFrom=self.startPos,
+                                    searchLeft=searchLeft)
+        if (validEmbeddingPos is None):
+            print("Warning: could not find a place to embed "+str(embeddable)
+                  +"; bailing")
+            return
+        else:
+            embeddable.embedInBackgroundStringArr(
+             priorEmbeddedThings=priorEmbeddedThings,
+             backgroundStringArr=backgroundStringArr,
+             startPos=validEmbeddingPos)
+
+    def _getValidEmbeddingPos(self, embeddable,
+                                    priorEmbeddedThings,
+                                    startingPosToSearchFrom,
+                                    searchLeft):
+        posToQuery = startingPosToSearchFrom 
+        maxLen = backgroundStringArr
+        embeddableLen = len(embeddable)
+        posToQuery = None
+        #search left/right (according to the value of searchLeft) for
+        #a valid position at which to embed the embeddable
+        while (posToQuery > 0 and posToQuery <= maxLen-embeddableLen):
+            canEmbed = embeddable.canEmbed(priorEmbeddedThings, posToQuery) 
+            if (canEmbed):
+                return posToQuery
+            if (searchLeft):
+                posToQuery -= 1 
+            else:
+                posToQuery += 1
+        return posToQuery 
 
     def getJsonableObject(self):
         """See superclass.
