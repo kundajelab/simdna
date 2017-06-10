@@ -48,7 +48,8 @@ def variableSpacingGrammar(options):
     )
 
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, numSeq)
-    synthetic.printSequences(outputFileName, sequenceSet, includeEmbeddings=True)
+    synthetic.printSequences(outputFileName, sequenceSet,
+                             includeFasta=True, includeEmbeddings=True)
 
 if __name__ == "__main__":
     import argparse
