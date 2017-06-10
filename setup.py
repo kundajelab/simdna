@@ -4,7 +4,7 @@ config = {
     'include_package_data': True,
     'description': 'Simulations of DNA',
     'download_url': 'https://github.com/kundajelab/simdna',
-    'version': '0.4.0',
+    'version': '0.4.1',
     'packages': ['simdna', 'simdna.resources', 'simdna.synthetic'],
     'package_data': {'simdna.resources': ['encode_motifs.txt.gz', 'HOCOMOCOv10_HUMAN_mono_homer_format_0.001.motif.gz']},
     'setup_requires': [],
@@ -12,7 +12,8 @@ config = {
     'dependency_links': [],
     'scripts': ['scripts/densityMotifSimulation.py',
                 'scripts/emptyBackground.py',
-                'scripts/motifGrammarSimulation.py'],
+                'scripts/motifGrammarSimulation.py',
+                'scripts/variableSpacingGrammarSimulation.py'],
     'name': 'simdna'
 }
 
