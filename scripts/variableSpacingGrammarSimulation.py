@@ -15,8 +15,9 @@ def variableSpacingGrammar(options):
     motifName2 = options.motifName2
     seqLength = options.seqLength
     numSeq = options.numSeq
-    outputFileName = ("variableSpacingGrammarSimulation_motif1-"
-                      +motifName1+"_motif2-"+motifName2
+    outputFileName = ("variableSpacingGrammarSimulation_"
+                      +"prefix-"+options.prefix
+                      +"_motif1-"+motifName1+"_motif2-"+motifName2
                       +"_seqLength"+str(seqLength)+"_numSeq"
                       +str(numSeq)+".simdata")
 
@@ -28,7 +29,6 @@ def variableSpacingGrammar(options):
     motif2Embedder=synthetic.SubstringEmbedder(substringGenerator=motif2Generator)
 
     embedders = []
-    namePrefix="synthPos"
     separationGenerator=synthetic.MinMaxWrapper(
         synthetic.PoissonQuantityGenerator(options.meanSpacing),
         theMin=options.minSpacing,
@@ -44,16 +44,18 @@ def variableSpacingGrammar(options):
     embedInBackground = synthetic.EmbedInABackground(
         backgroundGenerator=synthetic.ZeroOrderBackgroundGenerator(seqLength) 
         , embedders=embedders
-        , namePrefix=namePrefix
     )
 
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, numSeq)
     synthetic.printSequences(outputFileName, sequenceSet,
-                             includeFasta=True, includeEmbeddings=True)
+                             includeFasta=True, includeEmbeddings=True,
+                             prefix=options.prefix)
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("--prefix",
+        default="")
     parser.add_argument("--pathToMotifs",
         default=simdna.ENCODE_MOTIFS_PATH)
     parser.add_argument("--motifName1", required=True)
