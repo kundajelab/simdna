@@ -1,4 +1,4 @@
-# [simdna: simulations of DNA](https://kundajelab.github.io/simdna/)
+# [simdna: simulated datasets of DNA](https://kundajelab.github.io/simdna/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)
 
 ## Installation
