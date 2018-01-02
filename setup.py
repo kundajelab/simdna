@@ -2,7 +2,7 @@ from setuptools import setup
 
 config = {
     'include_package_data': True,
-    'description': 'Simulations of DNA',
+    'description': 'Simulated datasets of DNA',
     'download_url': 'https://github.com/kundajelab/simdna',
     'version': '0.4.1',
     'packages': ['simdna', 'simdna.resources', 'simdna.synthetic'],
