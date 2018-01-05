@@ -2,3 +2,5 @@
 **/*.bat
 **/*.DS_Store
 simdna.egg-info/*
+build
+dist
