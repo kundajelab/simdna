@@ -1,5 +1,5 @@
 # [simdna: simulated datasets of DNA](https://kundajelab.github.io/simdna/)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)[![PyPI version](https://badge.fury.io/py/requests.svg)](https://badge.fury.io/py/simdna)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)[![PyPI version](https://badge.fury.io/py/simdna.svg)](https://badge.fury.io/py/simdna)
 
 ## Installation
 ```
