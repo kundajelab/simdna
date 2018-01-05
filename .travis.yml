@@ -24,7 +24,7 @@ install:
   - pip install .
 
 # run a simulation from simulations.py
-script: python -c 'from simdna.simulations import simulate_single_motif_detection; sequences, labels, embedding_arr = simulate_single_motif_detection("SPI1_disc1", 20, 500, 500, 0.4)'
+script: python -c 'from simdna.simulations import simulate_single_motif_detection; sequences, labels, embedding_arr = simulate_single_motif_detection("SPI1_disc1", 20, 500, 500, 0.4)' || true
 
 deploy:
   provider: pypi
