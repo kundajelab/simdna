@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-emptyBackground.py --seqLength 200 --numSeqs 10
+emptyBackground.py --prefix empty --seqLength 200 --numSeqs 10
