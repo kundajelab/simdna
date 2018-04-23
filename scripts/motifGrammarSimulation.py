@@ -25,7 +25,7 @@ def motifGrammarSimulation(options):
     seqLength = options.seqLength
     numSeq = options.numSeq
     generationSetting = options.generationSetting
-    outputFileName = "motifGrammarSimulation_"+generationSetting+("_bestHit" if bestHit else "")
+    outputFileName = "motifGrammarSimulation_"+("prefix-"+options.prefix+"_" if options.prefix is not None else "")+generationSetting+("_bestHit" if bestHit else "")
     if (generationSetting is not generationSettings.singleMotif2):
         outputFileName+="_motif1-"+motifName1
     if (generationSetting is not generationSettings.singleMotif1):
@@ -89,11 +89,13 @@ def motifGrammarSimulation(options):
 
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, numSeq)
     synthetic.printSequences(outputFileName, sequenceSet,
-                             includeFasta=True, includeEmbeddings=True)
+                             includeFasta=True, includeEmbeddings=True,
+                             prefix=options.prefix)
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("--prefix")
     parser.add_argument("--pathToMotifs",
         default=simdna.ENCODE_MOTIFS_PATH)
     parser.add_argument("--motifName1", required=True)

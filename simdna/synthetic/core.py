@@ -3,6 +3,7 @@ from simdna import util
 from collections import OrderedDict
 import numpy as np
 import re
+import itertools
 
 
 class DefaultNameMixin(object):
