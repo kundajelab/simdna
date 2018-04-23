@@ -440,7 +440,8 @@ class LabelGenerator(object):
     """
     def __init__(self, labelNames, labelsFromGeneratedSequenceFunction):
         self.labelNames = labelNames
-        self.labelsFromGeneratedSequenceFunction = labelsFromGeneratedSequenceFunction
+        self.labelsFromGeneratedSequenceFunction =\
+            labelsFromGeneratedSequenceFunction
 
     def generateLabels(self, generatedSequence):
         """calls self.labelsFromGeneratedSequenceFunction.

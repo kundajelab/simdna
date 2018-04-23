@@ -5,6 +5,7 @@ from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from simdna.synthetic.quantitygen import AbstractQuantityGenerator
 from simdna import util
 from collections import OrderedDict
+from simdna import random
 
 
 class AbstractEmbedder(DefaultNameMixin):

@@ -10,7 +10,7 @@ def do(options):
     if (options.seed is not None):
         import numpy as np
         np.random.seed(options.seed) 
-        import random
+        from simdna import random
         random.seed(options.seed)
         
     outputFileName_core = util.addArguments("DensityEmbedding",

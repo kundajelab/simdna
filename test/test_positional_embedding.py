@@ -3,7 +3,7 @@ from simdna import fileProcessing as fp
 import simdna
 from simdna import synthetic as sn
 import numpy as np
-import random
+from simdna import random
 from collections import defaultdict
 random.seed(1234)
 np.random.seed(1234)

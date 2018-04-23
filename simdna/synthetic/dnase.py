@@ -8,7 +8,7 @@ from simdna.synthetic.substringgen import (PwmSamplerFromLoadedMotifs,
                                            ReverseComplementWrapper)
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from collections import OrderedDict
-import random
+from simdna import random
 
 def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
     """Parse a string representing a motif and position

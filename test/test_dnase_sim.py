@@ -2,7 +2,7 @@ import unittest
 from simdna import fileProcessing as fp
 import simdna
 from simdna import synthetic as sn
-import random
+from simdna import random
 
 class TestRun(unittest.TestCase):
 

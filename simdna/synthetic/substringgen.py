@@ -2,8 +2,10 @@ from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
 from simdna import pwm
 from simdna import util
-import random
+from simdna import random
 from collections import OrderedDict
+import numpy as np
+import sys
 
 
 class AbstractSubstringGenerator(DefaultNameMixin):
@@ -106,19 +108,47 @@ class PwmSampler(AbstractSubstringGenerator):
         name: see :class:`.DefaultNameMixin`
     """
 
-    def __init__(self, pwm, name=None):
+    def __init__(self, pwm, name=None, bg=None, minScore=None):
         self.pwm = pwm
+        assert ((bg is None and minScore is None)
+                or (bg is not None and minScore is not None)),\
+                "bg should be specified iff minScore is specified"
+        self.bg = bg
+        self.minScore = minScore
         super(PwmSampler, self).__init__(name)
 
     def generateSubstring(self):
         """See superclass.
         """
-        return self.pwm.sampleFromPwm(), self.pwm.name
+        if (self.minScore is not None):
+            tries = 0
+            sampled_pwm_score = -np.inf
+            while sampled_pwm_score <= self.minScore:
+                sampled_pwm, sampled_pwm_score =\
+                    self.pwm.sampleFromPwmAndScore(bg=self.bg)
+                sys.stdout.flush()
+                tries += 1 
+                if (tries%10 == 0):
+                    print("Warning: spent "+str(tries)+" tries trying to "
+                          +" sample a pwm "+str(self.pwm.name)
+                          +" with min score "+str(self.minScore))
+                    sys.stdout.flush()
+                    if (tries >= 50):
+                        raise RuntimeError("Terminated loop"
+                                           " due to too many tries")
+            return sampled_pwm, (self.pwm.name+"-score_"
+                                 +str(round(sampled_pwm_score,2)))
+        else: 
+            return self.pwm.sampleFromPwm(), self.pwm.name
 
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("class", "PwmSampler"), ("motifName", self.pwm.name)])
+        return OrderedDict([
+                    ("class", "PwmSampler"),
+                    ("motifName", self.pwm.name),
+                    ("bg", self.bg),
+                    ("minScore", self.minScore)])
 
 
 class PwmSamplerFromLoadedMotifs(PwmSampler):
@@ -137,10 +167,11 @@ class PwmSamplerFromLoadedMotifs(PwmSampler):
         name: see :class:`.DefaultNameMixin`
     """
 
-    def __init__(self, loadedMotifs, motifName, name=None):
+    def __init__(self, loadedMotifs, motifName, name=None,
+                 bg=None, minScore=None):
         self.loadedMotifs = loadedMotifs
         super(PwmSamplerFromLoadedMotifs, self).__init__(
-            loadedMotifs.getPwm(motifName), name)
+            loadedMotifs.getPwm(motifName), name, bg=bg, minScore=minScore)
 
     def getJsonableObject(self):
         """See superclass.

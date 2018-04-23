@@ -20,6 +20,11 @@ class PWM(object):
             assert len(weights) == len(self._rows[0])
         self._rows.append(weights)
 
+    def addRows(self, matrix):
+        for row in matrix:
+            self.addRow(weights=row)
+        return self
+
     def finalise(self, pseudocountProb=0.001):
         assert pseudocountProb >= 0 and pseudocountProb < 1
         # will smoothen the rows with a pseudocount...
@@ -32,6 +37,7 @@ class PWM(object):
         self._finalised = True
         self.bestPwmHit = self.computeBestHitGivenMatrix(self._rows)
         self.pwmSize = len(self._rows)
+        return self
 
     def getBestHit(self):
         return self.bestPwmHit
@@ -44,15 +50,26 @@ class PWM(object):
             raise RuntimeError("Please call finalised on " + str(self.name))
         return self._rows
 
-    def sampleFromPwm(self):
+    def sampleFromPwm(self, bg=None):
         if (not self._finalised):
             raise RuntimeError("Please call finalised on " + str(self.name))
+
         sampledLetters = []
+        logOdds = 0
         for row in self._rows:
             sampledIndex = util.sampleFromProbsArr(row)
-            sampledLetters.append(
-                self.indexToLetter[util.sampleFromProbsArr(row)])
-        return "".join(sampledLetters)
+            letter = self.indexToLetter[sampledIndex]
+            if (bg is not None):
+                logOdds += np.log(row[sampledIndex]) - np.log(bg[letter]) 
+            sampledLetters.append(letter)
+        sampledHit = "".join(sampledLetters)
+        if (bg is not None):
+            return (sampledHit, logOdds)
+        else:
+            return sampledHit 
+
+    def sampleFromPwmAndScore(self, bg):
+        return self.sampleFromPwm(bg=bg)
 
     def __str__(self):
         return self.name + "\n" + str(self._rows)
