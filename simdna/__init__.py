@@ -1,4 +1,4 @@
-import random
+from numpy import random
 random = random.Random()
 random.seed(1)
 
