@@ -1,5 +1,5 @@
 from numpy import random
-random = random.Random()
+random = random.RandomState()
 random.seed(1)
 
 from pkg_resources import resource_filename
