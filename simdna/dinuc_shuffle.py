@@ -1,4 +1,5 @@
 from collections import defaultdict
+from simdna import random
 from random import shuffle
 
 

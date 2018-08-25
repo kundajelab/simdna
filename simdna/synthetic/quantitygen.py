@@ -118,7 +118,7 @@ class PoissonQuantityGenerator(AbstractQuantityGenerator):
     def generateQuantity(self):
         """See superclass.
         """
-        return np.random.poisson(self.mean)
+        return random.poisson(self.mean)
 
     def getJsonableObject(self):
         """See superclass.
@@ -140,7 +140,7 @@ class BernoulliQuantityGenerator(AbstractQuantityGenerator):
     def generateQuantity(self):
         """See superclass.
         """
-        return 1 if (np.random.random() <= self.prob) else 0
+        return 1 if (random.random() <= self.prob) else 0
 
     def getJsonableObject(self):
         """See superclass.
