@@ -1,5 +1,13 @@
 from numpy import random
-random = random.RandomState()
+
+#extend the RandomState to have a random() func,
+# for compatibility with np.random
+class ExtendedRandomState(random.RandomState):
+
+    def random(self):
+        return self.rand(1)[0]
+
+random = ExtendedRandomState()
 random.seed(1)
 
 from pkg_resources import resource_filename
