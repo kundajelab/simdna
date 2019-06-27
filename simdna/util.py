@@ -98,7 +98,8 @@ def perform_action_on_each_line_of_file(
     i = 0;
     for line in file_handle:
         i += 1;
-        line = line.decode("utf-8")
+        if hasattr(line, "decode"): 
+            line = line.decode("utf-8")
         process_line(line, i, ignore_input_title,
                      transformation, action, progress_update)
         print_progress(progress_update, i, progress_update_file_name)
