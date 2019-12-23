@@ -175,28 +175,28 @@ class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
     """Call a :class:`.AbstractSingleSequenceGenerator` N times.
             
     Arguments:
-        singleSetGenerator: an instance of
-            :class:`.AbstractSequenceSetGenerator`
-        N: integer, the number of times to call singleSetGenerator
+        singleSeqGenerator: an instance of
+            :class:`.AbstractSingleSequenceGenerator`
+        N: integer, the number of times to call singleSeqGenerator
     """
 
-    def __init__(self, singleSetGenerator, N):
-        self.singleSetGenerator = singleSetGenerator
+    def __init__(self, singleSeqGenerator, N):
+        self.singleSeqGenerator = singleSeqGenerator
         self.N = N
 
     def generateSequences(self):
-        """A generator that calls self.singleSetGenerator N times.
+        """A generator that calls self.singleSeqGenerator N times.
 
         Returns:
-            a generator that will call self.singleSetGenerator N times. 
+            a generator that will call self.singleSeqGenerator N times. 
         """
         for i in range(self.N):
-            yield self.singleSetGenerator.generateSequence()
+            yield self.singleSeqGenerator.generateSequence()
 
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("numSeq", self.N), ("singleSetGenerator", self.singleSetGenerator.getJsonableObject())])
+        return OrderedDict([("numSeq", self.N), ("singleSeqGenerator", self.singleSeqGenerator.getJsonableObject())])
 
 
 class AbstractSingleSequenceGenerator(object):
