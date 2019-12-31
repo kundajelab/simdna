@@ -2,9 +2,9 @@
 import os
 import sys
 import simdna
-import simdna.util as util
+import simdna.util.util as util
 import simdna.synthetic as synthetic
-import simdna.pwm as pwm
+import simdna.util.pwm as pwm
 
 
 def variableSpacingGrammar(options):

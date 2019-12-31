@@ -10,6 +10,9 @@ class AbstractEmbeddableGenerator(DefaultNameMixin):
     """Generates an embeddable, usually for embedding in a background sequence.
     """
 
+    def generate_embeddable(self):
+        self.generateEmbeddable()
+
     def generateEmbeddable(self):
         """Generate an embeddable object.
 
@@ -17,6 +20,9 @@ class AbstractEmbeddableGenerator(DefaultNameMixin):
             An instance of :class:`AbstractEmbeddable`
         """
         raise NotImplementedError()
+
+    def get_jsonable_object(self):
+        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
