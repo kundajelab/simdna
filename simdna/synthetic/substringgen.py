@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
-from simdna import pwm
-from simdna import util
+from simdna.util import util, pwm
 from simdna import random
 from collections import OrderedDict
 import numpy as np
@@ -13,6 +12,9 @@ class AbstractSubstringGenerator(DefaultNameMixin):
         Generates a substring, usually for embedding in a background sequence.
     """
 
+    def generate_substring(self):
+        self.generateSubstring()
+
     def generateSubstring(self):
         """
         Return:
@@ -23,6 +25,9 @@ class AbstractSubstringGenerator(DefaultNameMixin):
         the __str__ representation for :class:`.StringEmbeddable`. 
         """
         raise NotImplementedError()
+
+    def get_jsonable_object(self):
+        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -128,14 +133,13 @@ class PwmSampler(AbstractSubstringGenerator):
                     self.pwm.sampleFromPwmAndScore(bg=self.bg)
                 sys.stdout.flush()
                 tries += 1 
-                if (tries%10 == 0):
-                    print("Warning: spent "+str(tries)+" tries trying to "
-                          +" sample a pwm "+str(self.pwm.name)
-                          +" with min score "+str(self.minScore))
+                if tries % 10 == 0:
+                    print("Warning: spent " + str(tries) + " tries trying to " +
+                          " sample a pwm " + str(self.pwm.name) +
+                          " with min score " + str(self.minScore))
                     sys.stdout.flush()
-                    if (tries >= 50):
-                        raise RuntimeError("Terminated loop"
-                                           " due to too many tries")
+                    if tries >= 50:
+                        raise RuntimeError("Terminated loop due to too many tries")
             return sampled_pwm, (self.pwm.name+"-score_"
                                  +str(round(sampled_pwm_score,2)))
         else: 

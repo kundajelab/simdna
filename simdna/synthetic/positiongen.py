@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
 from simdna import random
 from collections import OrderedDict
-
+import math
 
 class AbstractPositionGenerator(DefaultNameMixin):
     """Generate a start position at which to embed something
@@ -11,6 +11,9 @@ class AbstractPositionGenerator(DefaultNameMixin):
     of the substring you are trying to embed, will return a start position
     to embed the substring at.
     """
+
+    def generate_pos(self, lenBackground, lenSubstring, additionalInfo=None):
+        self.generatePos(lenBackground, lenSubstring, additionalInfo=additionalInfo)
 
     def generatePos(self, lenBackground, lenSubstring, additionalInfo=None):
         """Generate the position to embed in.
@@ -37,6 +40,9 @@ class AbstractPositionGenerator(DefaultNameMixin):
         on the arguments.
         """
         raise NotImplementedError()
+
+    def get_jsonable_object(self):
+        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -93,7 +99,7 @@ class NormalDistributionPositionGenerator(AbstractPositionGenerator):
 
 class UniformPositionGenerator(AbstractPositionGenerator):
     """Sample position uniformly at random.
-    
+
     Samples a start position to embed the substring in uniformly at random;
         does not return positions that are too close to the end of the
         background sequence to embed the full substring.
@@ -112,6 +118,31 @@ class UniformPositionGenerator(AbstractPositionGenerator):
         """See superclass.
         """
         return "uniform"
+
+
+class FixedPositionGenerator(AbstractPositionGenerator):
+    """Sample position uniformly at random.
+
+    Samples a start position to embed the substring in uniformly at random;
+        does not return positions that are too close to the end of the
+        background sequence to embed the full substring.
+
+    Arguments:
+        name: string, see :class:`.DefaultNameMixin`
+    """
+
+    def __init__(self, pos, name=None):
+        super(FixedPositionGenerator, self).__init__(name)
+        self.pos = abs(pos)
+
+    def _generatePos(self, lenBackground, lenSubstring, additionalInfo):
+        assert (self.pos < lenBackground - lenSubstring)
+        return self.pos
+
+    def getJsonableObject(self):
+        """See superclass.
+        """
+        return "fixed" + str(self.pos)
 
 #instantiate a UniformPositionGenerator for general use
 uniformPositionGenerator = UniformPositionGenerator()
