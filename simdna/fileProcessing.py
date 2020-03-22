@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import re
 import os
-from simdna.util import util
+from . import util
 import gzip
 
 

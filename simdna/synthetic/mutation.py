@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
 from simdna.synthetic.substringgen import AbstractSubstringGenerator
 from collections import OrderedDict
-import random
+
 
 class TransformedSubstringGenerator(AbstractSubstringGenerator):
     """Generates a substring and applies a series of transformations.

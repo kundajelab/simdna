@@ -9,9 +9,6 @@ class AbstractQuantityGenerator(DefaultNameMixin):
     """Class for sampling values from a distribution.
     """
 
-    def generate_quantity(self):
-        self.generateQuantity()
-
     def generateQuantity(self):
         """Sample a quantity from a distribution.
 
@@ -19,9 +16,6 @@ class AbstractQuantityGenerator(DefaultNameMixin):
             The sampled value.
         """
         raise NotImplementedError()
-
-    def get_jsonable_object(self):
-        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -186,18 +180,16 @@ class MinMaxWrapper(AbstractQuantityGenerator):
         while (True):
             tries += 1
             quantity = self.quantityGenerator.generateQuantity()
-            if (self.theMin is None or quantity >= self.theMin) and (self.theMax is None or quantity <= self.theMax):
+            if ((self.theMin is None or quantity >= self.theMin) and (self.theMax is None or quantity <= self.theMax)):
                 return quantity
-            if tries % 10 == 0:
+            if (tries % 10 == 0):
                 print("warning: made " + str(tries) +
                       " tries at trying to sample from distribution with min/max limits")
 
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("min", self.theMin),
-                            ("max", self.theMax),
-                            ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
+        return OrderedDict([("min", self.theMin), ("max", self.theMax), ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
 
 
 class ZeroInflater(AbstractQuantityGenerator):
@@ -234,7 +226,5 @@ class ZeroInflater(AbstractQuantityGenerator):
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("class", "ZeroInflater"),
-                            ("zeroProb", self.zeroProb),
-                            ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
+        return OrderedDict([("class", "ZeroInflater"), ("zeroProb", self.zeroProb), ("quantityGenerator", self.quantityGenerator.getJsonableObject())])
 

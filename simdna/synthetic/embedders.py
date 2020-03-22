@@ -3,10 +3,10 @@ from simdna.synthetic.core import DefaultNameMixin
 from simdna.synthetic.positiongen import uniformPositionGenerator
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from simdna.synthetic.quantitygen import AbstractQuantityGenerator
-from simdna.util import util
+from simdna import util
 from collections import OrderedDict
 from simdna import random
-import numpy as np
+
 
 class AbstractEmbedder(DefaultNameMixin):
     """Produces :class:`AbstractEmbeddable` objects and
@@ -42,9 +42,6 @@ class AbstractEmbedder(DefaultNameMixin):
         See docs for :func:`.AbstractEmbedder.embed`
         """
         raise NotImplementedError()
-
-    def get_jsonable_object(self):
-        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -89,28 +86,21 @@ class EmbeddableEmbedder(AbstractEmbedder):
         embeddable = self.embeddableGenerator.generateEmbeddable()
         canEmbed = False
         tries = 0
-        while not canEmbed:
+        while canEmbed == False:
             tries += 1
-            if isinstance(backgroundStringArr[0], list):
-                len_bsa = len(backgroundStringArr[0])
-            else:
-                len_bsa = len(backgroundStringArr)
             startPos = self.positionGenerator.generatePos(
-                len_bsa, len(embeddable), additionalInfo)
+                len(backgroundStringArr), len(embeddable), additionalInfo)
             canEmbed = embeddable.canEmbed(priorEmbeddedThings, startPos)
-            if tries % 10 == 0:
-                print("Warning: made " + str(tries) +
-                      " attemps at trying to embed " + str(embeddable) +
-                      " in region of length " + str(priorEmbeddedThings.getTotalPos()) +
-                      " with " + str(priorEmbeddedThings.getNumOccupiedPos()) + " occupied sites")
+            if (tries % 10 == 0): 
+                print("Warning: made " + str(tries) + " attemps at trying to embed " + str(embeddable) + " in region of length " + str(
+                    priorEmbeddedThings.getTotalPos()) + " with " + str(priorEmbeddedThings.getNumOccupiedPos()) + " occupied sites")
         embeddable.embedInBackgroundStringArr(
             priorEmbeddedThings, backgroundStringArr, startPos)
 
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("embeddableGenerator", self.embeddableGenerator.getJsonableObject()),
-                            ("positionGenerator", self.positionGenerator.getJsonableObject())])
+        return OrderedDict([("embeddableGenerator", self.embeddableGenerator.getJsonableObject()), ("positionGenerator", self.positionGenerator.getJsonableObject())])
 
 
 class SubstringEmbedder(EmbeddableEmbedder):
