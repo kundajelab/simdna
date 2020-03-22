@@ -1,5 +1,5 @@
 import unittest
-from simdna.util import fileProcessing as fp
+from simdna import fileProcessing as fp
 import simdna
 from simdna import synthetic as sn
 import numpy as np

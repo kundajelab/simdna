@@ -15,9 +15,6 @@ class AbstractEmbeddable(object):
     def __str__(self):
         raise NotImplementedError()
 
-    def get_description(self):
-        return self.getDescription()
-
     def getDescription(self):
         """Return a concise description of the embeddable.
 
@@ -25,9 +22,6 @@ class AbstractEmbeddable(object):
         be used when generating the __str__ representation of the embedabled.
         """
         raise NotImplementedError()
-
-    def can_embed(self, priorEmbeddedThings, startPos):
-        return self.canEmbed(priorEmbeddedThings, startPos)
 
     def canEmbed(self, priorEmbeddedThings, startPos):
         """Checks whether embedding is possible at a given pos.
@@ -48,9 +42,6 @@ class AbstractEmbeddable(object):
         """
         raise NotImplementedError()
 
-    def embed_in_background_string_arr(self, priorEmbeddedThings, backgroundStringArr, startPos):
-        self.embedInBackgroundStringArr(priorEmbeddedThings, backgroundStringArr, startPos)
-
     def embedInBackgroundStringArr(self, priorEmbeddedThings, backgroundStringArr, startPos):
         """Embed self in a background string.
 
@@ -65,10 +56,6 @@ class AbstractEmbeddable(object):
             startPos: integer; the position to embed self at
         """
         raise NotImplementedError()
-
-    @classmethod
-    def from_string(cls, theString):
-        cls.fromString(cls, theString)
 
     @classmethod
     def fromString(cls, theString):
@@ -115,11 +102,7 @@ class StringEmbeddable(AbstractEmbeddable):
                                          backgroundStringArr, startPos):
         """See superclass.
         """
-        if isinstance(backgroundStringArr[0], list):
-            len_bsa = len(backgroundStringArr[0])
-        else:
-            len_bsa = len(backgroundStringArr)
-        positions_left = len_bsa - startPos
+        positions_left = len(backgroundStringArr)-startPos
         if (positions_left < len(self.string)):
             print("Warning: length of background is "
                   +str(len(backgroundStringArr))
@@ -129,11 +112,8 @@ class StringEmbeddable(AbstractEmbeddable):
             string_to_embed = self.string[:positions_left]
         else:
             string_to_embed = self.string
-        if isinstance(backgroundStringArr[0], list):
-            for i in range(len(backgroundStringArr)):
-                backgroundStringArr[i][startPos:startPos + len(string_to_embed)] = string_to_embed
-        else:
-            backgroundStringArr[startPos:startPos + len(string_to_embed)] = string_to_embed
+        backgroundStringArr[startPos:
+         startPos+len(string_to_embed)] = string_to_embed
         priorEmbeddedThings.addEmbedding(startPos, self)
 
     @classmethod
@@ -162,7 +142,7 @@ class PairEmbeddable(AbstractEmbeddable):
     """Embed two embeddables with some separation.
 
     Arguments:
-        embeddable1: instance of :class:`.AbstractEmbeddable`.
+        embeddable1: instance of :class:`.AbstractEmbeddable`.\
         First embeddable to be embedded. If a string is provided, will\
         be wrapped in :class:`.StringEmbeddable`
 

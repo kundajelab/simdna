@@ -1,8 +1,9 @@
 from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
-from simdna.util import util, pwm
+from simdna import pwm
+from simdna import util
 from collections import OrderedDict
-import numpy as np
+
 
 class AbstractLoadedMotifs(object):
     """Class representing loaded PWMs.
@@ -18,9 +19,6 @@ class AbstractLoadedMotifs(object):
     def __init__(self, loadedMotifs):
         self.loadedMotifs = loadedMotifs
 
-    def get_pwm(selfself, name):
-        self.getPwm(name)
-
     def getPwm(self, name):
         """Get a specific PWM.
 
@@ -28,9 +26,6 @@ class AbstractLoadedMotifs(object):
             The ``pwm.PWM`` instance with the specified name.
         """
         return self.loadedMotifs[name]
-
-    def add_motifs(self, abstractLoadedMotifs):
-        self.addMotifs(abstractLoadedMotifs)
 
     def addMotifs(self, abstractLoadedMotifs):
         """Adds the motifs in abstractLoadedMotifs to this.
@@ -147,47 +142,4 @@ class LoadedHomerMotifs(AbstractLoadedMotifsFromFile):
                 assert currentPwm.var is not None
                 inpArr = inp.split()
                 currentPwm.var.addRow([float(x) for x in inpArr[0:]])
-        return action
-
-class LoadedJasparRawPMFMotifs(AbstractLoadedMotifsFromFile):
-    """A class for reading in a motifs file in the Jaspar Raw motifs format.
-
-    This class is specifically for reading files in the Jaspar motif
-    format.
-
-    Basically, the motif declarations start with a >, the first
-    characters after > until the first space are taken as the motif name,
-    the lines after the line with a > have the format:
-        P(A) "<nuc 1> <nuc 2> ... <nuc n>"
-        P(C) "<nuc 1> <nuc 2> ... <nuc n>"
-        P(T) "<nuc 1> <nuc 2> ... <nuc n>"
-        P(G) "<nuc 1> <nuc 2> ... <nuc n>"
-
-    Likely if you need to load your own motifs you will use this import
-    script.
-    """
-
-    def getReadPwmAction(self, loadedMotifs):
-        """See superclass.
-        """
-        currentPwm = util.VariableWrapper(None)
-        _pwm = []
-        def action(inp, lineNumber):
-            if (inp.startswith(">")):
-                inp = inp.lstrip(">")
-                inpArr = inp.split()
-                motifName = inpArr[1]
-                while len(_pwm) > 0:
-                    _pwm.pop()
-                currentPwm.var = pwm.PWM(motifName)
-                loadedMotifs[currentPwm.var.name] = currentPwm.var
-            else:
-                # assume that it's a line of the pwm
-                assert currentPwm.var is not None
-                inpArr = inp.split()
-                _pwm.append([float(x) for x in inpArr])
-                if len(_pwm) == 4:
-                    arr = np.array(_pwm).T
-                    arr /= arr.sum(axis=1, keepdims=True)
-                    currentPwm.var.addRows(arr.tolist())
         return action

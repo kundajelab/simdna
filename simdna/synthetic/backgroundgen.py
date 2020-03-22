@@ -1,27 +1,20 @@
 from __future__ import absolute_import, division, print_function
-from simdna.util import dinuc_shuffle, util
+from simdna import dinuc_shuffle
 from simdna.synthetic.substringgen import AbstractSubstringGenerator
-from simdna.synthetic.quantitygen import FixedQuantityGenerator, AbstractQuantityGenerator
+from simdna import util
+from simdna.synthetic.quantitygen import FixedQuantityGenerator
 from collections import OrderedDict
 
-
-import csv
 
 class AbstractBackgroundGenerator(object):
     """Returns the sequence that :class:`.AbstractEmbeddable` objects
     are to be embedded into.
     """
 
-    def generate_background(self):
-        self.generateBackground()
-
     def generateBackground(self):
         """Returns a sequence that is the background.
         """
         raise NotImplementedError()
-
-    def get_jsonable_object(self):
-        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -115,13 +108,14 @@ class ZeroOrderBackgroundGenerator(RepeatedSubstringBackgroundGenerator):
     """
 
     def __init__(self, seqLength,
-                 discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
+        discreteDistribution=util.DEFAULT_BASE_DISCRETE_DISTRIBUTION):
         if isinstance(discreteDistribution,dict):
-            discreteDistribution= util.DiscreteDistribution(
+            discreteDistribution=util.DiscreteDistribution(
                 discreteDistribution)
         super(ZeroOrderBackgroundGenerator, self).__init__(
     SampleFromDiscreteDistributionSubstringGenerator(discreteDistribution),
     seqLength)
+
 
 class FirstOrderBackgroundGenerator(AbstractBackgroundGenerator):
     """Returns a sequence from a first order markov chain with defined
@@ -140,14 +134,12 @@ class FirstOrderBackgroundGenerator(AbstractBackgroundGenerator):
                  priorFrequencies=util.DEFAULT_BACKGROUND_FREQ,
                  dinucFrequencies=util.DEFAULT_DINUC_FREQ):
         self.seqLength = seqLength
-        self._priorFrequencies = priorFrequencies
-        self._dinucFrequencies = dinucFrequencies
         assert self.seqLength > 0
 
         #do some sanity checks on dinucFrequencies
         assert abs(sum(dinucFrequencies.values())-1.0) < 10**-7,\
          sum(dinucFrequencies.values())
-        assert all(len(key) == 2 for key in dinucFrequencies.keys())
+        assert all(len(key)==2 for key in dinucFrequencies.keys())
 
         #build a transition matrix and priors matrix
         chars = set([key[0] for key in dinucFrequencies]) 
@@ -173,12 +165,6 @@ class FirstOrderBackgroundGenerator(AbstractBackgroundGenerator):
             generatedCharacters.append(
                 self.transitionMatrix[generatedCharacters[-1]].sample())
         return "".join(generatedCharacters)
-
-    def getJsonableObject(self):
-        return OrderedDict([('class', 'FirstOrderBackgroundGenerator'),
-                            ('priorFrequencies', self._priorFrequencies),
-                            ('dinucFrequencies', self._dinucFrequencies)]
-                           )
 
 
 class ShuffledBackgroundGenerator(AbstractBackgroundGenerator):
@@ -215,88 +201,6 @@ class AbstractShuffler(object):
 
 
 class DinucleotideShuffler(AbstractShuffler):
+
     def shuffle(self, string):
         return dinuc_shuffle.dinuc_shuffle(string)  
-
-
-class BackgroundArrayFromGenerator(AbstractBackgroundGenerator):
-    def __init__(self, backgroundGenerator, num_seqs=100):
-        """Returns a sequence array from a generator
-
-        Each sequence is sampled independently.
-
-        These sequence arrays can be used to embed motifs in the
-        same position in a number of background sequences, useful
-        for setting up randomized-background experiments.
-
-        Arguments:
-            backgroundGenerator: AbstractBackgroundGenerator, to sample from
-            num_seqs: int, number of sequences to be in the returned array
-        """
-        self.backgroundGenerator = backgroundGenerator
-        self.num_seqs = num_seqs
-
-    def generateBackground(self):
-        return ["".join(self.backgroundGenerator.generateBackground()) for _ in range(self.num_seqs)]
-
-    def getJsonableObject(self):
-        return OrderedDict([('class', 'BackgroundArrayFromGenerator'),
-                            ('backgroundGenerator', self.backgroundGenerator.getJsonableObject()),
-                            ('num_seqs', self.num_seqs)]
-                           )
-
-
-class BackgroundFromSimData(AbstractBackgroundGenerator):
-    def __init__(self, simdata="data/backgrounds.simdata"):
-        """
-        Cyclically return a backgrounds from a simdata file; on
-        reaching the end of the file simply start at the beginning.
-
-        :param simdata: path to simdata file to load
-        """
-        self.simdata = simdata
-        with open(self.simdata) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter="\t")
-            next(reader)
-            self.seqs = [seq[1] for seq in reader]
-        self.idx = 0
-
-    def __len__(self):
-        return len(self.seqs)
-
-    def generateBackground(self):
-        seq = self.seqs[self.idx]
-        self.idx = (self.idx + 1) % len(self)
-        return seq
-
-    def getJsonableObject(self):
-        """See superclass.
-        """
-        return OrderedDict([
-            ("class", "BackgroundFromSimData"),
-            ('simdata', self.simdata)]
-        )
-
-class BackgroundArrayFromSimData(AbstractBackgroundGenerator):
-    def __init__(self, simdata="data/backgrounds.simdata"):
-        """
-        Returns a sequence array read from a SimData file
-        :param simdata: path to simdata file to load
-        """
-        self.simdata = simdata
-
-    def generateBackground(self):
-        """
-        This returns the full array of sequences read from the file..
-        :return: a list of sequences which can be manipulated in other SimDNA functions
-        """
-        with open(self.simdata) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter="\t")
-            next(reader)
-            seqs = [seq[1] for seq in reader]
-        return seqs
-
-    def getJsonableObject(self):
-        return OrderedDict([('class', 'BackgroundArrayFromSimData'),
-                            ('simdata', self.simdata)]
-                           )

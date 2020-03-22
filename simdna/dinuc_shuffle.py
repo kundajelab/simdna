@@ -6,7 +6,7 @@ from random import shuffle
 #compile the dinucleotide edges
 def prepare_edges(s):
     edges = defaultdict(list) 
-    for i in range(len(s)-1):
+    for i in xrange(len(s)-1):
         edges[s[i]].append(s[i+1]) 
     return edges
 
@@ -35,4 +35,5 @@ def traverse_edges(s, edges):
 def dinuc_shuffle(s):
     s = s.upper()
     return traverse_edges(s, shuffle_edges(prepare_edges(s)))
-
+    
+    
