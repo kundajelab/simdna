@@ -1,4 +1,4 @@
-# [simdna: A python library for creating simulated regulatory DNA sequences](https://kundajelab.github.io/simdna/)
+# [simdna: a framework for creating simulated DNA sequences](https://kundajelab.github.io/simdna/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)
 
 ## Installation
