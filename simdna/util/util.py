@@ -5,7 +5,7 @@ import gzip
 import os
 import json
 from simdna import random
-
+import numpy as np
 
 DEFAULT_LETTER_TO_INDEX = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
 
