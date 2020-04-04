@@ -168,8 +168,8 @@ def sampleFromProbsArr(arrWithProbs):
         an index, sampled with the probability of that index in
     array of probabilities.
     """
-
-    return random.choice(len(arrWithProbs), p=arrWithProbs)
+    arrWithProbs = np.array(arrWithProbs)
+    return random.choice(len(arrWithProbs), p=arrWithProbs/arrWithProbs.sum())
 
 
 reverseComplementLookup = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G',
