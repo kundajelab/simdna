@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-from simdna import util
+from simdna.util import util
 from collections import OrderedDict
 import numpy as np
 import re
@@ -15,10 +15,14 @@ class DefaultNameMixin(object):
     Arguments:
         name: string
     """
+
     def __init__(self, name):
         if (name == None):
             name = self.getDefaultName()
         self.name = name
+
+    def get_default_name(self):
+        self.getDefaultName()
 
     def getDefaultName(self):
         return type(self).__name__
@@ -66,6 +70,10 @@ class Embedding(object):
         return "pos-" + str(self.startPos) + "_" + str(self.what)
 
     @classmethod
+    def from_string(cls, theString, whatClass=None):
+        cls.fromString(cls, theString, whatClass=whatClass)
+
+    @classmethod
     def fromString(cls, string, whatClass=None):
         """Recreate an :class:`.Embedding` object from a string.
 
@@ -86,14 +94,18 @@ class Embedding(object):
             from simdna.synthetic.embeddables import StringEmbeddable
             whatClass = StringEmbeddable
         # was printed out as pos-[startPos]_[what], but the
-        #[what] may contain underscores, hence the maxsplit
+        # [what] may contain underscores, hence the maxsplit
         # to avoid splitting on them.
         p = re.compile(r"pos\-(\d+)_(.*)$")
         m = p.search(string)
         startPos = m.group(1)
-        whatString = m.group(2) 
+        whatString = m.group(2)
         return cls(what=whatClass.fromString(whatString),
-                   startPos=int(startPos))
+            startPos=int(startPos))
+
+
+def get_embeddings_from_string(string):
+    return getEmbeddingsFromString(string)
 
 
 def getEmbeddingsFromString(string):
@@ -119,6 +131,9 @@ class AbstractSequenceSetGenerator(object):
     """A generator for a collection of generated sequences.
     """
 
+    def generate_sequences(self):
+        self.generateSequences()
+
     def generateSequences(self):
         """The generator; implementation should have a yield.
 
@@ -131,6 +146,9 @@ class AbstractSequenceSetGenerator(object):
             A generator of GeneratedSequence objects
         """
         raise NotImplementedError()
+
+    def get_jsonable_object(self):
+        self.getJsonableObject()
 
     def getJsonableObject(self):
         """Get JSON object representation.
@@ -168,7 +186,7 @@ class ChainSequenceSetGenerators(AbstractSequenceSetGenerator):
         """
         return OrderedDict([('generators',
                              [x.getJsonableObject() for x
-                             in self.generators])]) 
+                              in self.generators])])
 
 
 class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
@@ -191,12 +209,18 @@ class GenerateSequenceNTimes(AbstractSequenceSetGenerator):
             a generator that will call self.singleSetGenerator N times. 
         """
         for i in range(self.N):
-            yield self.singleSetGenerator.generateSequence()
+            out = self.singleSetGenerator.generateSequence()
+            if isinstance(out, list):
+                for seq in out:
+                    yield seq
+            else:
+                yield out
 
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("numSeq", self.N), ("singleSetGenerator", self.singleSetGenerator.getJsonableObject())])
+        return OrderedDict([("numSeq", self.N),
+                            ("singleSetGenerator", self.singleSetGenerator.getJsonableObject())])
 
 
 class AbstractSingleSequenceGenerator(object):
@@ -253,21 +277,33 @@ class EmbedInABackground(AbstractSingleSequenceGenerator):
 
     @staticmethod
     def generateSequenceGivenBackgroundGeneratorAndEmbedders(
-        backgroundGenerator, embedders, sequenceName):
+            backgroundGenerator, embedders, sequenceName):
         additionalInfo = AdditionalInfo()
         backgroundString = backgroundGenerator.generateBackground()
-        backgroundStringArr = [x for x in backgroundString]
+        backgroundStringArr = [list(x) for x in backgroundString] if isinstance(backgroundString,
+            list) else list(backgroundString)
         # priorEmbeddedThings keeps track of what has already been embedded
-        priorEmbeddedThings = PriorEmbeddedThings_numpyArrayBacked(
-            len(backgroundStringArr))
+        len_bsa = len(backgroundStringArr[0]) if isinstance(backgroundStringArr[0], list) else len(
+            backgroundStringArr)
+        priorEmbeddedThings = PriorEmbeddedThings_numpyArrayBacked(len_bsa)
         for embedder in embedders:
             embedder.embed(backgroundStringArr,
-                           priorEmbeddedThings, additionalInfo)
-        return GeneratedSequence(sequenceName,
-                                 "".join(backgroundStringArr),
-                                 priorEmbeddedThings.getEmbeddings(),
-                                 additionalInfo)
- 
+                priorEmbeddedThings, additionalInfo)
+
+        # deal w fact that can be an array or a string
+        if isinstance(backgroundStringArr[0], list):
+            gen_seq = [GeneratedSequence(sequenceName,
+                "".join(bs),
+                priorEmbeddedThings.getEmbeddings(),
+                additionalInfo)
+                       for bs in backgroundStringArr]
+        else:
+            gen_seq = GeneratedSequence(sequenceName,
+                "".join(backgroundStringArr),
+                priorEmbeddedThings.getEmbeddings(),
+                additionalInfo)
+        return gen_seq
+
     def generateSequence(self):
         """Produce the sequence.
         
@@ -278,12 +314,12 @@ class EmbedInABackground(AbstractSingleSequenceGenerator):
         Returns:
             An instance of :class:`.GeneratedSequence`
         """
-        toReturn = EmbedInABackground.\
-         generateSequenceGivenBackgroundGeneratorAndEmbedders(
+        toReturn = EmbedInABackground. \
+            generateSequenceGivenBackgroundGeneratorAndEmbedders(
             backgroundGenerator=self.backgroundGenerator,
             embedders=self.embedders,
             sequenceName=self.namePrefix + str(self.sequenceCounter))
-        self.sequenceCounter += 1
+        self.sequenceCounter += 1  # len(toReturn) if isinstance(toReturn, list) else 1
         return toReturn
 
     def getJsonableObject(self):
@@ -312,14 +348,21 @@ class AdditionalInfo(object):
         of writing, operatorName is typically just the name of the
         embedder.
     """
+
     def __init__(self):
         self.trace = OrderedDict()  # a trace of everything that was called.
         self.additionalInfo = OrderedDict()  # for more ad-hoc messages
+
+    def is_in_trace(self, operatorName):
+        self.isInTrace(operatorName)
 
     def isInTrace(self, operatorName):
         """Return True if operatorName has been called on the sequence.
         """
         return operatorName in self.trace
+
+    def update_trace(self, operatorName):
+        self.updateTrace(operatorName)
 
     def updateTrace(self, operatorName):
         """Increment count for the number of times operatorName was called.
@@ -327,6 +370,9 @@ class AdditionalInfo(object):
         if (operatorName not in self.trace):
             self.trace[operatorName] = 0
         self.trace[operatorName] += 1
+
+    def update_additional_info(self, operatorName, value):
+        self.updateAdditionalInfo(operatorName, value)
 
     def updateAdditionalInfo(self, operatorName, value):
         """Can be used to store any additional information on operatorName.
@@ -337,6 +383,9 @@ class AdditionalInfo(object):
 class AbstractPriorEmbeddedThings(object):
     """Keeps track of what has already been embedded in a sequence.
     """
+
+    def can_embed(self, startPos, endPos):
+        return self.canEmbed(startPos, endPos)
 
     def canEmbed(self, startPos, endPos):
         """Test whether startPos-endPos is available for embedding.
@@ -350,6 +399,9 @@ class AbstractPriorEmbeddedThings(object):
         """
         raise NotImplementedError()
 
+    def add_embedding(self, startPos, what):
+        self.addEmbedding(startPos, what)
+
     def addEmbedding(self, startPos, what):
         """Records the embedding of a :class:`AbstractEmbeddable`.
 
@@ -362,12 +414,18 @@ class AbstractPriorEmbeddedThings(object):
         """
         raise NotImplementedError()
 
+    def get_num_occupied_pos(self):
+        return self.getNumOccupiedPos()
+
     def getNumOccupiedPos(self):
         """
         Returns:
             Number of posiitons that are filled with some kind of embedding
         """
         raise NotImplementedError()
+
+    def get_total_pos(self):
+        return self.getTotalPos()
 
     def getTotalPos(self):
         """
@@ -376,6 +434,9 @@ class AbstractPriorEmbeddedThings(object):
         to embed things in.
         """
         raise NotImplementedError()
+
+    def get_embeddings(self):
+        return self.getEmbeddings()
 
     def getEmbeddings(self):
         """
@@ -439,10 +500,14 @@ class LabelGenerator(object):
             of the labels (eg: an array of ones and zeros indicating if
             the criteria for various labels are met)
     """
+
     def __init__(self, labelNames, labelsFromGeneratedSequenceFunction):
         self.labelNames = labelNames
-        self.labelsFromGeneratedSequenceFunction =\
+        self.labelsFromGeneratedSequenceFunction = \
             labelsFromGeneratedSequenceFunction
+
+    def generate_labels(self, generatedSequence):
+        return self.generateLabels(generatedSequence)
 
     def generateLabels(self, generatedSequence):
         """calls self.labelsFromGeneratedSequenceFunction.
@@ -460,13 +525,23 @@ class IsInTraceLabelGenerator(LabelGenerator):
     A special kind of LabelGenerator where the names of the labels
         are the names of embedders, and the label is 1 if a particular
         embedder has been called on the sequence and 0 otherwise.
-    """ 
+    """
+
     def __init__(self, labelNames):
         def labelsFromGeneratedSequenceFunction(self, generatedSequence):
             return [(1 if generatedSequence.additionalInfo.isInTrace(x) else 0)
                     for x in self.labelNames]
+
         super(IsInTraceLabelGenerator, self).__init__(
             labelNames, labelsFromGeneratedSequenceFunction)
+
+
+def print_sequences(outputFileName, sequenceSetGenerator,
+                   includeEmbeddings=False, labelGenerator=None,
+                   includeFasta=False, prefix=None):
+    printSequences(outputFileName, sequenceSetGenerator,
+                   includeEmbeddings=includeEmbeddings, labelGenerator=labelGenerator,
+                   includeFasta=includeFasta, prefix=prefix)
 
 
 def printSequences(outputFileName, sequenceSetGenerator,
@@ -511,51 +586,60 @@ def printSequences(outputFileName, sequenceSetGenerator,
                  if labelGenerator is not None else "") + "\n")
     generatedSequences = sequenceSetGenerator.generateSequences()  # returns a generator
     for generatedSequence in generatedSequences:
-        ofh.write((prefix+"-" if prefix is not None else "")
+        ofh.write((prefix + "-" if prefix is not None else "")
                   + generatedSequence.seqName + "\t" + generatedSequence.seq
                   + ("\t" + ",".join(str(x)
-                     for x in generatedSequence.embeddings)
-                         if includeEmbeddings else "")
+                                     for x in generatedSequence.embeddings)
+                     if includeEmbeddings else "")
                   + ("\t" + "\t".join(str(x) for x in labelGenerator.generateLabels(
-                      generatedSequence)) if labelGenerator is not None else "")
+            generatedSequence)) if labelGenerator is not None else "")
                   + "\n")
-        if (includeFasta):
-            fastaOfh.write(">" + (prefix+"-" if prefix is not None else "")
-                               + generatedSequence.seqName + "\n")
+        if includeFasta:
+            fastaOfh.write(">" + (prefix + "-" if prefix is not None else "")
+                           + generatedSequence.seqName + "\n")
             fastaOfh.write(generatedSequence.seq + "\n")
 
     ofh.close()
     if (includeFasta):
         fastaOfh.close()
     infoFilePath = (util.get_file_name_parts(outputFileName)
-                        .get_transformed_file_path(
-                          lambda x: x + "_info", extension=".txt"))
+        .get_transformed_file_path(
+        lambda x: x + "_info", extension=".txt"))
 
     ofh = util.get_file_handle(infoFilePath, 'w')
     ofh.write(util.format_as_json(sequenceSetGenerator.getJsonableObject()))
     ofh.close()
 
 
-def read_simdata_file(simdata_file, one_hot_encode=False, ids_to_load=None):
+def read_simdata_file(simdata_file, ids_to_load=None):
+    """
+    Read a simdata file and extract all simdata info as an enum
+    :param simdata_file: str, path to file
+    :param ids_to_load: list of ints, ids of sequences to load
+    :return: enum of sequences, the embedded elements in each
+             sequence, and any labels for those sequences
+    """
     ids = []
     sequences = []
     embeddings = []
     labels = []
     if (ids_to_load is not None):
         ids_to_load = set(ids_to_load)
+
     def action(inp, line_number):
         if (line_number > 1):
             if (ids_to_load is None or (inp[0] in ids_to_load)):
-                ids.append(inp[0]) 
+                ids.append(inp[0])
                 sequences.append(inp[1])
                 embeddings.append(getEmbeddingsFromString(inp[2]))
                 labels.append([int(x) for x in inp[3:]])
+
     util.perform_action_on_each_line_of_file(
         file_handle=util.get_file_handle(simdata_file),
         action=action,
         transformation=util.default_tab_seppd)
     return util.enum(
-            ids=ids,
-            sequences=sequences,
-            embeddings=embeddings,
-            labels=np.array(labels))
+        ids=ids,
+        sequences=sequences,
+        embeddings=embeddings,
+        labels=np.array(labels))

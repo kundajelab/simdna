@@ -2,7 +2,7 @@
 import os
 import sys
 import simdna
-import simdna.util as util
+import simdna.util.util as util
 import simdna.synthetic as synthetic
 import argparse
 
@@ -25,10 +25,12 @@ def do(options):
                          util.ArgumentToAdd(options.numSeqs, "numSeqs")])
     
     loadedMotifs = synthetic.LoadedEncodeMotifs(options.pathToMotifs, pseudocountProb=0.001)
-    Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs   
+    Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs
     embedInBackground = synthetic.EmbedInABackground(
-        backgroundGenerator=synthetic.ZeroOrderBackgroundGenerator(seqLength=options.seqLength) 
-        , embedders=[
+        backgroundGenerator=synthetic.BackgroundArrayFromGenerator(
+            synthetic.ZeroOrderBackgroundGenerator(seqLength=options.seqLength)
+        ),
+        embedders=[
             synthetic.RepeatedEmbedder(
             synthetic.SubstringEmbedder(
                 synthetic.ReverseComplementWrapper(
@@ -41,7 +43,7 @@ def do(options):
                 synthetic.PoissonQuantityGenerator(options.mean_motifs),
                 theMax=options.max_motifs, theMin=options.min_motifs), zeroProb=options.zero_prob)
             )
-            for motifName in options.motifNames 
+            for motifName in options.motifNames
         ]
     )
     sequenceSet = synthetic.GenerateSequenceNTimes(embedInBackground, options.numSeqs)
