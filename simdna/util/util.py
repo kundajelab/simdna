@@ -60,7 +60,7 @@ DEFAULT_BASE_DISCRETE_DISTRIBUTION = DiscreteDistribution(
 def get_file_handle(filename, mode="r"):
     """
     Retrieve an open file handle
-    WARNING: most close file handle returned from this function
+    WARNING: must close file handle returned from this function
     :param filename: str, path to file
     :param mode: char, 'r'=read; 'w'=write, etc according `open`
     :return: open file handle
@@ -178,10 +178,10 @@ reverseComplementLookup = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G',
 
 def reverseComplement(sequence):
     """
-    Get the reverse compliment of a sequence by flipping
+    Get the reverse complement of a sequence by flipping
     the pairs of nucleotides and reversing the string
     :param sequence: str, sequence of elements in  reverseComplementLookup
-    :return: str, reversed compliment
+    :return: str, reversed complement
     """
     reversedSequence = sequence[::-1]
     reverseComplemented = "".join(
