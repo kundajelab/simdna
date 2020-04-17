@@ -27,9 +27,7 @@ def do(options):
     loadedMotifs = synthetic.LoadedEncodeMotifs(options.pathToMotifs, pseudocountProb=0.001)
     Constructor = synthetic.BestHitPwmFromLoadedMotifs if options.bestHit else synthetic.PwmSamplerFromLoadedMotifs
     embedInBackground = synthetic.EmbedInABackground(
-        backgroundGenerator=synthetic.BackgroundArrayFromGenerator(
-            synthetic.ZeroOrderBackgroundGenerator(seqLength=options.seqLength)
-        ),
+        backgroundGenerator=synthetic.ZeroOrderBackgroundGenerator(seqLength=options.seqLength),
         embedders=[
             synthetic.RepeatedEmbedder(
             synthetic.SubstringEmbedder(

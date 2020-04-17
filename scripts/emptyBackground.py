@@ -12,7 +12,7 @@ def do(options):
                                                  , util.ArgumentToAdd(options.numSeqs, "numSeqs")
                                                  ])
     embedInBackground = sn.EmbedInABackground(
-        backgroundGenerator=sn.FirstOrderBackgroundGenerator(seqLength=options.seqLength), embedders=[]
+        backgroundGenerator=sn.ZeroOrderBackgroundGenerator(seqLength=options.seqLength), embedders=[]
     )
     sequenceSet = sn.GenerateSequenceNTimes(embedInBackground, options.numSeqs)
     sn.printSequences(outputFileName_core+".simdata", sequenceSet, includeFasta=True, includeEmbeddings=True,

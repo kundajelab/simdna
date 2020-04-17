@@ -121,11 +121,10 @@ class UniformPositionGenerator(AbstractPositionGenerator):
 
 
 class FixedPositionGenerator(AbstractPositionGenerator):
-    """Sample position uniformly at random.
+    """Return a constant position value.
 
-    Samples a start position to embed the substring in uniformly at random;
-        does not return positions that are too close to the end of the
-        background sequence to embed the full substring.
+    Takes a position to return; returns that position on calling _generatePos.
+    Will error if position is outside the sequence bounds.
 
     Arguments:
         name: string, see :class:`.DefaultNameMixin`

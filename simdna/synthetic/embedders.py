@@ -6,7 +6,6 @@ from simdna.synthetic.quantitygen import AbstractQuantityGenerator
 from simdna.util import util
 from collections import OrderedDict
 from simdna import random
-import numpy as np
 
 class AbstractEmbedder(DefaultNameMixin):
     """Produces :class:`AbstractEmbeddable` objects and
