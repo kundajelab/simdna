@@ -1,5 +1,7 @@
 # [simdna: simulated datasets of DNA](https://kundajelab.github.io/simdna/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/kundajelab/simdna/blob/master/LICENSE)
+[![DOI](https://zenodo.org/badge/64431056.svg)](https://zenodo.org/badge/latestdoi/64431056)
+
 
 ## Installation
 ```
