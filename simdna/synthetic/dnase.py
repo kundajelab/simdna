@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 from simdna.synthetic.embedders import AbstractEmbedder
 from simdna.synthetic.core import AbstractSequenceSetGenerator
-from simdna import util
+from simdna.util import util
 from simdna.synthetic.core import EmbedInABackground
 from simdna.synthetic.backgroundgen import ShuffledBackgroundGenerator
 from simdna.synthetic.substringgen import (PwmSamplerFromLoadedMotifs,
@@ -9,6 +9,11 @@ from simdna.synthetic.substringgen import (PwmSamplerFromLoadedMotifs,
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from collections import OrderedDict
 from simdna import random
+
+
+def parse_dnase_motif_embedder_string(embedderString, loadedMotifs):
+    parseDnaseMotifEmbedderString(embedderString, loadedMotifs)
+
 
 def parseDnaseMotifEmbedderString(embedderString, loadedMotifs):
     """Parse a string representing a motif and position
@@ -78,6 +83,9 @@ class SingleDnaseSequenceGenerator(object):
         self.backgroundGenerator = backgroundGenerator 
         self.dnaseMotifEmbedders = dnaseMotifEmbedders
         self.sequenceName = sequenceName
+
+    def generate_sequence(self):
+        self.generateSequence()
 
     def generateSequence(self):
         return EmbedInABackground.\

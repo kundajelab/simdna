@@ -1,4 +1,7 @@
 from numpy import random
+from .simdnautil import pwm
+from .simdnautil import util
+from .simdnautil import dinuc_shuffle
 
 #extend the RandomState to have a random() func,
 # for compatibility with np.random

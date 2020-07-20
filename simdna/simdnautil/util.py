@@ -5,7 +5,7 @@ import gzip
 import os
 import json
 from simdna import random
-
+import numpy as np
 
 DEFAULT_LETTER_TO_INDEX = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
 
@@ -57,15 +57,22 @@ DEFAULT_BASE_DISCRETE_DISTRIBUTION = DiscreteDistribution(
     DEFAULT_BACKGROUND_FREQ)
 
 
-def get_file_handle(filename,mode="r"):
+def get_file_handle(filename, mode="r"):
+    """
+    Retrieve an open file handle
+    WARNING: must close file handle returned from this function
+    :param filename: str, path to file
+    :param mode: char, 'r'=read; 'w'=write, etc according `open`
+    :return: open file handle
+    """
     if (re.search('.gz$',filename) or re.search('.gzip',filename)):
         if (mode=="r"):
             mode="rb";
         elif (mode=="w"):
-            #I think write will actually append if the file already
-            #exists...so you want to remove it if it exists
+            # I think write will actually append if the file already
+            # exists...so you want to remove it if it exists
             if os.path.isfile(filename):
-                os.remove(filename);
+                os.remove(filename)
         return gzip.open(filename,mode)
     else:
         return open(filename,mode) 
@@ -73,7 +80,7 @@ def get_file_handle(filename,mode="r"):
 
 def default_tab_seppd(s):
     s = trim_newline(s)
-    s = split_by_delimiter(s, "\t")
+    s = s.split("\t")
     return s
 
 
@@ -81,43 +88,42 @@ def trim_newline(s):
     return s.rstrip('\r\n')
 
 
-def split_by_delimiter(s, delimiter):
-    return s.split(delimiter)
-
-
 def perform_action_on_each_line_of_file(
-    file_handle
-    #should be a function that accepts the
-    #preprocessed/filtered line and the line number
-    , action
-    , transformation=default_tab_seppd
-    , ignore_input_title=False
-    , progress_update=None
-    , progress_update_file_name=None):
+    file_handle, action, transformation=default_tab_seppd, ignore_input_title=False):
+    """
+    Read file and perform action on each line
+    :param file_handle: file, file handle
+    :param action: function handle, what to do with line
+    :param transformation: function handle, manipulate line before action
+    :param ignore_input_title: bool, skip index 0
+    :return:
+    """
 
-    i = 0;
+    i = 0
     for line in file_handle:
-        i += 1;
+        i += 1
         if hasattr(line, "decode"): 
             line = line.decode("utf-8")
         process_line(line, i, ignore_input_title,
-                     transformation, action, progress_update)
-        print_progress(progress_update, i, progress_update_file_name)
+                     transformation, action)
 
-    file_handle.close();
+    file_handle.close()
 
 
 def process_line(line, i, ignore_input_title,
-                 transformation, action, progress_update=None):
-    if (i > 1 or (ignore_input_title==False)):
-        action(transformation(line),i)
-
-
-def print_progress(progress_update, i, file_name=None):
-    if progress_update is not None:
-        if (i%progress_update == 0):
-            print ("Processed "+str(i)+" lines"
-                   +str("" if file_name is None else " of "+file_name))
+                 transformation, action):
+    """
+    Line by line file processor; used in motif loading
+    and simdata loading functions
+    :param line: str, line from file
+    :param i: int, line index
+    :param ignore_input_title: bool, skip index 0
+    :param transformation: function handle, manipulate line before action
+    :param action: function handle, what to do with line
+    :return:
+    """
+    if i > 1 or (ignore_input_title is False):
+        action(transformation(line), i)
 
 
 class VariableWrapper():
@@ -127,6 +133,11 @@ class VariableWrapper():
 
 
 def enum(**enums):
+    """
+    Constructs an enum object around a set of kwargs (all of the same length)
+    :param enums: dict of iterables of the same length
+    :return: enum version of kwargs
+    """
     class Enum(object):
         pass
     to_return = Enum
@@ -157,14 +168,8 @@ def sampleFromProbsArr(arrWithProbs):
         an index, sampled with the probability of that index in
     array of probabilities.
     """
-    randNum = random.random()
-    cdfSoFar = 0
-    for (idx, prob) in enumerate(arrWithProbs):
-        cdfSoFar += prob
-        if (cdfSoFar >= randNum or idx == (len(arrWithProbs) - 1)):  # need the
-            # letterIdx==(len(row)-1) clause because of potential floating point errors
-            # that mean arrWithProbs doesn't sum to 1
-            return idx
+    arrWithProbs = np.array(arrWithProbs)
+    return random.choice(len(arrWithProbs), p=arrWithProbs/arrWithProbs.sum())
 
 
 reverseComplementLookup = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G',
@@ -172,6 +177,12 @@ reverseComplementLookup = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G',
 
 
 def reverseComplement(sequence):
+    """
+    Get the reverse complement of a sequence by flipping
+    the pairs of nucleotides and reversing the string
+    :param sequence: str, sequence of elements in  reverseComplementLookup
+    :return: str, reversed complement
+    """
     reversedSequence = sequence[::-1]
     reverseComplemented = "".join(
         [reverseComplementLookup[x] for x in reversedSequence])
@@ -193,12 +204,21 @@ def swapIndices(arr, idx1, idx2):
 
 
 def get_file_name_parts(file_name):
+    """
+    Extract filename components with regex
+    :param file_name: a unix file path
+    :return:
+    """
     p = re.compile(r"^(.*/)?([^\./]+)(\.[^/]*)?$")
     m = p.search(file_name)
     return FileNameParts(m.group(1), m.group(2), m.group(3))
 
 
 class FileNameParts(object):
+    """
+    Warning: this will break for non-unix systems;
+    wrapper on filename for manipulating file names
+    """
 
     def __init__(self, directory, core_file_name, extension):
         self.directory = directory if (directory is not None) else os.getcwd()
