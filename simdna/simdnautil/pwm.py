@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
-from simdna.util.util import DEFAULT_LETTER_TO_INDEX
-from simdna.util import util
+from simdna.simdnautil.util import DEFAULT_LETTER_TO_INDEX
+from simdna.simdnautil import util
 import math
 
 

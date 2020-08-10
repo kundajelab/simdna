@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 from simdna.synthetic.embedders import AbstractEmbedder
 from simdna.synthetic.core import AbstractSequenceSetGenerator
-from simdna.util import util
+from simdna.simdnautil import util
 from simdna.synthetic.core import EmbedInABackground
 from simdna.synthetic.backgroundgen import ShuffledBackgroundGenerator
 from simdna.synthetic.substringgen import (PwmSamplerFromLoadedMotifs,

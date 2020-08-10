@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 from simdna.synthetic.core import DefaultNameMixin
-from simdna.util import util, pwm
+from simdna.simdnautil import util, pwm
 from simdna import random
 from collections import OrderedDict
 import numpy as np
