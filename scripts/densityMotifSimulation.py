@@ -2,7 +2,7 @@
 import os
 import sys
 import simdna
-import simdna.util.util as util
+import simdna.simdnautil.util as util
 import simdna.synthetic as synthetic
 import argparse
 

@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-from simdna.util import util
+from simdna.simdnautil import util
 from collections import OrderedDict
 import numpy as np
 import re

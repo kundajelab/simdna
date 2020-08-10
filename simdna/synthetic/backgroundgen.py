@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-from simdna.util import dinuc_shuffle, util
+from simdna.simdnautil import dinuc_shuffle, util
 from simdna.synthetic.substringgen import AbstractSubstringGenerator
 from simdna.synthetic.quantitygen import FixedQuantityGenerator, AbstractQuantityGenerator
 from collections import OrderedDict
