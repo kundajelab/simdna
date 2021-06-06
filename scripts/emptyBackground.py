@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-import simdna.util.util as util
+import simdna.simdnautil.util as util
 import simdna.synthetic as sn
 import argparse
 

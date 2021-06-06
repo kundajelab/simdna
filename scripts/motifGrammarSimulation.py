@@ -2,9 +2,9 @@
 import os
 import sys
 import simdna
-import simdna.util.util as util
+import simdna.simdnautil.util as util
 import simdna.synthetic as synthetic
-import simdna.util.pwm as pwm
+import simdna.simdnautil.pwm as pwm
 
 generationSettings = util.enum(
     allBackground="allBackground" 
