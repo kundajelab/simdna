@@ -149,7 +149,7 @@ class LoadedHomerMotifs(AbstractLoadedMotifsFromFile):
                 currentPwm.var.addRow([float(x) for x in inpArr[0:]])
         return action
 
-class LoadedJasparRawPMFMotifs(AbstractLoadedMotifsFromFile):
+class LoadedJasparRawPFMMotifs(AbstractLoadedMotifsFromFile):
     """A class for reading in a motifs file in the Jaspar Raw motifs format.
 
     This class is specifically for reading files in the Jaspar motif
