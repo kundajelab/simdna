@@ -1,19 +1,15 @@
 .. SimDNA documentation master file, created by
-   sphinx-quickstart on Thu Jul 28 18:27:46 2016.
+   sphinx-quickstart on Sat Jun 26 15:49:58 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 Welcome to SimDNA's documentation!
 ==================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
+   :caption: Contents:
 
-   synthetic
-   simulations
-   utils
 
 
 Indices and tables
@@ -22,4 +18,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
