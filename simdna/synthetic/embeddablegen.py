@@ -96,7 +96,7 @@ class SubstringEmbeddableGenerator(AbstractEmbeddableGenerator):
     """
     def __init__(self, substringGenerator, name=None):
         self.substringGenerator = substringGenerator
-        super(SubstringEmbeddableGenerator, self).__init__(name)
+        AbstractEmbeddableGenerator.__init__(self, name)
 
     def generateEmbeddable(self):
         substring, substringDescription =\
