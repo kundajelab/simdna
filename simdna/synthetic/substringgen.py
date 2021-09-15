@@ -120,7 +120,7 @@ class PwmSampler(AbstractSubstringGenerator):
                 "bg should be specified iff minScore is specified"
         self.bg = bg
         self.minScore = minScore
-        AbstractSubstringGenerator.__init__(name)
+        AbstractSubstringGenerator.__init__(self, name)
 
     def generateSubstring(self):
         """See superclass.
