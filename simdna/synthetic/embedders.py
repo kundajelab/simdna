@@ -236,7 +236,8 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
         return OrderedDict([("class", "RandomSubsetOfEmbedders"),
             ("embedders", [x.getJsonableObject() for x in self.embedders]),
             ("quantityGenerator", self.quantityGenerator.getJsonableObject()),
-            ("probs", self.probs)])
+            ("probs", list(self.probs) if self.probs
+                       is not None else self.probs)])
 
 
 class RepeatedEmbedder(AbstractEmbedder):
