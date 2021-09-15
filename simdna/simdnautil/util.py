@@ -191,7 +191,7 @@ def reverseComplement(sequence):
 
 
 def sampleWithoutReplacement(arr, numToSample, p=None):
-    indices = nprandom.(np.arange(len(arr)), size=numToSample,
+    indices = nprandom.choice(np.arange(len(arr)), size=numToSample,
                         replace=False, p=p) 
     return [arr[idx] for idx in indices]
 
