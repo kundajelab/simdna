@@ -8,7 +8,7 @@ from . import quantitygen
 from . import substringgen
 from . import mutation
 from . import loadedmotifs
-from . import bacckgroundgen
+from . import backgroundgen
 from . import embeddablegen
 from .core import *
 from .dnase import *
