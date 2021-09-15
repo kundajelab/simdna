@@ -3,6 +3,7 @@ from simdna.synthetic.core import DefaultNameMixin
 from simdna.synthetic.positiongen import uniformPositionGenerator
 from simdna.synthetic.embeddablegen import SubstringEmbeddableGenerator
 from simdna.synthetic.quantitygen import AbstractQuantityGenerator
+from simdna.synthetic.quantitygen import FixedQuantityGenerator
 from simdna.simdnautil import util
 from collections import OrderedDict
 from simdna import random
