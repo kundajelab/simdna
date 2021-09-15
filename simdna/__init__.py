@@ -1,4 +1,5 @@
 from numpy import random
+from . import synthetic
 from .simdnautil import pwm
 from .simdnautil import util
 from .simdnautil import dinuc_shuffle
