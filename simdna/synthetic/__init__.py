@@ -1,4 +1,15 @@
 from __future__ import absolute_import, division, print_function
+from . import core
+from . import dnase
+from . import embedders
+from . import positiongen
+from . import embeddables
+from . import quantitygen
+from . import substringgen
+from . import mutation
+from . import loadedmotifs
+from . import bacckgroundgen
+from . import embeddablegen
 from .core import *
 from .dnase import *
 from .embedders import *
