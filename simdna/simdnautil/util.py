@@ -5,6 +5,7 @@ import gzip
 import os
 import json
 from simdna import random
+from simdna import nprandom
 import numpy as np
 
 DEFAULT_LETTER_TO_INDEX = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
@@ -189,12 +190,10 @@ def reverseComplement(sequence):
     return reverseComplemented
 
 
-def sampleWithoutReplacement(arr, numToSample):
-    arrayCopy = [x for x in arr]
-    for i in range(numToSample):
-        randomIndex = int(random.random() * (len(arrayCopy) - i)) + i
-        swapIndices(arrayCopy, i, randomIndex)
-    return arrayCopy[0:numToSample]
+def sampleWithoutReplacement(arr, numToSample, p=None):
+    indices = nprandom.(np.arange(len(arr)), size=numToSample,
+                        replace=False, p=p) 
+    return [arr[idx] for idx in indices]
 
 
 def swapIndices(arr, idx1, idx2):

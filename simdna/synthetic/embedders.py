@@ -205,12 +205,13 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
         embedders: a list of :class:`.AbstractEmbedder` objects
     """
 
-    def __init__(self, quantityGenerator, embedders, name=None):
+    def __init__(self, quantityGenerator, embedders, probs=None, name=None):
         if (isinstance(quantityGenerator, int)):
             quantityGenerator = FixedQuantityGenerator(quantityGenerator)
         assert isinstance(quantityGenerator, AbstractQuantityGenerator)
         self.quantityGenerator = quantityGenerator
         self.embedders = embedders
+        self.probs = probs
         super(RandomSubsetOfEmbedders, self).__init__(name)
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
@@ -219,9 +220,11 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
         numberOfEmbeddersToSample = self.quantityGenerator.generateQuantity()
         if (numberOfEmbeddersToSample > len(self.embedders)):
             raise RuntimeError("numberOfEmbeddersToSample came up as " + str(
-                numberOfEmbeddersToSample) + " but total number of embedders is " + str(len(self.embedders)))
+                numberOfEmbeddersToSample)
+                 + " but total number of embedders is "
+                 + str(len(self.embedders)))
         sampledEmbedders = util.sampleWithoutReplacement(
-            self.embedders, numberOfEmbeddersToSample)
+            self.embedders, numberOfEmbeddersToSample, p=self.probs)
         for embedder in sampledEmbedders:
             embedder.embed(backgroundStringArr,
                            priorEmbeddedThings, additionalInfo)
@@ -229,7 +232,10 @@ class RandomSubsetOfEmbedders(AbstractEmbedder):
     def getJsonableObject(self):
         """See superclass.
         """
-        return OrderedDict([("class", "RandomSubsetOfEmbedders"), ("setOfEmbedders", [x.getJsonableObject() for x in self.embedders])])
+        return OrderedDict([("class", "RandomSubsetOfEmbedders"),
+            ("embedders", [x.getJsonableObject() for x in self.embedders]),
+            ("quantityGenerator", self.quantityGenerator.getJsonableObject()),
+            ("probs", self.probs)])
 
 
 class RepeatedEmbedder(AbstractEmbedder):
