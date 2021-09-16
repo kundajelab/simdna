@@ -74,7 +74,7 @@ class EmbeddableEmbedder(AbstractEmbedder):
                        positionGenerator=uniformPositionGenerator, name=None):
         self.embeddableGenerator = embeddableGenerator
         self.positionGenerator = positionGenerator
-        super(EmbeddableEmbedder, self).__init__(name)
+        AbstractEmbedder.__init__(self, name)
 
     def _embed(self, backgroundStringArr, priorEmbeddedThings, additionalInfo):
         """See superclass.
