@@ -129,8 +129,9 @@ class SubstringEmbedder(EmbeddableEmbedder):
     """
 
     def __init__(self, substringGenerator, positionGenerator=uniformPositionGenerator, name=None):
-        super(SubstringEmbedder, self).__init__(
-            SubstringEmbeddableGenerator(substringGenerator), positionGenerator, name)
+        EmbeddableEmbedder.__init__(self,
+            SubstringEmbeddableGenerator(substringGenerator),
+            positionGenerator, name)
 
 
 class XOREmbedder(AbstractEmbedder):
