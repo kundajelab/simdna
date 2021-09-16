@@ -8,10 +8,19 @@ import math
 class PWM(object):
     """
     Object representing a position weight matrix;
-    allows sampling from the PWM either randoml or taking the best hit.
-    """
+    allows sampling from the PWM either randomly or taking the best hit.
 
-    def __init__(self, name, letterToIndex=DEFAULT_LETTER_TO_INDEX):
+    :param name: name of the PWM
+    :param letterToIndex: dictionary mapping from letter to index. Defaults
+    to ACGT ordering.
+    :param probMatrix: rows of the PWM (in probability space). Can be added
+    later too by calling addRows.
+    :param pseudocountProb: smoothing factor to add to probMatrix. Specify
+        this in the constructor if you are also specifying probMatrix in
+        the constructor.
+    """
+    def __init__(self, name, letterToIndex=DEFAULT_LETTER_TO_INDEX,
+                       probMatrix=None, pseudocountProb=None):
         self.name = name
         self.letterToIndex = letterToIndex
         self.indexToLetter = dict(
@@ -19,18 +28,41 @@ class PWM(object):
         self._rows = []
         self._finalised = False
 
+        if (probMatrix is not None):
+            self.addRows(matrix=probMatrix)
+
+        if (pseudocountProb is not None):
+            assert probMatrix is not None,(
+                "please specify probMatrix in the constructor if you are"
+                +"going to specify pseudocountProb in the constructor")
+            self.finalise(pseudocountProb=pseudocountProb)
 
     def add_row(self, weights):
         self.addRow(weights)
+    """
+    Add row to the end of the PWM. Must be specified in probability
+    space.
 
+    :param weights: a row of the PWM (in probability space)
+    """
     def addRow(self, weights):
         if (len(self._rows) > 0):
             assert len(weights) == len(self._rows[0])
         self._rows.append(weights)
 
+    """
+    See addRows
+    """
     def add_rows(self, matrix):
         self.addRows(matrix)
 
+    """
+    Add rows of 'matrix' to the end of the PWM. Must be specified in probability
+    space.
+
+    :param matrix: rows of the PWM (in probability space)
+    :return: self
+    """
     def addRows(self, matrix):
         for row in matrix:
             self.addRow(weights=row)
@@ -86,7 +118,7 @@ class PWM(object):
 
     def getRows(self):
         if (not self._finalised):
-            raise RuntimeError("Please call finalised on " + str(self.name))
+            raise RuntimeError("Please call finalise on " + str(self.name))
         return self._rows
 
     def sample_from_pwm(self, bg=None):
@@ -100,7 +132,7 @@ class PWM(object):
         :return: sample or (sample and logodds) if bg is not None
         """
         if (not self._finalised):
-            raise RuntimeError("Please call finalised on " + str(self.name))
+            raise RuntimeError("Please call finalise on " + str(self.name))
 
         sampledLetters = []
         logOdds = 0
