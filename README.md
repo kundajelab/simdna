@@ -23,7 +23,7 @@ These phases are captured by the two core classes underlying the packages basic 
 ### Backgrounds
 
 SimDNA afford several ways of generating background sequences to embed elements into.  The simplest of
- these is simply generating a set of completely randomized background sequences according to a set of probabilities 
+ these is generating a set of completely randomized background sequences according to a set of probabilities 
  for each individual nucleotide. See [Background Sequence](###Background Sequence) for more information on different
   ways to generate a background.
 
