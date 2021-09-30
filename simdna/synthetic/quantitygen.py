@@ -97,7 +97,7 @@ class FixedQuantityGenerator(AbstractQuantityGenerator):
 
     def __init__(self, quantity, name=None):
         self.quantity = quantity
-        super(FixedQuantityGenerator, self).__init__(name)
+        AbstractQuantityGenerator.__init__(self, name)
 
     def generateQuantity(self):
         """See superclass.
