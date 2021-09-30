@@ -167,7 +167,7 @@ class InsideCentralBp(AbstractPositionGenerator):
         """
         """
         self.centralBp = centralBp
-        super(InsideCentralBp, self).__init__(name)
+        AbstractPositionGenerator.__init__(self, name)
 
     def _generatePos(self, lenBackground, lenSubstring, additionalInfo):
         if (lenBackground < self.centralBp):
