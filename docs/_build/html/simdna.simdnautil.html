@@ -1,0 +1,801 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simdna.simdnautil package &#8212; SimDNA 0.5.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simdna-simdnautil-package">
+<h1>simdna.simdnautil package<a class="headerlink" href="#simdna-simdnautil-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-simdna.simdnautil.dinuc_shuffle">
+<span id="simdna-simdnautil-dinuc-shuffle-module"></span><h2>simdna.simdnautil.dinuc_shuffle module<a class="headerlink" href="#module-simdna.simdnautil.dinuc_shuffle" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simdna.simdnautil.dinuc_shuffle.dinuc_shuffle">
+<code class="sig-prename descclassname">simdna.simdnautil.dinuc_shuffle.</code><code class="sig-name descname">dinuc_shuffle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.dinuc_shuffle.dinuc_shuffle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.dinuc_shuffle.prepare_edges">
+<code class="sig-prename descclassname">simdna.simdnautil.dinuc_shuffle.</code><code class="sig-name descname">prepare_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.dinuc_shuffle.prepare_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.dinuc_shuffle.shuffle_edges">
+<code class="sig-prename descclassname">simdna.simdnautil.dinuc_shuffle.</code><code class="sig-name descname">shuffle_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.dinuc_shuffle.shuffle_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.dinuc_shuffle.traverse_edges">
+<code class="sig-prename descclassname">simdna.simdnautil.dinuc_shuffle.</code><code class="sig-name descname">traverse_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">edges</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.dinuc_shuffle.traverse_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-simdna.simdnautil.fileProcessing">
+<span id="simdna-simdnautil-fileprocessing-module"></span><h2>simdna.simdnautil.fileProcessing module<a class="headerlink" href="#module-simdna.simdnautil.fileProcessing" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simdna.simdnautil.fileProcessing.BackupForWriteFileHandle">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">BackupForWriteFileHandle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.BackupForWriteFileHandle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="simple">
+<dt>Wrapper around a filehandle that</dt><dd><p>backs up the file while writing,
+then deletes the backup when close
+is called</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.restore">
+<code class="sig-name descname">restore</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.restore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.BackupForWriteFileHandle.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.fileProcessing.FastaIterator">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">FastaIterator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em>, <em class="sig-param"><span class="n">progressUpdate</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">progressUpdateFileName</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FastaIterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Returns an iterator over lines of a fasta file - assumes each sequence
+spans only one line!</p>
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FastaIterator.next">
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FastaIterator.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">FileNameParts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em>, <em class="sig-param"><span class="n">coreFileName</span></em>, <em class="sig-param"><span class="n">extension</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts.getCoreFileNameAndExtension">
+<code class="sig-name descname">getCoreFileNameAndExtension</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts.getCoreFileNameAndExtension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts.getCoreFileNameWithTransformation">
+<code class="sig-name descname">getCoreFileNameWithTransformation</code><span class="sig-paren">(</span><em class="sig-param">transformation=&lt;function FileNameParts.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts.getCoreFileNameWithTransformation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts.getFileNameWithTransformation">
+<code class="sig-name descname">getFileNameWithTransformation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformation</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts.getFileNameWithTransformation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts.getFilePathWithTransformation">
+<code class="sig-name descname">getFilePathWithTransformation</code><span class="sig-paren">(</span><em class="sig-param">transformation=&lt;function FileNameParts.&lt;lambda&gt;&gt;</em>, <em class="sig-param">extension=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts.getFilePathWithTransformation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileNameParts.getFullPath">
+<code class="sig-name descname">getFullPath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileNameParts.getFullPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.fileProcessing.FileReader">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">FileReader</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">filterFunction=None</em>, <em class="sig-param">transformation=&lt;function FileReader.&lt;lambda&gt;&gt;</em>, <em class="sig-param">ignoreInputTitle=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.FileReader.getNextLine">
+<code class="sig-name descname">getNextLine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.FileReader.getNextLine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.fileProcessing.SubsetOfColumnsToUseOptions">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">SubsetOfColumnsToUseOptions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'setOfColumnNames'</span></em>, <em class="sig-param"><span class="n">columnNames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.SubsetOfColumnsToUseOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.fileProcessing.SubsetOfColumnsToUseOptions.integrityChecks">
+<code class="sig-name descname">integrityChecks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.SubsetOfColumnsToUseOptions.integrityChecks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.appendNewline">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">appendNewline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.appendNewline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.assertParameterIrrelevantForMode">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">assertParameterIrrelevantForMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameterName</span></em>, <em class="sig-param"><span class="n">parameter</span></em>, <em class="sig-param"><span class="n">modeName</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.assertParameterIrrelevantForMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.assertParameterNecessaryForMode">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">assertParameterNecessaryForMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameterName</span></em>, <em class="sig-param"><span class="n">parameter</span></em>, <em class="sig-param"><span class="n">modeName</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.assertParameterNecessaryForMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.concatenateFiles">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">concatenateFiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputFile</span></em>, <em class="sig-param"><span class="n">arrOfFilesToConcatenate</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.concatenateFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.concatenateFiles_preprocess">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">concatenateFiles_preprocess</code><span class="sig-paren">(</span><em class="sig-param">outputFile</em>, <em class="sig-param">arrOfFilesToConcatenate</em>, <em class="sig-param">transformation=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">inputFileTransformation=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">outputTitleFromInputTitle=None</em>, <em class="sig-param">ignoreInputTitle=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.concatenateFiles_preprocess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.defaultTabSeppd">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">defaultTabSeppd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.defaultTabSeppd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.defaultWhitespaceSeppd">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">defaultWhitespaceSeppd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.defaultWhitespaceSeppd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.getCoreFileName">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">getCoreFileName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.getCoreFileName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.getCoreTitledMappingAction">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">getCoreTitledMappingAction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subsetOfColumnsToUseOptions</span></em>, <em class="sig-param"><span class="n">contentType</span></em>, <em class="sig-param"><span class="n">contentStartIndex</span></em>, <em class="sig-param"><span class="n">subsetOfRowsToUse</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keyColumns</span><span class="o">=</span><span class="default_value">[0]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.getCoreTitledMappingAction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.getFileHandle">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">getFileHandle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'r'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.getFileHandle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.getFileNameParts">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">getFileNameParts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.getFileNameParts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.getTitleOfFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">getTitleOfFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.getTitleOfFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.lambdaMaker_dictionaryFromLine">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">lambdaMaker_dictionaryFromLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">delimiter</span><span class="o">=</span><span class="default_value">'\t'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.lambdaMaker_dictionaryFromLine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.lambdaMaker_getAtPosition">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">lambdaMaker_getAtPosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.lambdaMaker_getAtPosition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.lambdaMaker_insertPrefixIntoFileName">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">lambdaMaker_insertPrefixIntoFileName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefix</span></em>, <em class="sig-param"><span class="n">separator</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.lambdaMaker_insertPrefixIntoFileName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.lambdaMaker_insertSuffixIntoFileName">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">lambdaMaker_insertSuffixIntoFileName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">suffix</span></em>, <em class="sig-param"><span class="n">separator</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.lambdaMaker_insertSuffixIntoFileName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.peekAtFirstLineOfFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">peekAtFirstLineOfFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.peekAtFirstLineOfFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.performActionInBatchesOnEachLineOfFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">performActionInBatchesOnEachLineOfFile</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">batchSize</em>, <em class="sig-param">actionOnLineInBatch</em>, <em class="sig-param">actionAtEndOfBatch</em>, <em class="sig-param">transformation=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">filterFunction=None</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">progressUpdate=None</em>, <em class="sig-param">ignoreInputTitle=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.performActionInBatchesOnEachLineOfFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.performActionOnEachLineOfFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">performActionOnEachLineOfFile</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">action=None</em>, <em class="sig-param">transformation=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">ignoreInputTitle=False</em>, <em class="sig-param">filterFunction=None</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">actionFromTitle=None</em>, <em class="sig-param">progressUpdate=None</em>, <em class="sig-param">progressUpdateFileName=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.performActionOnEachLineOfFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.printProgress">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">printProgress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">progressUpdate</span></em>, <em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">fileName</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.printProgress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.processLine">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">processLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span></em>, <em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">ignoreInputTitle</span></em>, <em class="sig-param"><span class="n">preprocessing</span></em>, <em class="sig-param"><span class="n">filterFunction</span></em>, <em class="sig-param"><span class="n">transformation</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">progressUpdate</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.processLine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.read2DMatrix">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">read2DMatrix</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">colNamesPresent=False</em>, <em class="sig-param">rowNamesPresent=False</em>, <em class="sig-param">contentType=&lt;class 'float'&gt;</em>, <em class="sig-param">contentStartIndex=None</em>, <em class="sig-param">contentEndIndex=None</em>, <em class="sig-param">progressUpdate=None</em>, <em class="sig-param">numpify=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.read2DMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>“numpify” will return a numpy mat for the rows
+returns an instance of util.Titled2DMatrix
+Has attributes rows, rowNames, colNames</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.readColIntoArr">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">readColIntoArr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em>, <em class="sig-param"><span class="n">col</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">titlePresent</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.readColIntoArr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.readRowsIntoArr">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">readRowsIntoArr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em>, <em class="sig-param"><span class="n">progressUpdate</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">titlePresent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.readRowsIntoArr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.readTitledMapping">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">readTitledMapping</code><span class="sig-paren">(</span><em class="sig-param">fileHandle, contentType=&lt;class 'float'&gt;, contentStartIndex=1, subsetOfColumnsToUseOptions=None, subsetOfRowsToUse=None, progressUpdate=None, keyColumns=[0]</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.readTitledMapping" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>returns an instance of util.TitledMapping.</dt><dd><dl>
+<dt>util.TitledMapping has functions:</dt><dd><ul class="simple">
+<li><p>getTitledArrForKey(key): returns an instance of util.TitledArr which has: getCol(colName) and setCol(colName)</p></li>
+<li><p>getArrForKey(key): returns the array for the key</p></li>
+<li><p>keyPresenceCheck(key): throws an error if the key is absent</p></li>
+</ul>
+<p>Is also iterable! Returns an iterator of util.TitledArr</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>subsetOfColumnsToUseOptions: instance of SubsetOfColumnsToUseOptions
+subsetOfRowsToUse: something that has a subset of row ids to be considered</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.simpleDictionaryFromFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">simpleDictionaryFromFile</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">keyIndex=0</em>, <em class="sig-param">valIndex=1</em>, <em class="sig-param">titlePresent=False</em>, <em class="sig-param">transformation=&lt;function defaultTabSeppd&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.simpleDictionaryFromFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.splitByDelimiter">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">splitByDelimiter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">delimiter</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.splitByDelimiter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.splitByTabs">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">splitByTabs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.splitByTabs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.splitLinesIntoOtherFiles">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">splitLinesIntoOtherFiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em>, <em class="sig-param"><span class="n">preprocessingStep</span></em>, <em class="sig-param"><span class="n">filterVariableFromLine</span></em>, <em class="sig-param"><span class="n">outputFilePathFromFilterVariable</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.splitLinesIntoOtherFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.stringToFloat">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">stringToFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.stringToFloat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.stringToInt">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">stringToInt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.stringToInt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.titleColumnToIndex">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">titleColumnToIndex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'\t'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.titleColumnToIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.transformFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">transformFile</code><span class="sig-paren">(</span><em class="sig-param">fileHandle</em>, <em class="sig-param">outputFile</em>, <em class="sig-param">transformation=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">outputTitleFromInputTitle=None</em>, <em class="sig-param">ignoreInputTitle=False</em>, <em class="sig-param">filterFunction=None</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">progressUpdate=None</em>, <em class="sig-param">progressUpdateFileName=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.transformFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.transformFileIntoArray">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">transformFileIntoArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.transformFileIntoArray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.trimNewline">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">trimNewline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.trimNewline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.unsupportedValueForMode">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">unsupportedValueForMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">modeName</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.unsupportedValueForMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.writeMatrixToFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">writeMatrixToFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileHandle</span></em>, <em class="sig-param"><span class="n">rows</span></em>, <em class="sig-param"><span class="n">colNames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rowNames</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.writeMatrixToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.writeRowsToFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">writeRowsToFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rows</span></em>, <em class="sig-param"><span class="n">theFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.writeRowsToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.writeRowsToFileHandle">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">writeRowsToFileHandle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rows</span></em>, <em class="sig-param"><span class="n">fileHandle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.writeRowsToFileHandle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.writeToFile">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">writeToFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputFile</span></em>, <em class="sig-param"><span class="n">contents</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.writeToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.fileProcessing.writeToFileHandle">
+<code class="sig-prename descclassname">simdna.simdnautil.fileProcessing.</code><code class="sig-name descname">writeToFileHandle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputFileHandle</span></em>, <em class="sig-param"><span class="n">contents</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.fileProcessing.writeToFileHandle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-simdna.simdnautil.pwm">
+<span id="simdna-simdnautil-pwm-module"></span><h2>simdna.simdnautil.pwm module<a class="headerlink" href="#module-simdna.simdnautil.pwm" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simdna.simdnautil.pwm.PWM">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.pwm.</code><code class="sig-name descname">PWM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">letterToIndex</span><span class="o">=</span><span class="default_value">{'A': 0, 'C': 1, 'G': 2, 'T': 3}</span></em>, <em class="sig-param"><span class="n">probMatrix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pseudocountProb</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Object representing a position weight matrix;
+allows sampling from the PWM either randomly or taking the best hit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of the PWM</p></li>
+<li><p><strong>letterToIndex</strong> – dictionary mapping from letter to index. Defaults</p></li>
+</ul>
+</dd>
+</dl>
+<p>to ACGT ordering.
+:param probMatrix: rows of the PWM (in probability space). Can be added
+later too by calling addRows.
+:param pseudocountProb: smoothing factor to add to probMatrix. Specify</p>
+<blockquote>
+<div><p>this in the constructor if you are also specifying probMatrix in
+the constructor.</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.addRow">
+<code class="sig-name descname">addRow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weights</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.addRow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.addRows">
+<code class="sig-name descname">addRows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.addRows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.add_row">
+<code class="sig-name descname">add_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weights</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.add_row" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.add_rows">
+<code class="sig-name descname">add_rows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.add_rows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.computeBestHitGivenMatrix">
+<code class="sig-name descname">computeBestHitGivenMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.computeBestHitGivenMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the highest probability instance of the PWM
+:param matrix: the matrix to use to copmute the PWM
+:return: the string best hit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.compute_best_hit_given_matrix">
+<code class="sig-name descname">compute_best_hit_given_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.compute_best_hit_given_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the highest probability instance of the PWM
+:param matrix: the matrix to use to copmute the PWM
+:return: the string best hit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.finalise">
+<code class="sig-name descname">finalise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pseudocountProb</span><span class="o">=</span><span class="default_value">0.001</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.finalise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function run after loading the weight matrix to smooth
+the PWM after loading is complete
+:param pseudocountProb: smoothing factor
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.finalize">
+<code class="sig-name descname">finalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pseudocountProb</span><span class="o">=</span><span class="default_value">0.001</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.getBestHit">
+<code class="sig-name descname">getBestHit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.getBestHit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.getRows">
+<code class="sig-name descname">getRows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.getRows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.get_best_hit">
+<code class="sig-name descname">get_best_hit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.get_best_hit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.get_rows">
+<code class="sig-name descname">get_rows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.get_rows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.sampleFromPwm">
+<code class="sig-name descname">sampleFromPwm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.sampleFromPwm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly sample according to the PWM; if a background is included
+then compute the logodds relative to that background and return.
+:param bg: background frequency to compute relative to
+:return: sample or (sample and logodds) if bg is not None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.sampleFromPwmAndScore">
+<code class="sig-name descname">sampleFromPwmAndScore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.sampleFromPwmAndScore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.sample_from_pwm">
+<code class="sig-name descname">sample_from_pwm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.sample_from_pwm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.pwm.PWM.sample_from_pwm_and_score">
+<code class="sig-name descname">sample_from_pwm_and_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.pwm.PWM.sample_from_pwm_and_score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-simdna.simdnautil.util">
+<span id="simdna-simdnautil-util-module"></span><h2>simdna.simdnautil.util module<a class="headerlink" href="#module-simdna.simdnautil.util" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simdna.simdnautil.util.ArgumentToAdd">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">ArgumentToAdd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">argumentName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">argNameAndValSep</span><span class="o">=</span><span class="default_value">'-'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArgumentToAdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to append runtime arguments to a string
+to facilitate auto-generation of output file names.</p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.ArgumentToAdd.argNamePrefix">
+<code class="sig-name descname">argNamePrefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArgumentToAdd.argNamePrefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.util.ArgumentToAdd.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArgumentToAdd.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.ArrArgument">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">ArrArgument</code><span class="sig-paren">(</span><em class="sig-param">val</em>, <em class="sig-param">argumentName</em>, <em class="sig-param">sep='+'</em>, <em class="sig-param">toStringFunc=&lt;class 'str'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArrArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simdna.simdnautil.util.ArgumentToAdd" title="simdna.simdnautil.util.ArgumentToAdd"><code class="xref py py-class docutils literal notranslate"><span class="pre">simdna.simdnautil.util.ArgumentToAdd</span></code></a></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.ArrArgument.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArrArgument.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.ArrOfFileNamesArgument">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">ArrOfFileNamesArgument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">argumentName</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'+'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.ArrOfFileNamesArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simdna.simdnautil.util.ArrArgument" title="simdna.simdnautil.util.ArrArgument"><code class="xref py py-class docutils literal notranslate"><span class="pre">simdna.simdnautil.util.ArrArgument</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.BooleanArgument">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">BooleanArgument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">argumentName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">argNameAndValSep</span><span class="o">=</span><span class="default_value">'-'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.BooleanArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simdna.simdnautil.util.ArgumentToAdd" title="simdna.simdnautil.util.ArgumentToAdd"><code class="xref py py-class docutils literal notranslate"><span class="pre">simdna.simdnautil.util.ArgumentToAdd</span></code></a></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.BooleanArgument.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.BooleanArgument.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.CoreFileNameArgument">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">CoreFileNameArgument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">argumentName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">argNameAndValSep</span><span class="o">=</span><span class="default_value">'-'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.CoreFileNameArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simdna.simdnautil.util.ArgumentToAdd" title="simdna.simdnautil.util.ArgumentToAdd"><code class="xref py py-class docutils literal notranslate"><span class="pre">simdna.simdnautil.util.ArgumentToAdd</span></code></a></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.CoreFileNameArgument.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.CoreFileNameArgument.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.DiscreteDistribution">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">DiscreteDistribution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">valToFreq</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.DiscreteDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.DiscreteDistribution.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.DiscreteDistribution.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from the distribution.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.FileNameParts">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">FileNameParts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em>, <em class="sig-param"><span class="n">core_file_name</span></em>, <em class="sig-param"><span class="n">extension</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FileNameParts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Warning: this will break for non-unix systems;
+wrapper on filename for manipulating file names</p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FileNameParts.get_core_file_name_and_extension">
+<code class="sig-name descname">get_core_file_name_and_extension</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FileNameParts.get_core_file_name_and_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FileNameParts.get_full_path">
+<code class="sig-name descname">get_full_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FileNameParts.get_full_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FileNameParts.get_transformed_core_file_name">
+<code class="sig-name descname">get_transformed_core_file_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformation</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FileNameParts.get_transformed_core_file_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FileNameParts.get_transformed_file_path">
+<code class="sig-name descname">get_transformed_file_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformation</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FileNameParts.get_transformed_file_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.FloatArgument">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">FloatArgument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">argumentName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">argNameAndValSep</span><span class="o">=</span><span class="default_value">'-'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FloatArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simdna.simdnautil.util.ArgumentToAdd" title="simdna.simdnautil.util.ArgumentToAdd"><code class="xref py py-class docutils literal notranslate"><span class="pre">simdna.simdnautil.util.ArgumentToAdd</span></code></a></p>
+<p>Replace the period with a p</p>
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FloatArgument.argNamePrefix">
+<code class="sig-name descname">argNamePrefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FloatArgument.argNamePrefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simdna.simdnautil.util.FloatArgument.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.FloatArgument.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simdna.simdnautil.util.VariableWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">VariableWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.VariableWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>For when I want reference-type access to an immutable</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.addArguments">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">addArguments</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">joiner</span><span class="o">=</span><span class="default_value">'_'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.addArguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>args is an array of ArgumentToAdd.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.combine_enums">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">combine_enums</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">enums</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.combine_enums" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.default_tab_seppd">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">default_tab_seppd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.default_tab_seppd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.enum">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">enum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">enums</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs an enum object around a set of kwargs (all of the same length)
+:param enums: dict of iterables of the same length
+:return: enum version of kwargs</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.format_as_json">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">format_as_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jsonable_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.format_as_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.get_file_handle">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">get_file_handle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'r'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.get_file_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve an open file handle
+WARNING: must close file handle returned from this function
+:param filename: str, path to file
+:param mode: char, ‘r’=read; ‘w’=write, etc according <cite>open</cite>
+:return: open file handle</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.get_file_name_parts">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">get_file_name_parts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.get_file_name_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract filename components with regex
+:param file_name: a unix file path
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.perform_action_on_each_line_of_file">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">perform_action_on_each_line_of_file</code><span class="sig-paren">(</span><em class="sig-param">file_handle</em>, <em class="sig-param">action</em>, <em class="sig-param">transformation=&lt;function default_tab_seppd&gt;</em>, <em class="sig-param">ignore_input_title=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.perform_action_on_each_line_of_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read file and perform action on each line
+:param file_handle: file, file handle
+:param action: function handle, what to do with line
+:param transformation: function handle, manipulate line before action
+:param ignore_input_title: bool, skip index 0
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.process_line">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">process_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span></em>, <em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">ignore_input_title</span></em>, <em class="sig-param"><span class="n">transformation</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.process_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Line by line file processor; used in motif loading
+and simdata loading functions
+:param line: str, line from file
+:param i: int, line index
+:param ignore_input_title: bool, skip index 0
+:param transformation: function handle, manipulate line before action
+:param action: function handle, what to do with line
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.reverseComplement">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">reverseComplement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sequence</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.reverseComplement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reverse complement of a sequence by flipping
+the pairs of nucleotides and reversing the string
+:param sequence: str, sequence of elements in  reverseComplementLookup
+:return: str, reversed complement</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.sampleFromProbsArr">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">sampleFromProbsArr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arrWithProbs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.sampleFromProbsArr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Samples from a discrete distribution.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>arrWithProbs: array of probabilities</p>
+</dd>
+<dt>Returns:</dt><dd><p>an index, sampled with the probability of that index in</p>
+</dd>
+</dl>
+<p>array of probabilities.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.sampleWithoutReplacement">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">sampleWithoutReplacement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">numToSample</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.sampleWithoutReplacement" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.swapIndices">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">swapIndices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">idx1</span></em>, <em class="sig-param"><span class="n">idx2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.swapIndices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simdna.simdnautil.util.trim_newline">
+<code class="sig-prename descclassname">simdna.simdnautil.util.</code><code class="sig-name descname">trim_newline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#simdna.simdnautil.util.trim_newline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-simdna.simdnautil">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-simdna.simdnautil" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SimDNA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Av Shrikumar, Johnny Israeli, Nic Fishman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/simdna.simdnautil.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
