@@ -82,8 +82,8 @@ mult_rc_pwmembedder = synthetic.SubstringEmbedder(rc_pwmsampler, positionGenerat
 # a wrapper that embeds a returned element multiple times; SubstringEmbedder samples the quantityGenerator each 
 # time it is called and embeds that many elements in the given sequence
 repeatedpwmembedder = synthetic.RepeatedEmbedder(
-                          corepwmembedder, 
-                          quantityGenerator=synthetic.UniformIntegerGenerator(minval=1, maxval=3)
+                          mult_rc_pwmembedder, 
+                          quantityGenerator=synthetic.UniformIntegerGenerator(minVal=1, maxVal=3)
                       )
 ```
 
